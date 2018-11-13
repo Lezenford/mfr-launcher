@@ -1,0 +1,144 @@
+@font-face {
+    font-family: Magic Cards;
+    src: url(font/MagicCardsRussian.ttf);
+}
+
+* {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-font-family: "Magic Cards";
+    -fx-text-fill: rgb(193, 166, 113);
+    -fx-font-size: 14px;
+}
+
+.mainPageRoot {
+    -fx-background-image: url(image/main-page-background.png);
+    -fx-max-height: 600px;
+    -fx-max-width: 700px;
+    -fx-min-height: 600px;
+    -fx-min-width: 700px;
+}
+
+.configurationPageRoot {
+    -fx-background-image: url(image/configuration-page-background.png);
+    -fx-max-height: 600px;
+    -fx-max-width: 700px;
+    -fx-min-height: 600px;
+    -fx-min-width: 700px;
+}
+
+.mgePageRoot {
+    -fx-background-image: url(image/mge-page-background.png);
+    -fx-max-height: 369px;
+    -fx-max-width: 172px;
+    -fx-min-height: 369px;
+    -fx-min-width: 172px;
+}
+
+.button {
+    -fx-background-image: url(image/button-middle.png);
+    -fx-max-height: 24px;
+    -fx-max-width: 148px;
+    -fx-min-height: 24px;
+    -fx-min-width: 148px;
+}
+
+.button:hover {
+    -fx-background-image: url(image/button-middle-hover.png);
+}
+
+.button:pressed {
+    -fx-background-image: url(image/button-middle-pressed.png);
+}
+
+.button.short {
+    -fx-background-image: url(image/button-short.png);
+    -fx-max-height: 24px;
+    -fx-max-width: 57px;
+    -fx-min-height: 24px;
+    -fx-min-width: 57px;
+}
+
+.button.short:hover {
+    -fx-background-image: url(image/button-short-hover.png);
+}
+
+.button.short:pressed {
+    -fx-background-image: url(image/button-short-pressed.png);
+}
+
+.button.long {
+    -fx-background-image: url(image/button-long.png);
+    -fx-max-height: 32px;
+    -fx-max-width: 604px;
+    -fx-min-height: 32px;
+    -fx-min-width: 604px;
+}
+
+.button.long:hover {
+    -fx-background-image: url(image/button-long-hover.png);
+}
+
+.button.long:pressed {
+    -fx-background-image: url(image/button-long-pressed.png);
+}
+
+.toggle-button.longConfigPage {
+    -fx-background-image: url(image/button-long-configure-page.png);
+    -fx-max-height: 24px;
+    -fx-max-width: 219px;
+    -fx-min-height: 24px;
+    -fx-min-width: 219px;
+}
+
+.toggle-button.longConfigPage:hover {
+    -fx-background-image: url(image/button-long-configure-page-hover.png);
+}
+
+.toggle-button.longConfigPage:selected {
+    -fx-background-image: url(image/button-long-configure-page-pressed.png);
+}
+
+.text-field.path {
+    -fx-max-height: 24px;
+    -fx-max-width: 594px;
+    -fx-min-height: 24px;
+    -fx-min-width: 594px;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 13px;
+}
+
+.scroll-bar:vertical .track {
+    -fx-background-image: url(image/scroll/track.png);
+
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-image: url(image/scroll/thumb.png);
+}
+
+.increment-button {
+    -fx-background-image: url(image/scroll/down.png);
+}
+
+.decrement-button {
+    -fx-background-image: url(image/scroll/up.png);
+}
+
+.radio-button .dot {
+    -fx-background-image: url(image/radio-button.png);
+    -fx-padding: 7;
+}
+
+.radio-button:selected .dot {
+    -fx-background-image: url(image/radion-button-selected.png);
+}
+
+.list-cell {
+    -fx-alignment: center;
+}
+
+.list-cell:filled:selected:focused {
+    -fx-text-fill: rgb(128, 102, 55);
+}

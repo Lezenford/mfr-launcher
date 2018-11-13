@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="280.0" prefWidth="120.0" styleClass="mgePageRoot" stylesheets="@css/style.css"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.plugins_configuration_utility.controller.MGEConfigurationController">
+    <children>
+        <VBox alignment="TOP_CENTER" prefHeight="369.0" prefWidth="172.0">
+            <children>
+                <VBox alignment="TOP_CENTER" prefHeight="74.0" prefWidth="172.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#startMGE" prefHeight="25.0" prefWidth="124.0"
+                                text="Старт MGE">
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                    </children>
+                    <padding>
+                        <Insets top="38.0"/>
+                    </padding>
+                </VBox>
+                <VBox alignment="TOP_CENTER" prefHeight="214.0" prefWidth="172.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#useHightPerformanceConfig" prefHeight="25.0"
+                                prefWidth="138.0" text="Мощный компьютер">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#useMiddlePerformanceConfig" prefHeight="25.0"
+                                prefWidth="120.0" text="Средний компьютер">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#useLowPerformanceConfig" prefHeight="25.0"
+                                prefWidth="130.0" text="Слабый компьютер">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#useNecroPerformanceConfig" prefHeight="25.0"
+                                prefWidth="126.0" text="Древний компьютер">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#saveConfig" prefHeight="25.0" prefWidth="122.0"
+                                text="Сохранить свой">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                        <Button fx:id="restoreBackupButton" mnemonicParsing="false" onAction="#restoreBackup"
+                                prefHeight="25.0" prefWidth="122.0" text="Восстановить свой">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" text="Назад" onAction="#cancel">
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="3.0"/>
+                            </padding>
+                        </Button>
+                    </children>
+                    <padding>
+                        <Insets top="6.0"/>
+                    </padding>
+                </VBox>
+                <VBox prefHeight="82.0" prefWidth="172.0">
+                    <children>
+                        <VBox prefHeight="97.0" prefWidth="172.0">
+                            <children>
+                                <ScrollPane hbarPolicy="NEVER" prefHeight="74.0" prefWidth="172.0">
+                                    <content>
+                                        <ListView fx:id="backups" minHeight="0.0" minWidth="0.0" prefHeight="71.0"
+                                                  prefWidth="168.0"/>
+                                    </content>
+                                </ScrollPane>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

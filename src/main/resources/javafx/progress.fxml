@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="168.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.plugins_configuration_utility.controller.ProgressController">
+    <children>
+        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="600.0">
+            <children>
+                <Region prefHeight="24.0" prefWidth="600.0"/>
+                <Label fx:id="headerLabel" text="Операция выполняется, пожалуйста, подождите..."/>
+                <Region prefHeight="38.0" prefWidth="600.0"/>
+                <ProgressIndicator fx:id="progressBar" progress="0.0"/>
+                <Region prefHeight="11.0" prefWidth="600.0"/>
+                <Label fx:id="informationLabel"/>
+                <Region prefHeight="9.0" prefWidth="600.0"/>
+                <Button fx:id="closeButton" disable="true" mnemonicParsing="false" text="Закрыть"
+                        onAction="#closeButtonAction"/>
+                <Region prefHeight="20.0" prefWidth="600.0"/>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
