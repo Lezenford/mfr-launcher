@@ -58,6 +58,7 @@ public class PluginConfigurationController extends AbstractController {
 
     private Map<Group, ToggleGroup> groupMap;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void beforeOpen() {
         groupMap = new HashMap<>();
@@ -82,28 +83,22 @@ public class PluginConfigurationController extends AbstractController {
                     button.setSelected(true);
                 }
                 buttons.add(button);
-                button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        setRelease(release);
-                        acceptButton.setDisable(false);
-                    }
+                button.setOnMouseClicked(event -> {
+                    setRelease(release);
+                    acceptButton.setDisable(false);
                 });
             }
             groupMap.put(group, toggleGroup);
             groupButton.setUserData(buttons);
         }
-        groupButtons.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                if (newValue != null) {
-                    releaseVBox.getChildren().removeAll(releaseVBox.getChildren());
-                    descriptionVBox.getChildren().removeAll(descriptionVBox.getChildren());
-                    for (RadioButton button : (List<RadioButton>) newValue.getUserData()) {
-                        releaseVBox.getChildren().add(button);
-                        if (button.isSelected()) {
-                            setRelease((Release) button.getUserData());
-                        }
+        groupButtons.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                releaseVBox.getChildren().removeAll(releaseVBox.getChildren());
+                descriptionVBox.getChildren().removeAll(descriptionVBox.getChildren());
+                for (RadioButton button : (List<RadioButton>) newValue.getUserData()) {
+                    releaseVBox.getChildren().add(button);
+                    if (button.isSelected()) {
+                        setRelease((Release) button.getUserData());
                     }
                 }
             }

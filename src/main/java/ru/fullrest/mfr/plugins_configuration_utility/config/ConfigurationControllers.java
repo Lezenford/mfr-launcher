@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import ru.fullrest.mfr.plugins_configuration_utility.PluginsConfigurationUtilityApplication;
 import ru.fullrest.mfr.plugins_configuration_utility.controller.*;
 
+import javax.persistence.EnumType;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.ElementType;
 
 /**
  * Created on 01.11.2018
@@ -20,29 +22,35 @@ import java.io.InputStream;
 @Configuration
 public class ConfigurationControllers {
 
+    @SuppressWarnings("unchecked")
     @Bean(name = "mainView")
     public View<MainController> getMainView() throws IOException {
         return (View<MainController>) loadView("javafx/main.fxml");
     }
 
+    @SuppressWarnings("unchecked")
     @Bean(name = "configurationView")
     public View<PluginConfigurationController> getConfigurationView() throws IOException {
         return (View<PluginConfigurationController>) loadView("javafx/plugin_configuration.fxml");
     }
 
+    @SuppressWarnings("unchecked")
     @Bean(name = "progressView")
     public View<ProgressController> getProgressView() throws IOException {
         return (View<ProgressController>) loadView("javafx/progress.fxml");
     }
 
+    @SuppressWarnings("unchecked")
     @Bean(name = "detailsEditorView")
     public View<DetailsEditorController> getDetailsEditorView() throws IOException {
         return (View<DetailsEditorController>) loadView("javafx/details-editor.fxml");
     }
 
+
+    @SuppressWarnings("unchecked")
     @Bean(name = "mgeConfigurationView")
     public View<MGEConfigurationController> getMGEConfigurationView() throws IOException {
-        return (View<MGEConfigurationController>) loadView("javafx/mge-configuration.fxml");
+        return (View<MGEConfigurationController>)  loadView("javafx/mge-configuration.fxml");
     }
 
     /**
@@ -80,16 +88,10 @@ public class ConfigurationControllers {
      * произведены все FXML инъекции и вызван метод инициализации контроллера.
      */
     private View<?> loadView(String url) throws IOException {
-        InputStream fxmlStream = null;
-        try {
-            fxmlStream = getClass().getClassLoader().getResourceAsStream(url);
+        try (InputStream fxmlStream = getClass().getClassLoader().getResourceAsStream(url)) {
             FXMLLoader loader = new FXMLLoader();
             loader.load(fxmlStream);
             return new View<>(loader.getRoot(), loader.getController());
-        } finally {
-            if (fxmlStream != null) {
-                fxmlStream.close();
-            }
         }
     }
 

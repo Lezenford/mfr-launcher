@@ -41,6 +41,7 @@ dependencies {
 
 //	lombok
     compileOnly 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
 //	JavaFX
     compile "org.openjfx:javafx-base:11:$platform"
