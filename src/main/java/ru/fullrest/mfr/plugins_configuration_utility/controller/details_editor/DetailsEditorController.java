@@ -255,6 +255,11 @@ public class DetailsEditorController implements AbstractController {
             createSchemaButton.setDisable(true);
         });
 
+        //Edit description
+        descriptionArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            releaseComboBox.getSelectionModel().getSelectedItem().setDescription(newValue);
+        });
+
         image.setFitHeight(200);
         image.setFitWidth(200);
     }
