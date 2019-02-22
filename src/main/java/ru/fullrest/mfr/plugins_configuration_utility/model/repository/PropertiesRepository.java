@@ -11,6 +11,5 @@ import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey;
  */
 public interface PropertiesRepository extends CrudRepository<Properties, Integer> {
 
-    //    @Query("SELECT p.value FROM Properties p WHERE p.key=?1")
     Properties findByKey(PropertyKey key);
 }

@@ -12,7 +12,5 @@ import java.util.List;
  * @author Alexey Plekhanov
  */
 public interface DetailsRepository extends CrudRepository<Details, Integer> {
-    List<Details> findAllByReleaseAndActiveIsTrue(Release release);
-
-    List<Details> findAllByActiveIsTrue();
+    List<Details> findAllByRelease(Release release);
 }

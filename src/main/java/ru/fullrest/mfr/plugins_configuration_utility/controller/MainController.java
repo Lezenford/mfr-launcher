@@ -1,18 +1,17 @@
 package ru.fullrest.mfr.plugins_configuration_utility.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.fullrest.mfr.plugins_configuration_utility.PluginsConfigurationUtilityApplication;
-import ru.fullrest.mfr.plugins_configuration_utility.config.ConfigurationControllers;
-import ru.fullrest.mfr.plugins_configuration_utility.config.StageControllers;
+import ru.fullrest.mfr.plugins_configuration_utility.config.PropertiesConfiguration;
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.View;
 import ru.fullrest.mfr.plugins_configuration_utility.manager.FileManager;
-import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey;
-import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository;
+import ru.fullrest.mfr.plugins_configuration_utility.manager.StageManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,11 +22,7 @@ import java.io.IOException;
  * @author Alexey Plekhanov
  */
 @Log4j2
-public class MainController extends AbstractController {
-
-    // Инъекции Spring
-    @Autowired
-    private PropertiesRepository propertiesRepository;
+public class MainController implements AbstractController {
 
     @Autowired
     private FileManager fileManager;
@@ -36,10 +31,22 @@ public class MainController extends AbstractController {
     private PluginsConfigurationUtilityApplication application;
 
     @Autowired
-    private StageControllers stageControllers;
+    private StageManager stageManager;
 
     @Autowired
-    private ConfigurationControllers configurationControllers;
+    private View<MGEConfigurationController> mgeConfigurationView;
+
+    @Autowired
+    private View<PluginConfigurationController> pluginConfigurationView;
+
+    @Autowired
+    private View<ReadmeController> readmeView;
+
+    @Autowired
+    private View<HelpForProjectController> helpForProjectView;
+
+    @Autowired
+    private PropertiesConfiguration propertiesConfiguration;
 
     @FXML
     @Getter
@@ -47,18 +54,12 @@ public class MainController extends AbstractController {
 
     @FXML
     @Getter
-    private TextField gamePath;
-
-    public void open() {
-        fileManager.initGameDirectory();
-        gamePath.setText(propertiesRepository.findByKey(PropertyKey.GAME_DIRECTORY_PATH).getValue());
-        fileManager.checkVersion();
-    }
+    private Label gamePath;
 
     public void startGame() {
         try {
-            Runtime.getRuntime().exec(fileManager.getAbsolutePath(FileManager.MORROWIND_EXE), null,
-                    new File(fileManager.getGamePath()));
+            Runtime.getRuntime().exec(fileManager.getAbsolutePath(propertiesConfiguration.getMorrowind_exe()), null,
+                    new File(fileManager.getGamePath(false)));
             System.exit(0);
         } catch (IOException e) {
             createAlertForException(e, "Невозможно запустить Morrowind!");
@@ -67,8 +68,8 @@ public class MainController extends AbstractController {
 
     public void startLauncher() {
         try {
-            Runtime.getRuntime().exec(fileManager.getAbsolutePath(FileManager.MORROWIND_LAUNCHER_EXE), null,
-                    new File(fileManager.getGamePath()));
+            Runtime.getRuntime().exec(fileManager.getAbsolutePath(propertiesConfiguration.getLauncher_exe()), null,
+                    new File(fileManager.getGamePath(false)));
             System.exit(0);
         } catch (IOException e) {
             createAlertForException(e, "Невозможно запустить Morrowind Launcher!");
@@ -77,8 +78,8 @@ public class MainController extends AbstractController {
 
     public void startMCP() {
         try {
-            Runtime.getRuntime().exec(fileManager.getAbsolutePath(FileManager.MORROWIND_MCP_EXE), null,
-                    new File(fileManager.getGamePath()));
+            Runtime.getRuntime().exec(fileManager.getAbsolutePath(propertiesConfiguration.getMcp_exe()), null,
+                    new File(fileManager.getGamePath(false)));
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка!");
@@ -94,26 +95,29 @@ public class MainController extends AbstractController {
     }
 
     public void startMGE() {
-        try {
-            configurationControllers.getMGEConfigurationView().getController().beforeOpen();
-            stageControllers.getMgeConfigurationStage().show();
-        } catch (IOException e) {
-            log.error(e);
-        }
+        mgeConfigurationView.getController().beforeOpen();
+        stageManager.getMgeConfigurationStage().show();
     }
 
     public void openForum() {
-        application.getHostServices().showDocument(propertiesRepository.findByKey(PropertyKey.FORUM_LINK).getValue());
+        application.getHostServices().showDocument(propertiesConfiguration.getForumLink());
     }
 
     public void openReadme() {
-        application.getHostServices().showDocument(fileManager.getAbsolutePath(FileManager.MORROWIND_README));
+        readmeView.getController().beforeOpen();
+        stageManager.getApplicationStage().hide();
+        stageManager.getReadmeStage().show();
     }
 
-    public void openConfiguration() throws IOException {
-        configurationControllers.getConfigurationView().getController().beforeOpen();
-        stageControllers.getApplicationStage().hide();
-        stageControllers.getPluginConfigurationStage().show();
+    public void helpForProject() {
+        helpForProjectView.getController().beforeOpen();
+        stageManager.getHelpForProjectStage().show();
+    }
+
+    public void openConfiguration() {
+        pluginConfigurationView.getController().beforeOpen();
+        stageManager.getApplicationStage().hide();
+        stageManager.getPluginConfigurationStage().show();
     }
 
     private void createAlertForException(Throwable e, String message) {
@@ -122,5 +126,14 @@ public class MainController extends AbstractController {
         alert.setHeaderText(message);
         alert.setContentText(e.getMessage());
         alert.showAndWait();
+    }
+
+    public void close() {
+        Platform.exit();
+    }
+
+    @Override
+    public void beforeOpen() {
+
     }
 }

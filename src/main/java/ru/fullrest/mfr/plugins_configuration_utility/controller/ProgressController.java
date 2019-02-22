@@ -1,8 +1,8 @@
 package ru.fullrest.mfr.plugins_configuration_utility.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,34 +11,28 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
 import ru.fullrest.mfr.plugins_configuration_utility.manager.FileManager;
-import ru.fullrest.mfr.plugins_configuration_utility.manager.RepositoryManager;
-import ru.fullrest.mfr.plugins_configuration_utility.model.entity.*;
+import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Details;
+import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Group;
+import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Release;
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.DetailsRepository;
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.GroupRepository;
-import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository;
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.ReleaseRepository;
 
-import javax.persistence.PersistenceException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
-public class ProgressController extends AbstractController {
-
-    @Autowired
-    private ResourceLoader loader;
-
-    @Autowired
-    private RepositoryManager repositoryManager;
+public class ProgressController implements AbstractController {
 
     @Autowired
     private GroupRepository groupRepository;
@@ -48,9 +42,6 @@ public class ProgressController extends AbstractController {
 
     @Autowired
     private DetailsRepository detailsRepository;
-
-    @Autowired
-    private PropertiesRepository propertiesRepository;
 
     @Autowired
     private FileManager fileManager;
@@ -79,67 +70,50 @@ public class ProgressController extends AbstractController {
         progressBar.progressProperty().bind(task.progressProperty());
         informationLabel.textProperty().unbind();
         informationLabel.textProperty().bind(task.messageProperty());
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                closeButton.setDisable(false);
-                if (task.getValue()) {
-                    headerLabel.setText("Загрузка завершена");
-                } else {
-                    headerLabel.setText("Ошибка загрузки!");
-                }
+        headerLabel.setText("Применение изменений");
+        closeButton.setVisible(false);
+        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
+            closeButton.setDisable(false);
+            closeButton.setVisible(true);
+            if (task.getValue()) {
+                headerLabel.setText("Загрузка завершена");
+            } else {
+                headerLabel.setText("Ошибка загрузки!");
             }
         });
         new Thread(task).start();
     }
 
-    public void execSqlScript(String path, boolean classpath, boolean initScript) {
-        ExecuteSQLTask task = new ExecuteSQLTask();
-        task.setPath(path);
-        task.setClasspath(classpath);
-        task.setInitScript(initScript);
+    public void readJson(File file) {
+        ReadJsonTask task = new ReadJsonTask();
+        task.setFile(file);
         progressBar.progressProperty().unbind();
         progressBar.progressProperty().bind(task.progressProperty());
         informationLabel.textProperty().unbind();
         informationLabel.textProperty().bind(task.messageProperty());
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                closeButton.setDisable(false);
-                if (task.getValue()) {
-                    headerLabel.setText("Загрузка завершена");
-                    if (initScript) {
-                        closeButton.setDisable(true);
-                        Properties properties = propertiesRepository.findByKey(PropertyKey.DEFAULT_DETAILS_INIT);
-                        properties.setValue("");
-                        propertiesRepository.save(properties);
-                        calculateMD5(initScript);
-                    }
-                } else {
-                    headerLabel.setText("Ошибка загрузки!");
-                }
+        closeButton.setVisible(false);
+        headerLabel.setText("Анализ конфигурации");
+        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
+            if (task.getValue()) {
+                headerLabel.setText("Загрузка завершена");
+            } else {
+                headerLabel.setText("Ошибка загрузки");
             }
+            calculateMD5();
         });
         new Thread(task).start();
     }
 
-    public void calculateMD5(boolean initScript) {
+    public void calculateMD5() {
         CalculateMD5Task task = new CalculateMD5Task();
         progressBar.progressProperty().unbind();
         progressBar.progressProperty().bind(task.progressProperty());
         informationLabel.textProperty().unbind();
         informationLabel.textProperty().bind(task.messageProperty());
         headerLabel.setText("Анализ опциональных файлов");
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                closeButton.setDisable(false);
-                headerLabel.setText("Анализ файлов завершен");
-                if (initScript) {
-                    closeButton.setDisable(true);
-                    findActivePluginByMD5();
-                }
-            }
+        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
+            headerLabel.setText("Анализ файлов завершен");
+            findActivePluginByMD5();
         });
         new Thread(task).start();
     }
@@ -151,12 +125,10 @@ public class ProgressController extends AbstractController {
         informationLabel.textProperty().unbind();
         informationLabel.textProperty().bind(task.messageProperty());
         headerLabel.setText("Поиск активированных плагинов");
-        task.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                headerLabel.setText("Поиск завершен");
-                closeButton.setDisable(false);
-            }
+        task.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
+            headerLabel.setText("Поиск активной конфигурации завершен");
+            closeButton.setVisible(true);
+            closeButton.setDisable(false);
         });
         new Thread(task).start();
     }
@@ -165,91 +137,63 @@ public class ProgressController extends AbstractController {
         ((Stage) closeButton.getScene().getWindow()).close();
     }
 
-    private class ExecuteSQLTask extends Task<Boolean> {
+    private void checkFutures(List<Future> futures) {
+        if (futures != null) {
+            for (Future future : futures) {
+                try {
+                    future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    log.error("Future get error\n", e);
+                }
+            }
+        }
+    }
+
+    private class ReadJsonTask extends Task<Boolean> {
 
         @Setter
-        private String path;
-
-        @Setter
-        private boolean classpath;
-
-        @Setter
-        private boolean initScript;
+        private File file;
 
         @Override
         protected Boolean call() {
-            File script;
-            int maxCount = 0;
-            this.updateProgress(0, maxCount);
-            this.updateMessage("Считывание файла скрипта");
-            if (classpath) {
-                try {
-                    script = Files.createTempFile("tmp_", ".sql").toFile();
-                    script.deleteOnExit();
-                    try (InputStream in = loader.getResource("classpath:" + path).getInputStream(); OutputStream out
-                            = new FileOutputStream(script)) {
-                        IOUtils.copy(in, out);
-                    }
-                } catch (IOException e) {
-                    log.error(e.getMessage());
-                    this.updateMessage(e.getMessage());
-                    return false;
+            ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+            this.updateProgress(0, 0);
+            this.updateMessage("Считывание данных из файла");
+            List<String> jsonList = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new FileReader(file, Charset.forName("UTF-8")))) {
+                while (reader.ready()) {
+                    jsonList.add(reader.readLine());
                 }
-            } else {
-                script = new File(path);
+            } catch (IOException e) {
+                log.error("Error read json file.\n", e);
             }
-            if (script.exists() && script.isFile() && script.canRead()) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(script))) {
-                    while (reader.ready()) {
-                        if (reader.readLine().contains(";")) {
-                            maxCount++;
-                        }
+            this.updateMessage("Считывание данных из файла");
+            List<Group> groups = new CopyOnWriteArrayList<>();
+            List<Future> futures = new ArrayList<>();
+            AtomicInteger count = new AtomicInteger();
+            for (String json : jsonList) {
+                futures.add(threadPool.submit(() -> {
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        Group group = mapper.readValue(json, Group.class);
+                        group.getReleases().forEach(release -> {
+                            release.setGroup(group);
+                            release.getDetails().forEach(details -> details.setRelease(release));
+                        });
+                        groups.add(group);
+                        this.updateProgress(count.incrementAndGet(), jsonList.size());
+                    } catch (IOException e) {
+                        log.error("Error mapping json to entity.\n", e);
                     }
-                } catch (IOException e) {
-                    log.error(e.getMessage());
-                    this.updateMessage(e.getMessage());
-                    return false;
-                }
-                try (BufferedReader reader = new BufferedReader(new FileReader(script, Charset.forName("UTF-8")))) {
-                    StringBuilder builder = new StringBuilder();
-                    int currentCount = 0;
-                    while (reader.ready()) {
-                        String temp = reader.readLine();
-                        if (temp.contains(";")) {
-                            builder.append(temp);
-                            currentCount++;
-                            if (currentCount <= maxCount) {
-                                this.updateProgress(currentCount, maxCount);
-                            }
-                            this.updateMessage("Выполняется команда: " + builder.toString().strip());
-                            try {
-                                repositoryManager.initUpdateScript(builder.toString());
-                            } catch (PersistenceException e) {
-                                log.error(e.getMessage());
-                            }
-                            builder = new StringBuilder();
-                        } else {
-                            builder.append(temp).append(" ");
-                        }
-                    }
-                } catch (IOException e) {
-                    log.error(e.getMessage());
-                    this.updateMessage(e.getMessage());
-                    return false;
-                }
-                this.updateProgress(1, 1);
-                this.updateMessage("");
-                if (classpath) {
-                    if (!script.delete()) {
-                        log.error("Temp script file has not deleted! " + script.getAbsolutePath());
-                    }
-                }
-                return true;
-            } else {
-                this.updateProgress(0, 0);
-                this.updateMessage("Не удалось прочитать файл скрипта!");
-                return false;
+                }));
             }
+            checkFutures(futures);
+            this.updateMessage("Сохранение данных");
+            this.updateProgress(1, 1);
+            groupRepository.saveAll(groups);
+            this.updateMessage("Процесс завершен");
+            threadPool.shutdownNow();
+            return true;
         }
     }
 
@@ -259,34 +203,43 @@ public class ProgressController extends AbstractController {
         private Map<Group, ToggleGroup> groupMap;
 
         @Override
-        protected Boolean call() throws Exception {
+        protected Boolean call() {
+            ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
             for (Map.Entry<Group, ToggleGroup> entry : groupMap.entrySet()) {
                 List<Release> releases =
-                        releaseRepository.findAllByGroupAndAppliedIsTrueAndActiveIsTrue(entry.getKey());
+                        releaseRepository.findAllByGroupAndAppliedIsTrue(entry.getKey());
+                List<Future> futures = new ArrayList<>();
                 this.updateMessage("Проверка отключаемых модулей");
                 if (entry.getValue().getSelectedToggle() != null && entry.getValue().getSelectedToggle().getUserData() instanceof Release && !releases.contains((Release) entry.getValue().getSelectedToggle().getUserData())) {
                     for (Release release : releases) {
                         this.updateMessage("Отключение модуля: " + release.getValue());
                         this.updateProgress(0, 0);
-                        List<Details> details = detailsRepository.findAllByReleaseAndActiveIsTrue(release);
-                        for (int i = 0; i < details.size(); i++) {
-                            this.updateProgress(i, details.size());
-                            if (fileManager.checkFileMD5(details.get(i))) {
-                                fileManager.removeFromGameDirectory(details.get(i));
-                            }
+                        AtomicInteger count = new AtomicInteger();
+                        List<Details> detailsForInactive = detailsRepository.findAllByRelease(release);
+                        for (Details detail : detailsForInactive) {
+                            futures.add(threadPool.submit(() -> {
+                                if (fileManager.checkFileMD5(detail)) {
+                                    fileManager.removeFromGameDirectory(detail);
+                                }
+                                this.updateProgress(count.incrementAndGet(), detailsForInactive.size());
+                            }));
                         }
+                        checkFutures(futures);
                         release.setApplied(false);
                         releaseRepository.save(release);
                     }
                     Release release = (Release) entry.getValue().getSelectedToggle().getUserData();
-                    List<Details> detailsList = detailsRepository.findAllByReleaseAndActiveIsTrue(release);
-                    int count = 0;
-                    for (Details details : detailsList) {
-                        count++;
-                        this.updateMessage("Подключение модуля: " + details.getRelease().getValue());
-                        this.updateProgress(count, detailsList.size());
-                        fileManager.copyToGameDirectory(details);
+                    List<Details> detailsForActive = detailsRepository.findAllByRelease(release);
+                    futures = new ArrayList<>();
+                    AtomicInteger count = new AtomicInteger();
+                    this.updateMessage("Подключение модуля: " + release.getValue());
+                    for (Details details : detailsForActive) {
+                        futures.add(threadPool.submit(() -> {
+                            fileManager.copyToGameDirectory(details);
+                            this.updateProgress(count.incrementAndGet(), detailsForActive.size());
+                        }));
                     }
+                    checkFutures(futures);
                     this.updateMessage("Сохранение изменений");
                     this.updateProgress(1, 1);
                     release.setApplied(true);
@@ -295,70 +248,85 @@ public class ProgressController extends AbstractController {
                 this.updateProgress(1, 1);
                 this.updateMessage("");
             }
+            threadPool.shutdownNow();
             return true;
         }
     }
 
-    private class CalculateMD5Task extends Task<List<Details>> {
+    private class CalculateMD5Task extends Task<Boolean> {
 
         @Override
-        protected List<Details> call() throws Exception {
-            List<Details> resultList = new ArrayList<>();
-            List<Details> detailsList = detailsRepository.findAllByActiveIsTrue();
-            for (int i = 0; i < detailsList.size(); i++) {
-                File file = new File(fileManager.getOptionalPath(true) + detailsList.get(i).getStoragePath());
-                this.updateMessage("Расчет метаинформации для файла: " + file.getAbsolutePath());
-                this.updateProgress(i, detailsList.size());
-                if (file.exists()) {
-                    try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file))) {
-                        MessageDigest digest = MessageDigest.getInstance("MD5");
-                        digest.update(bufferedInputStream.readAllBytes());
-                        detailsList.get(i).setMd5(digest.digest());
-                        detailsRepository.save(detailsList.get(i));
-                        this.updateMessage("Расчет успешно завершен");
-                        this.updateProgress(i, detailsList.size());
+        protected Boolean call() {
+            ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+            List<Future> futures = new ArrayList<>();
+            AtomicInteger count = new AtomicInteger();
+            List<Details> detailsList = new ArrayList<>();
+            detailsRepository.findAll().forEach(detailsList::add);
+            for (Details details : detailsList) {
+                File file = new File(fileManager.getOptionalPath(true) + details.getStoragePath());
+                futures.add(threadPool.submit(() -> {
+                    byte[] md5 = fileManager.getFileMD5(file);
+                    details.setMd5(md5);
+                    String comment;
+                    if (file.getAbsolutePath().length() > 25) {
+                        comment = "..." + file.getAbsolutePath().substring(file.getAbsolutePath().length() - 20);
+                    } else {
+                        comment = file.getAbsolutePath();
                     }
-                } else {
-                    resultList.add(detailsList.get(i));
-                    this.updateMessage("Ошибка расчета MD5");
-                    this.updateProgress(i, detailsList.size());
-                    log.error("File doesn't exist!\n" + file.getAbsolutePath());
-                }
+                    this.updateMessage("Расчет метаинформации завершен для файла: " + comment);
+                    this.updateProgress(count.incrementAndGet(), detailsList.size());
+                }));
             }
-            this.updateMessage("Расчет успешно завершен");
+            checkFutures(futures);
+            this.updateMessage("Сохранение данных");
             this.updateProgress(1, 1);
-            return resultList;
+            detailsRepository.saveAll(detailsList);
+            this.updateMessage("Расчет успешно завершен");
+            threadPool.shutdownNow();
+            return true;
         }
     }
 
     private class FindActivePluginByMD5Task extends Task<Boolean> {
 
         @Override
-        protected Boolean call() throws Exception {
-            for (Group group : groupRepository.findAllByActiveIsTrue()) {
+        protected Boolean call() {
+            ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+            for (Group group : groupRepository.findAllByOrderByValue()) {
+                this.updateProgress(0, 0);
                 this.updateMessage("Поиск активной конфигурации для " + group.getValue());
-                boolean foundRelease = false;
-                for (Release release : releaseRepository.findAllByGroupAndActiveIsTrue(group)) {
-                    this.updateProgress(0, 0);
-                    release.setApplied(false);
-                    if (!foundRelease) {
-                        List<Details> details = detailsRepository.findAllByReleaseAndActiveIsTrue(release);
+                List<Future> futures = new ArrayList<>();
+                AtomicInteger count = new AtomicInteger();
+                AtomicInteger current = new AtomicInteger();
+                List<Release> releases = releaseRepository.findAllByGroup(group);
+                for (Release release : releases) {
+                    futures.add(threadPool.submit(() -> {
+                        List<Details> details = detailsRepository.findAllByRelease(release);
+                        count.addAndGet(details.size());
+                        boolean apply = true;
                         for (int i = 0; i < details.size(); i++) {
-                            updateProgress(i, details.size());
                             if (!fileManager.checkFileMD5(details.get(i))) {
+                                apply = false;
+                                current.addAndGet(details.size() - i);
+                                release.setApplied(false);
                                 break;
-                            }
-                            if (i == details.size() - 1) {
-                                foundRelease = true;
-                                release.setApplied(true);
+                            } else {
+                                this.updateProgress(current.incrementAndGet(), count.get());
                             }
                         }
-                    }
-                    releaseRepository.save(release);
+                        if (apply) {
+                            release.setApplied(true);
+                        }
+                    }));
+                    checkFutures(futures);
                 }
+                this.updateProgress(1, 1);
+                this.updateMessage("Сохранение данных");
+                releaseRepository.saveAll(releases);
             }
             this.updateProgress(1, 1);
             this.updateMessage("");
+            threadPool.shutdownNow();
             return null;
         }
     }

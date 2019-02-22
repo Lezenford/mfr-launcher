@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.1.2.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -21,7 +21,7 @@ apply plugin: 'com.google.osdetector'
 ext.platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
 
 group = 'ru.fullrest.mfr'
-version = '0.1'
+version = '1.0'
 sourceCompatibility = 1.11
 mainClassName = 'ru.fullrest.mfr.plugins_configuration_utility.PluginsConfigurationUtilityApplication'
 
@@ -49,9 +49,15 @@ dependencies {
     compile "org.openjfx:javafx-controls:11:$platform"
     compile "org.openjfx:javafx-fxml:11:$platform"
     compile "org.openjfx:javafx-swing:11:$platform"
+    compile "org.openjfx:javafx-web:11:$platform"
+    compile "org.openjfx:javafx-media:11:$platform"
 
 //  apache-commons
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
+
+//  jackson
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+
 
 }
 
@@ -84,3 +90,12 @@ jar {
     }
 }
 
+task moveJar(dependsOn: build) {
+    doLast {
+        copy {
+            from '/build/libs'
+            into 'C:/Games/M[FR]/MFRPCU'
+        }
+    }
+
+}

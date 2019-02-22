@@ -1,126 +1,259 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="800.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ru.fullrest.mfr.plugins_configuration_utility.controller.DetailsEditorController">
+<AnchorPane prefHeight="750.0" prefWidth="800.0" styleClass="detailsEditorRoot" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.plugins_configuration_utility.controller.details_editor.DetailsEditorController">
     <children>
-        <BorderPane prefHeight="800.0" prefWidth="700.0">
-            <top>
-                <VBox prefHeight="245.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="800.0" prefWidth="776.0" styleClass="mr-border-thin-borders" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox prefHeight="803.0" prefWidth="776.0" styleClass="mr-border-thin-corners">
                     <children>
-                        <HBox prefHeight="65.0" prefWidth="700.0">
+                        <HBox alignment="CENTER" prefHeight="26.0" prefWidth="776.0" styleClass="mr-headblock">
                             <children>
-                                <VBox prefHeight="65.0" prefWidth="740.0">
+                                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="bg-black">
                                     <children>
-                                        <HBox prefHeight="24.0" prefWidth="290.0">
-                                            <children>
-                                                <Label text="Группа"/>
-                                                <ComboBox fx:id="groupComboBox" prefHeight="25.0" prefWidth="141.0"/>
-                                                <TextField fx:id="groupName"/>
-                                                <Button fx:id="addGroupButton" disable="true" mnemonicParsing="false"
-                                                        onAction="#addGroup" text="+"/>
-                                                <Button fx:id="removeGroupButton" mnemonicParsing="false"
-                                                        onAction="#removeGroup" text="-"/>
-                                            </children>
-                                        </HBox>
-                                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="540.0">
-                                            <children>
-                                                <Label text="Пакет"/>
-                                                <ComboBox fx:id="releaseComboBox" prefWidth="150.0"/>
-                                                <TextField fx:id="releaseName"/>
-                                                <Button fx:id="addReleaseButton" disable="true" mnemonicParsing="false"
-                                                        onAction="#addRelease" text="+"/>
-                                                <Button fx:id="removeReleaseButton" mnemonicParsing="false"
-                                                        onAction="#removeRelease" text="-"/>
-                                                <CheckBox fx:id="defaultCheckBox" mnemonicParsing="false"
-                                                          text="По-умолчанию"/>
-                                                <CheckBox fx:id="applyCheckBox" mnemonicParsing="false"
-                                                          text="Активирован"/>
-                                            </children>
-                                        </HBox>
+                                        <Label styleClass="p08" text="Настройка сборки"/>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                        <VBox prefHeight="779.0" prefWidth="776.0" styleClass="mr-border-thin-borders">
+                            <children>
+                                <VBox prefHeight="781.0" prefWidth="776.0" styleClass="mr-border-thin-corners">
+                                    <children>
+                                        <BorderPane prefHeight="800.0" prefWidth="927.0">
+                                            <top>
+                                                <VBox prefHeight="328.0" prefWidth="776.0"
+                                                      BorderPane.alignment="CENTER">
+                                                    <children>
+                                                        <VBox prefHeight="38.0" prefWidth="700.0">
+                                                            <children>
+                                                                <HBox prefHeight="65.0" prefWidth="700.0">
+                                                                    <children>
+                                                                        <VBox prefHeight="65.0" prefWidth="800.0">
+                                                                            <children>
+                                                                                <HBox prefHeight="100.0"
+                                                                                      prefWidth="800.0">
+                                                                                    <children>
+                                                                                        <HBox alignment="CENTER"
+                                                                                              prefHeight="100.0"
+                                                                                              prefWidth="400.0">
+                                                                                            <children>
+                                                                                                <Label text="Группа">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets right="5.0"/>
+                                                                                                    </HBox.margin>
+                                                                                                </Label>
+                                                                                                <ComboBox
+                                                                                                        fx:id="groupComboBox"
+                                                                                                        prefHeight="25.0"
+                                                                                                        prefWidth="141.0"
+                                                                                                        styleClass="mr-border-thin">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets right="5.0"/>
+                                                                                                    </HBox.margin>
+                                                                                                </ComboBox>
+                                                                                                <Button fx:id="deleteGroupButton"
+                                                                                                        disable="true"
+                                                                                                        mnemonicParsing="false"
+                                                                                                        styleClass="short"
+                                                                                                        text="-">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets/>
+                                                                                                    </HBox.margin>
+                                                                                                </Button>
+                                                                                                <Button fx:id="newGroupButton"
+                                                                                                        mnemonicParsing="false"
+                                                                                                        styleClass="short"
+                                                                                                        text="+">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets right="5.0"/>
+                                                                                                    </HBox.margin>
+                                                                                                </Button>
+                                                                                            </children>
+                                                                                        </HBox>
+                                                                                        <HBox alignment="CENTER"
+                                                                                              prefHeight="24.0"
+                                                                                              prefWidth="400.0">
+                                                                                            <children>
+                                                                                                <Label text="Пакет">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets right="5.0"/>
+                                                                                                    </HBox.margin>
+                                                                                                </Label>
+                                                                                                <ComboBox
+                                                                                                        fx:id="releaseComboBox"
+                                                                                                        prefWidth="150.0"
+                                                                                                        styleClass="mr-border-thin">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets right="5.0"/>
+                                                                                                    </HBox.margin>
+                                                                                                </ComboBox>
+                                                                                                <Button fx:id="deleteReleaseButton"
+                                                                                                        disable="true"
+                                                                                                        mnemonicParsing="false"
+                                                                                                        styleClass="short"
+                                                                                                        text="-">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets/>
+                                                                                                    </HBox.margin>
+                                                                                                </Button>
+                                                                                                <Button fx:id="newReleaseButton"
+                                                                                                        mnemonicParsing="false"
+                                                                                                        styleClass="short"
+                                                                                                        text="+">
+                                                                                                    <HBox.margin>
+                                                                                                        <Insets right="5.0"/>
+                                                                                                    </HBox.margin>
+                                                                                                </Button>
+                                                                                            </children>
+                                                                                            <padding>
+                                                                                                <Insets left="5.0"/>
+                                                                                            </padding>
+                                                                                            <opaqueInsets>
+                                                                                                <Insets/>
+                                                                                            </opaqueInsets>
+                                                                                        </HBox>
+                                                                                    </children>
+                                                                                    <VBox.margin>
+                                                                                        <Insets bottom="5.0" top="5.0"/>
+                                                                                    </VBox.margin>
+                                                                                </HBox>
+                                                                            </children>
+                                                                        </VBox>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </VBox>
+                                                        <HBox alignment="CENTER" prefHeight="31.0" prefWidth="776.0">
+                                                            <children>
+                                                                <HBox alignment="CENTER" prefHeight="23.0"
+                                                                      prefWidth="400.0">
+                                                                    <children>
+                                                                        <Label text="Описание"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox alignment="CENTER" prefHeight="23.0"
+                                                                      prefWidth="400.0">
+                                                                    <children>
+                                                                        <Label text="Изображение"/>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox alignment="CENTER" prefHeight="200.0" prefWidth="700.0">
+                                                            <children>
+                                                                <HBox alignment="CENTER" prefHeight="100.0"
+                                                                      prefWidth="400.0" styleClass="mr-border-thin">
+                                                                    <children>
+                                                                        <TextArea fx:id="descriptionArea"
+                                                                                  prefHeight="250.0" prefWidth="330.0"
+                                                                                  styleClass="mr-border-thin"
+                                                                                  wrapText="true">
+                                                                            <HBox.margin>
+                                                                                <Insets bottom="5.0" top="5.0"/>
+                                                                            </HBox.margin>
+                                                                        </TextArea>
+                                                                    </children>
+                                                                </HBox>
+                                                                <VBox alignment="CENTER" prefHeight="200.0"
+                                                                      prefWidth="400.0" styleClass="mr-border-thin">
+                                                                    <children>
+                                                                        <ImageView fx:id="image" fitHeight="200.0"
+                                                                                   fitWidth="200.0" pickOnBounds="true"
+                                                                                   preserveRatio="true">
+                                                                            <VBox.margin>
+                                                                                <Insets bottom="5.0" top="5.0"/>
+                                                                            </VBox.margin>
+                                                                        </ImageView>
+                                                                        <HBox alignment="CENTER" prefHeight="100.0"
+                                                                              prefWidth="200.0">
+                                                                            <children>
+                                                                                <Button fx:id="deleteImageButton"
+                                                                                        mnemonicParsing="false"
+                                                                                        styleClass="short" text="-"/>
+                                                                                <Button fx:id="imageButton"
+                                                                                        mnemonicParsing="false"
+                                                                                        styleClass="short" text="+"/>
+                                                                            </children>
+                                                                            <VBox.margin>
+                                                                                <Insets bottom="5.0" top="5.0"/>
+                                                                            </VBox.margin>
+                                                                        </HBox>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                            <VBox.margin>
+                                                                <Insets bottom="5.0" top="5.0"/>
+                                                            </VBox.margin>
+                                                        </HBox>
+                                                        <HBox alignment="CENTER_RIGHT" prefHeight="32.0"
+                                                              prefWidth="700.0">
+                                                            <children>
+                                                                <Button fx:id="addNewFilesButton"
+                                                                        mnemonicParsing="false" text="Добавить">
+                                                                    <HBox.margin>
+                                                                        <Insets right="5.0"/>
+                                                                    </HBox.margin>
+                                                                </Button>
+                                                            </children>
+                                                            <VBox.margin>
+                                                                <Insets bottom="5.0" top="5.0"/>
+                                                            </VBox.margin>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                            </top>
+                                            <bottom>
+                                                <VBox prefHeight="36.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+                                                    <children>
+                                                        <HBox alignment="CENTER_RIGHT" prefHeight="30.0"
+                                                              prefWidth="800.0">
+                                                            <children>
+                                                                <Button fx:id="createSchemaButton"
+                                                                        mnemonicParsing="false" text="Выгрузить скрипт">
+                                                                    <HBox.margin>
+                                                                        <Insets right="5.0"/>
+                                                                    </HBox.margin>
+                                                                </Button>
+                                                                <Button fx:id="applyButton" mnemonicParsing="false"
+                                                                        text="Применить">
+                                                                    <HBox.margin>
+                                                                        <Insets right="5.0"/>
+                                                                    </HBox.margin>
+                                                                </Button>
+                                                                <Button fx:id="closeButton" mnemonicParsing="false"
+                                                                        text="Закрыть">
+                                                                    <HBox.margin>
+                                                                        <Insets right="5.0"/>
+                                                                    </HBox.margin>
+                                                                </Button>
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                            </bottom>
+                                            <center>
+                                                <ListView fx:id="detailsList" prefHeight="409.0" prefWidth="800.0"
+                                                          styleClass="mr-border-thin" BorderPane.alignment="CENTER">
+                                                    <BorderPane.margin>
+                                                        <Insets bottom="5.0" top="5.0"/>
+                                                    </BorderPane.margin>
+                                                </ListView>
+                                            </center>
+                                        </BorderPane>
                                     </children>
                                 </VBox>
                             </children>
-                        </HBox>
-                        <HBox alignment="CENTER" prefHeight="34.0" prefWidth="700.0">
-                            <children>
-                                <Label text="Суффикс в игровой дирректории"/>
-                                <TextField fx:id="suffixGameDirectory"/>
-                                <Label text="Суффикс в Optional"/>
-                                <TextField fx:id="suffixOptional"/>
-                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER" prefHeight="32.0" prefWidth="700.0">
-                            <children>
-                                <Label text="Изображение"/>
-                                <TextField fx:id="icon"/>
-                                <Button onAction="#setIconPath" mnemonicParsing="false" text="Обзор"/>
-                                <Label text="Описание"/>
-                                <TextArea fx:id="descriptionArea" prefHeight="200.0" prefWidth="200.0"/>
-                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER" prefHeight="81.0" prefWidth="700.0">
-                            <children>
-                                <VBox>
-                                    <children>
-                                        <Label text="Папки"/>
-                                        <ListView fx:id="directoryListView" prefHeight="60.0" prefWidth="294.0"/>
-                                    </children>
-                                </VBox>
-                                <VBox prefHeight="81.0" prefWidth="33.0">
-                                    <children>
-                                        <Button mnemonicParsing="false" onAction="#plusDirectoryButton" text="++"/>
-                                        <Button mnemonicParsing="false" onAction="#plusDirectoryFolderButton" text="+"/>
-                                        <Button mnemonicParsing="false" onAction="#removeDirectoryButton" text="-"/>
-                                    </children>
-                                </VBox>
-                                <VBox prefHeight="70.0" prefWidth="302.0">
-                                    <children>
-                                        <Label text="Исключения"/>
-                                        <ListView fx:id="exceptionListView" prefHeight="60.0" prefWidth="302.0"/>
-                                    </children>
-                                </VBox>
-                                <VBox>
-                                    <children>
-                                        <Button mnemonicParsing="false" onAction="#plusExceptionFolderButton"
-                                                text="++"/>
-                                        <Button mnemonicParsing="false" onAction="#plusExceptionButton" text="+"/>
-                                        <Button mnemonicParsing="false" onAction="#removeExceptionButton" text="-"/>
-                                    </children>
-                                </VBox>
-                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="700.0">
-                            <children>
-                                <Button mnemonicParsing="false" onAction="#refresh" text="Обновить"/>
-                                <Button mnemonicParsing="false" onAction="#saveTemporarily" text="Сохранить"/>
-                            </children>
-                        </HBox>
+                        </VBox>
                     </children>
                 </VBox>
-            </top>
-            <bottom>
-                <VBox prefHeight="36.0" prefWidth="700.0" BorderPane.alignment="CENTER">
-                    <children>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
-                            <children>
-                                <Button mnemonicParsing="false" text="Выгрузить скрипт" onAction="#createScript"/>
-                                <Button fx:id="applyButton" mnemonicParsing="false" text="Применить текущие изменения"
-                                        onAction="#saveInBase"/>
-                                <Button mnemonicParsing="false" text="Отмена" onAction="#cancel"/>
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-            </bottom>
-            <center>
-                <ScrollPane prefHeight="327.0" prefWidth="700.0" BorderPane.alignment="CENTER">
-                    <content>
-                        <VBox fx:id="mainPane" prefHeight="486.0" prefWidth="700.0"/>
-                    </content>
-                </ScrollPane>
-            </center>
-        </BorderPane>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>

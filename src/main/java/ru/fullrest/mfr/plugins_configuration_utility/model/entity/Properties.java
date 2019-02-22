@@ -1,6 +1,7 @@
 package ru.fullrest.mfr.plugins_configuration_utility.model.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 
@@ -9,17 +10,13 @@ import javax.persistence.*;
  *
  * @author Alexey Plekhanov
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "PROPERTY")
-public class Properties {
+public class Properties extends BaseEntity {
 
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column(name = "KEY")
+    @Column(name = "KEY", unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
     private PropertyKey key;
 

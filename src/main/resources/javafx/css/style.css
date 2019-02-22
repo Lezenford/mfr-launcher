@@ -34,12 +34,79 @@
     -fx-min-width: 172px;
 }
 
+.progressPageRoot {
+    /*-fx-background-image: url(image/progress-page-background.png);*/
+    -fx-background-color: rgb(0, 0, 0);
+    -fx-max-height: 171px;
+    -fx-max-width: 480px;
+    -fx-min-height: 171px;
+    -fx-min-width: 480px;
+}
+
+.readmePageRoot {
+    -fx-background-color: rgba(0, 0, 0, 255);
+    -fx-border-width: 2px;
+}
+
+.detailsEditorRoot {
+    -fx-background-color: rgba(0, 0, 0, 255);
+    -fx-border-width: 2px;
+}
+
+.mr-border-thin {
+    -fx-background-image: url(image/menu_thin_border/menu_thin_border_top.png),
+    url(image/menu_thin_border/menu_thin_border_right.png),
+    url(image/menu_thin_border/menu_thin_border_bottom.png),
+    url(image/menu_thin_border/menu_thin_border_left.png),
+    url(image/menu_thin_border/menu_thin_border_top_left_corner.png),
+    url(image/menu_thin_border/menu_thin_border_top_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_left_corner.png);
+    -fx-background-repeat: repeat-x, repeat-y, repeat-x, repeat-y, no-repeat, no-repeat, no-repeat, no-repeat;
+    -fx-background-position: top center, right center, bottom center, left center, top left, top right, bottom right, bottom left;
+}
+
+.text-field {
+    -fx-background-image: url(image/menu_thin_border/menu_thin_border_top.png),
+    url(image/menu_thin_border/menu_thin_border_right.png),
+    url(image/menu_thin_border/menu_thin_border_bottom.png),
+    url(image/menu_thin_border/menu_thin_border_left.png),
+    url(image/menu_thin_border/menu_thin_border_top_left_corner.png),
+    url(image/menu_thin_border/menu_thin_border_top_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_left_corner.png);
+    -fx-background-repeat: repeat-x, repeat-y, repeat-x, repeat-y, no-repeat, no-repeat, no-repeat, no-repeat;
+    -fx-background-position: top center, right center, bottom center, left center, top left, top right, bottom right, bottom left;
+    -fx-fit-to-width: 340px;
+    -fx-alignment: center;
+}
+
+.mr-border-thin-borders {
+    -fx-background-image: url(image/menu_thin_border/menu_thin_border_top.png),
+    url(image/menu_thin_border/menu_thin_border_right.png),
+    url(image/menu_thin_border/menu_thin_border_bottom.png),
+    url(image/menu_thin_border/menu_thin_border_left.png);
+    -fx-background-repeat: repeat-x, repeat-y, repeat-x, repeat-y;
+    -fx-background-position: top center, right center, bottom center, left center;
+}
+
+.mr-border-thin-corners {
+    -fx-background-image: url(image/menu_thin_border/menu_thin_border_top_left_corner.png),
+    url(image/menu_thin_border/menu_thin_border_top_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_left_corner.png);
+    -fx-background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    -fx-background-position: top left, top right, bottom right, bottom left;
+    -fx-padding: 2px;
+}
+
 .button {
     -fx-background-image: url(image/button-middle.png);
     -fx-max-height: 24px;
     -fx-max-width: 148px;
     -fx-min-height: 24px;
     -fx-min-width: 148px;
+    -fx-padding: 0px, 0px, 3px, 0px;
 }
 
 .button:hover {
@@ -56,6 +123,7 @@
     -fx-max-width: 57px;
     -fx-min-height: 24px;
     -fx-min-width: 57px;
+    -fx-padding: 0px, 0px, 3px, 0px;
 }
 
 .button.short:hover {
@@ -72,6 +140,7 @@
     -fx-max-width: 604px;
     -fx-min-height: 32px;
     -fx-min-width: 604px;
+    -fx-padding: 0px, 0px, 3px, 0px;
 }
 
 .button.long:hover {
@@ -88,6 +157,7 @@
     -fx-max-width: 219px;
     -fx-min-height: 24px;
     -fx-min-width: 219px;
+    -fx-padding: 0px, 0px, 3px, 0px;
 }
 
 .toggle-button.longConfigPage:hover {
@@ -105,25 +175,56 @@
     -fx-min-width: 594px;
 }
 
-.scroll-bar:vertical {
-    -fx-pref-width: 13px;
+.scroll-bar {
+    -fx-pref-width: 14px;
+    -fx-pref-height: 14px;
+    -fx-background-color: rgb(0, 0, 0);
 }
 
 .scroll-bar:vertical .track {
-    -fx-background-image: url(image/scroll/track.png);
+    -fx-background-image: url(image/scroll/v_track.png) repeat-y center center;
 
 }
 
 .scroll-bar:vertical .thumb {
-    -fx-background-image: url(image/scroll/thumb.png);
+    -fx-background-image: url(image/scroll/v_thumb_top.png), url(image/scroll/v_thumb_bottom.png), url(image/scroll/v_thumb.png);
+    -fx-background-position: top center, bottom center, center center;
+    -fx-background-repeat: no-repeat, no-repeat, repeat-y;
 }
 
-.increment-button {
-    -fx-background-image: url(image/scroll/down.png);
+.scroll-bar:vertical .increment-button {
+    -fx-background-image: url(image/scroll/v_down.png) no-repeat center center;
+    -fx-pref-height: 14px;
 }
 
-.decrement-button {
-    -fx-background-image: url(image/scroll/up.png);
+.scroll-bar:vertical .decrement-button {
+    -fx-background-image: url(image/scroll/v_up.png) no-repeat center center;
+    -fx-pref-height: 14px;
+}
+
+.scroll-bar:horizontal .track {
+    -fx-background-image: url(image/scroll/h_track.png) repeat-y center center;
+
+}
+
+.scroll-bar:horizontal .thumb {
+    -fx-background-image: url(image/scroll/h_thumb_top.png), url(image/scroll/h_thumb_bottom.png), url(image/scroll/h_thumb.png);
+    -fx-background-position: right center, left center, center center;
+    -fx-background-repeat: no-repeat, no-repeat, repeat-y;
+}
+
+.scroll-bar:horizontal .increment-button {
+    -fx-background-image: url(image/scroll/h_down.png) no-repeat center center;
+    -fx-pref-width: 14px;
+}
+
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-image: url(image/scroll/h_up.png) no-repeat center center;
+    -fx-pref-width: 14px;
+}
+
+.scroll-bar .button:hover {
+    -fx-opacity: 0.7 !important;
 }
 
 .radio-button .dot {
@@ -141,4 +242,74 @@
 
 .list-cell:filled:selected:focused {
     -fx-text-fill: rgb(128, 102, 55);
+}
+
+.web {
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.progress-bar {
+    -fx-min-width: 300px;
+    -fx-max-width: 300px;
+}
+
+.progress-bar .bar {
+    -fx-background-image: url(image/menu_head_block/menu_head_block_top_left_corner.png),
+    url(image/menu_head_block/menu_head_block_top_right_corner.png),
+    url(image/menu_head_block/menu_head_block_bottom_right_corner.png),
+    url(image/menu_head_block/menu_head_block_bottom_left_corner.png),
+    url(image/menu_head_block/menu_head_block_top.png),
+    url(image/menu_head_block/menu_head_block_right.png),
+    url(image/menu_head_block/menu_head_block_bottom.png),
+    url(image/menu_head_block/menu_head_block_left.png),
+    url(image/menu_head_block/menu_head_block_middle.png);
+    -fx-background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat-x, repeat-y, repeat-x, repeat-y, repeat;
+    -fx-background-position: top left, top right, bottom right, bottom left, top center, right center, bottom center, left center, 2px 2px;
+    -fx-min-height: 20px;
+}
+
+.combo-box {
+    -fx-min-width: 200px;
+}
+
+.combo-box-popup > .list-view {
+    -fx-background-color: rgb(0, 0, 0);
+    -fx-background-image: url(image/menu_thin_border/menu_thin_border_top.png),
+    url(image/menu_thin_border/menu_thin_border_right.png),
+    url(image/menu_thin_border/menu_thin_border_bottom.png),
+    url(image/menu_thin_border/menu_thin_border_left.png),
+    url(image/menu_thin_border/menu_thin_border_top_left_corner.png),
+    url(image/menu_thin_border/menu_thin_border_top_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_right_corner.png),
+    url(image/menu_thin_border/menu_thin_border_bottom_left_corner.png);
+    -fx-background-repeat: repeat-x, repeat-y, repeat-x, repeat-y, no-repeat, no-repeat, no-repeat, no-repeat;
+    -fx-background-position: top center, right center, bottom center, left center, top left, top right, bottom right, bottom left;
+}
+
+.mr-headblock {
+    -fx-background-image: url(image/menu_head_block/menu_head_block_top_left_corner.png),
+    url(image/menu_head_block/menu_head_block_top_right_corner.png),
+    url(image/menu_head_block/menu_head_block_bottom_right_corner.png),
+    url(image/menu_head_block/menu_head_block_bottom_left_corner.png),
+    url(image/menu_head_block/menu_head_block_top.png),
+    url(image/menu_head_block/menu_head_block_right.png),
+    url(image/menu_head_block/menu_head_block_bottom.png),
+    url(image/menu_head_block/menu_head_block_left.png),
+    url(image/menu_head_block/menu_head_block_middle.png);
+    -fx-background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat-x, repeat-y, repeat-x, repeat-y, repeat;
+    -fx-background-position: top left, top right, bottom right, bottom left, top center, right center, bottom center, left center, 2px 2px;
+    -fx-min-height: 20px;
+}
+
+.bg-black {
+    -fx-background-color: rgb(0, 0, 0) !important;
+}
+
+.p08 {
+    -fx-padding: 0 8px;
+    -webkit-flex-shrink: 0;
+}
+
+.progress-bar .track {
+    -fx-background-color: rgba(0, 0, 0, 0);
 }

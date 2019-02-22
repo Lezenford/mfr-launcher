@@ -1,24 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="168.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane maxHeight="171.0" maxWidth="480.0" minHeight="171.0" minWidth="480.0" styleClass="progressPageRoot"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ru.fullrest.mfr.plugins_configuration_utility.controller.ProgressController">
     <children>
-        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="600.0">
+        <VBox alignment="CENTER" maxHeight="171.0" maxWidth="480.0" minHeight="171.0" minWidth="480.0"
+              prefHeight="171.0" prefWidth="480.0" styleClass="mr-border-thin-borders" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <Region prefHeight="24.0" prefWidth="600.0"/>
-                <Label fx:id="headerLabel" text="Операция выполняется, пожалуйста, подождите..."/>
-                <Region prefHeight="38.0" prefWidth="600.0"/>
-                <ProgressIndicator fx:id="progressBar" progress="0.0"/>
-                <Region prefHeight="11.0" prefWidth="600.0"/>
-                <Label fx:id="informationLabel"/>
-                <Region prefHeight="9.0" prefWidth="600.0"/>
-                <Button fx:id="closeButton" disable="true" mnemonicParsing="false" text="Закрыть"
-                        onAction="#closeButtonAction"/>
-                <Region prefHeight="20.0" prefWidth="600.0"/>
+                <VBox alignment="CENTER" styleClass="mr-border-thin-corners" VBox.vgrow="ALWAYS">
+                    <children>
+                        <HBox alignment="CENTER" styleClass="mr-headblock">
+                            <children>
+                                <HBox alignment="CENTER" styleClass="bg-black">
+                                    <children>
+                                        <Label styleClass="p08" text="Пожалуйста, подождите..."/>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                        <VBox styleClass="mr-border-thin-borders">
+                            <children>
+                                <VBox styleClass="mr-border-thin-corners">
+                                    <children>
+                                        <VBox alignment="TOP_CENTER" prefHeight="151.0" prefWidth="480.0"
+                                              VBox.vgrow="ALWAYS">
+                                            <children>
+                                                <Region prefHeight="24.0" prefWidth="600.0"/>
+                                                <Label fx:id="headerLabel"
+                                                       text="Операция выполняется, пожалуйста, подождите..."/>
+                                                <Region prefHeight="38.0" prefWidth="600.0"/>
+                                                <VBox alignment="CENTER"
+                                                      styleClass="mr-border-thin-borders, progress-bar">
+                                                    <children>
+                                                        <ProgressBar fx:id="progressBar" progress="0.0"
+                                                                     styleClass="mr-border-thin-corners, progress-bar"/>
+                                                    </children>
+                                                </VBox>
+                                                <Region prefHeight="11.0" prefWidth="600.0"/>
+                                                <Label fx:id="informationLabel"/>
+                                                <Region prefHeight="9.0" prefWidth="600.0"/>
+                                                <Button fx:id="closeButton" disable="true" mnemonicParsing="false"
+                                                        onAction="#closeButtonAction" text="Закрыть">
+                                                </Button>
+                                                <Region prefHeight="20.0" prefWidth="600.0"/>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
             </children>
         </VBox>
     </children>

@@ -3,8 +3,8 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="280.0" prefWidth="120.0" styleClass="mgePageRoot" stylesheets="@css/style.css"
-            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="280.0" prefWidth="120.0"
+            styleClass="mgePageRoot" xmlns="http://javafx.com/javafx/8"
             fx:controller="ru.fullrest.mfr.plugins_configuration_utility.controller.MGEConfigurationController">
     <children>
         <VBox alignment="TOP_CENTER" prefHeight="369.0" prefWidth="172.0">
@@ -24,67 +24,46 @@
                 </VBox>
                 <VBox alignment="TOP_CENTER" prefHeight="214.0" prefWidth="172.0">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#useHightPerformanceConfig" prefHeight="25.0"
+                        <Button mnemonicParsing="false" onAction="#useHighPerformanceConfig" prefHeight="25.0"
                                 prefWidth="138.0" text="Мощный компьютер">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#useMiddlePerformanceConfig" prefHeight="25.0"
                                 prefWidth="120.0" text="Средний компьютер">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#useLowPerformanceConfig" prefHeight="25.0"
                                 prefWidth="130.0" text="Слабый компьютер">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#useNecroPerformanceConfig" prefHeight="25.0"
                                 prefWidth="126.0" text="Древний компьютер">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#saveConfig" prefHeight="25.0" prefWidth="122.0"
                                 text="Сохранить свой">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button fx:id="restoreBackupButton" mnemonicParsing="false" onAction="#restoreBackup"
                                 prefHeight="25.0" prefWidth="122.0" text="Восстановить свой">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" text="Назад" onAction="#cancel">
                             <VBox.margin>
                                 <Insets top="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                     </children>
                     <padding>

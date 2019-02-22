@@ -3,8 +3,8 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="600.0" prefWidth="700.0" styleClass="mainPageRoot"
-            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane prefHeight="600.0" prefWidth="700.0" styleClass="mainPageRoot" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ru.fullrest.mfr.plugins_configuration_utility.controller.MainController">
     <children>
         <VBox prefHeight="600.0" prefWidth="700.0">
@@ -25,54 +25,48 @@
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#startLauncher" prefHeight="25.0" prefWidth="126.0"
                                 text="Launcher">
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#startMGE" prefHeight="25.0" prefWidth="126.0"
                                 text="MGE">
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#startMCP" prefHeight="25.0" prefWidth="130.0"
                                 text="MCP">
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#openForum" prefHeight="25.0" prefWidth="284.0"
                                 text="Обсудить на форуме">
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#openReadme" prefHeight="25.0" prefWidth="284.0"
                                 text="Readme">
                             <VBox.margin>
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#helpForProject" prefHeight="25.0" prefWidth="284.0"
+                                text="Помочь проекту">
+                            <VBox.margin>
+                                <Insets bottom="4.0"/>
+                            </VBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#close" prefHeight="25.0" prefWidth="284.0"
+                                text="Выход">
+                            <VBox.margin>
+                                <Insets bottom="4.0"/>
+                            </VBox.margin>
                         </Button>
                     </children>
                 </VBox>
@@ -86,26 +80,22 @@
                         </Button>
                     </children>
                 </HBox>
-                <HBox alignment="BOTTOM_RIGHT" prefHeight="85.0" prefWidth="700.0" styleClass="down">
+                <HBox alignment="BOTTOM_RIGHT" prefHeight="85.0" prefWidth="700.0">
                     <children>
-                        <TextField fx:id="gamePath" editable="false" prefHeight="25.0" prefWidth="497.0"
-                                   styleClass="path">
+                        <Label fx:id="gamePath" prefHeight="25.0" prefWidth="587.0" styleClass="path">
                             <HBox.margin>
                                 <Insets bottom="24.0" right="3.0"/>
                             </HBox.margin>
-                        </TextField>
-                        <Button alignment="CENTER" maxHeight="29.0" maxWidth="218.0" minWidth="55.0"
-                                mnemonicParsing="false" onAction="#open" prefHeight="29.0" prefWidth="55.0"
-                                styleClass="short" text="Обзор" textAlignment="CENTER">
+                        </Label>
+                        <Button alignment="CENTER" disable="true" maxHeight="29.0" maxWidth="218.0" minWidth="55.0"
+                                mnemonicParsing="false" prefHeight="29.0" prefWidth="55.0" styleClass="short"
+                                text="Обзор" textAlignment="CENTER">
                             <opaqueInsets>
                                 <Insets/>
                             </opaqueInsets>
                             <HBox.margin>
                                 <Insets bottom="24.0" right="23.0"/>
                             </HBox.margin>
-                            <padding>
-                                <Insets bottom="3.0"/>
-                            </padding>
                         </Button>
                     </children>
                 </HBox>

@@ -1,41 +1,43 @@
 package ru.fullrest.mfr.plugins_configuration_utility.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.fullrest.mfr.plugins_configuration_utility.config.StageControllers;
+import ru.fullrest.mfr.plugins_configuration_utility.config.PropertiesConfiguration;
 import ru.fullrest.mfr.plugins_configuration_utility.manager.FileManager;
+import ru.fullrest.mfr.plugins_configuration_utility.manager.StageManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class MGEConfigurationController extends AbstractController {
+@Log4j2
+public class MGEConfigurationController implements AbstractController {
 
     @Autowired
     private FileManager fileManager;
 
     @Autowired
-    private StageControllers stageControllers;
+    private PropertiesConfiguration propertiesConfiguration;
 
-    @Override
+    @Autowired
+    private StageManager stageManager;
+    @FXML
+    private ListView<MGEConfig> backups;
+    @FXML
+    private Button restoreBackupButton;
+
     public void init() {
-        backups.getSelectionModel().selectionModeProperty().addListener(new ChangeListener<SelectionMode>() {
-            @Override
-            public void changed(ObservableValue<? extends SelectionMode> observable, SelectionMode oldValue,
-                                SelectionMode newValue) {
-                if (newValue != null) {
-                    restoreBackupButton.setDisable(false);
-                } else {
-                    restoreBackupButton.setDisable(true);
-                }
+        backups.getSelectionModel().selectionModeProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                restoreBackupButton.setDisable(false);
+            } else {
+                restoreBackupButton.setDisable(true);
             }
         });
     }
@@ -51,16 +53,10 @@ public class MGEConfigurationController extends AbstractController {
         }
     }
 
-    @FXML
-    private ListView<MGEConfig> backups;
-
-    @FXML
-    private Button restoreBackupButton;
-
     public void startMGE() {
         try {
-            Runtime.getRuntime().exec(fileManager.getAbsolutePath(FileManager.MORROWIND_MGE_EXE), null,
-                    new File(fileManager.getGamePath()));
+            Runtime.getRuntime().exec(fileManager.getAbsolutePath(propertiesConfiguration.getMge_exe()), null,
+                    new File(fileManager.getGamePath(false)));
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка!");
@@ -70,7 +66,7 @@ public class MGEConfigurationController extends AbstractController {
         }
     }
 
-    public void useHightPerformanceConfig() {
+    public void useHighPerformanceConfig() {
         if (fileManager.checkMGEFilesForUnique()) {
             saveConfig();
         }
@@ -104,11 +100,13 @@ public class MGEConfigurationController extends AbstractController {
     }
 
     public void restoreBackup() {
-        fileManager.setMGEConfig(backups.getSelectionModel().getSelectedItem().getConfig().getAbsolutePath());
+        if (!backups.getSelectionModel().isEmpty()) {
+            fileManager.setMGEConfig(backups.getSelectionModel().getSelectedItem().getConfig().getAbsolutePath());
+        }
     }
 
-    public void cancel() throws IOException {
-        stageControllers.getMgeConfigurationStage().hide();
+    public void cancel() {
+        stageManager.getMgeConfigurationStage().close();
     }
 
     @AllArgsConstructor

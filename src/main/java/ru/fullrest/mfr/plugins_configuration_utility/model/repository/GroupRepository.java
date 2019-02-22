@@ -11,5 +11,5 @@ import java.util.List;
  * @author Alexey Plekhanov
  */
 public interface GroupRepository extends CrudRepository<Group, Integer> {
-    List<Group> findAllByActiveIsTrue();
+    List<Group> findAllByOrderByValue();
 }

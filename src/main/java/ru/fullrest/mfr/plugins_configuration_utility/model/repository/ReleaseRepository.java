@@ -12,7 +12,7 @@ import java.util.List;
  * @author Alexey Plekhanov
  */
 public interface ReleaseRepository extends CrudRepository<Release, Integer> {
-    List<Release> findAllByGroupAndActiveIsTrue(Group group);
+    List<Release> findAllByGroup(Group group);
 
-    List<Release> findAllByGroupAndAppliedIsTrueAndActiveIsTrue(Group group);
+    List<Release> findAllByGroupAndAppliedIsTrue(Group group);
 }
