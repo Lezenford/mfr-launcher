@@ -1,0 +1,79 @@
+plugins {
+    id "io.spring.dependency-management" version "1.0.7.RELEASE"
+    id "org.springframework.boot" version "2.1.3.RELEASE"
+    id "com.google.osdetector" version "1.6.2"
+    id "application"
+}
+
+ext {
+    platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
+}
+
+version = '1.1'
+mainClassName = 'ru.fullrest.mfr.plugins_configuration_utility.PluginsConfigurationUtilityApplication'
+
+dependencies {
+    //	spring-boot
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-data-rest')
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    //	database
+    runtimeOnly('com.h2database:h2')
+
+    //	JavaFX
+    compile("org.openjfx:javafx-base:11:$platform")
+    compile("org.openjfx:javafx-graphics:11:$platform")
+    compile("org.openjfx:javafx-controls:11:$platform")
+    compile("org.openjfx:javafx-fxml:11:$platform")
+    compile("org.openjfx:javafx-swing:11:$platform")
+    compile("org.openjfx:javafx-web:11:$platform")
+    compile("org.openjfx:javafx-media:11:$platform")
+
+    //  apache-commons
+    compile("org.apache.commons:commons-io:$apacheCommonVersion")
+
+    //  jackson
+    compile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    // common objects
+    compile project(':common')
+}
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'javafx.controls,javafx.fxml'
+        ]
+    }
+}
+
+run {
+    doFirst {
+        jvmArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'javafx.controls,javafx.fxml'
+        ]
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Morrowind Fullrest Repack Plugins Configuration Utility',
+                'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task moveJar(dependsOn: build) {
+    doLast {
+        copy {
+            from '/build/libs'
+            into 'C:/Games/M[FR]/MFRPCU'
+        }
+    }
+}

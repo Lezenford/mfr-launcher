@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузить новую версию приложения</title>
+</head>
+<body>
+<th:block th:include="/_menu"></th:block>
+<h1>Добавить новую версию приложения</h1>
+<label th:text="${error}"/>
+<form th:object="${app}" method="POST"
+      th:action="@{/admin/application/upload}" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <td><label>Операционная система <input type="text" th:field="*{operationSystem}" required/> </label></td>
+        </tr>
+        <tr>
+            <td><label>Платформа <input type="text" th:field="*{shortName}" required/> </label>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Версия <input type="text" th:field="*{version}" required/> </label></td>
+        </tr>
+        <tr>
+            <td><label>Загрузить файл: <input type="file" name="file" accept="application/zip" required/></label></td>
+        </tr>
+    </table>
+    <input type="submit" value="Загрузить">
+</form>
+</body>
+</html>

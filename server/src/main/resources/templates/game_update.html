@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Обновления игры</title>
+</head>
+<body>
+<th:block th:include="/_menu"/>
+<th:block th:include="/_game_platforms"/>
+<h1>Список обновлений</h1>
+<table border="1px">
+    <tr align="center">
+        <th>Версия</th>
+        <th>Дата загрузки</th>
+        <th>Обновление<br>схемы</th>
+        <th>Обнолвение<br>установленных<br>компонентов</th>
+        <th>Активировано</th>
+    </tr>
+    <tr th:each="update : ${updates}" align="center">
+        <td th:text="${update.version}"></td>
+        <td th:text="${#dates.format(update.uploadDate, 'dd-MM-yyyy')}"></td>
+        <td th:text="${update.schemaUpdate}"></td>
+        <td th:text="${update.appliedUpdate}"></td>
+        <td th:text="${update.active}"></td>
+        <td>
+            <a th:text="${update.active} ? 'Деактивировать' : 'Активировать'"
+               th:href="@{/admin/game/update/{platform}/{id}/change(platform=${platform}, id=${update.id}, active=${!update.active})}"></a>
+        </td>
+    </tr>
+</table>
+<a th:href="@{/admin/game/update/upload}">Добавить</a>
+</body>
+</html>

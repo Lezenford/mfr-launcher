@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Конфигуратор</title>
+</head>
+<body>
+<th:block th:include="/_menu"/>
+<h1>Доступные версии конфигуратора</h1>
+<table border="1px">
+    <tr align="center">
+        <th>Опрационная система</th>
+        <th>Платформа</th>
+        <th>Версия</th>
+    </tr>
+    <tr th:each="app : ${applications}" align="center">
+        <td th:text="${app.operationSystem}"></td>
+        <td th:text="${app.shortName}"></td>
+        <td th:text="${app.version}"></td>
+        <td>
+            <a th:href="@{'/admin/application/update/' + ${app.shortName}}">Обновить</a>
+        </td>
+    </tr>
+</table>
+<a th:href="@{/admin/application/upload}">Добавить</a>
+</body>
+</html>
