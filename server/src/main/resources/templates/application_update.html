@@ -5,7 +5,7 @@
     <title>Обновление конфигуратора</title>
 </head>
 <body>
-<th:block th:include="/_menu"/>
+<th:block th:include="_menu"/>
 <h1><label th:text="'Обновление конфигуратора для платформы ' + ${app.shortName}"/></h1>
 <label th:text="${error}"/>
 <form th:object="${app}" method="POST"

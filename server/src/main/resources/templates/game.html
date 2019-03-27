@@ -5,8 +5,8 @@
     <title>Обновления игры</title>
 </head>
 <body>
-<th:block th:include="/_menu"/>
-<th:block th:include="/_game_platforms"/>
+<th:block th:include="_menu"/>
+<th:block th:include="_game_platforms"/>
 <h1>Выберите платформу или добавьте новую</h1>
 <a th:href="@{/admin/game/update/upload}">Добавить</a>
 </body>

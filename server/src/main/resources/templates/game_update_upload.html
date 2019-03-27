@@ -5,7 +5,7 @@
     <title>Добавить новый патч</title>
 </head>
 <body>
-<th:block th:include="/_menu"></th:block>
+<th:block th:include="_menu"></th:block>
 <h1>Добавить новый патч</h1>
 <label th:text="${error}"/>
 <form th:object="${update}" method="POST"
