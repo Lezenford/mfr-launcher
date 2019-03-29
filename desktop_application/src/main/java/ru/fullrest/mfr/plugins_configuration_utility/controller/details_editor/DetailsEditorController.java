@@ -144,11 +144,11 @@ public class DetailsEditorController implements AbstractController {
                 newValue.getDetails().forEach(details -> detailsList.getItems().add(new DetailsHBox(details)));
                 descriptionArea.setText(newValue.getDescription());
                 try {
-                    image.setImage(new Image(new File(fileManager.getOptionalPath(true) + newValue.getImage()).toURI().toURL().toString()));
+                    image.setImage(new Image(new File(fileManager.getOptionalPath(true) +
+                            newValue.getImage()).toURI().toURL().toString()));
                 } catch (MalformedURLException e) {
                     log.error(String.format("Can't use image for %s\n", newValue.getImage()), e);
                 }
-//                }
                 deleteReleaseButton.setDisable(false);
             } else {
                 deleteReleaseButton.setDisable(true);

@@ -3,8 +3,8 @@ package ru.fullrest.mfr.plugins_configuration_utility.manager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.fullrest.mfr.plugins_configuration_utility.config.PropertiesConfiguration;
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Details;
@@ -25,13 +25,11 @@ import java.util.zip.ZipInputStream;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class FileManager {
 
-    @Autowired
-    private PropertiesConfiguration propertiesConfiguration;
-
-    @Autowired
-    private StageManager stageManager;
+    private final PropertiesConfiguration propertiesConfiguration;
+    private final StageManager stageManager;
 
     public File openDirectoryChooser(boolean optionalFolder) {
         DirectoryChooser directoryChooser = new DirectoryChooser();

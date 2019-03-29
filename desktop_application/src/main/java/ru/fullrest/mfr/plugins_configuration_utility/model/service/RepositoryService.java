@@ -1,6 +1,6 @@
 package ru.fullrest.mfr.plugins_configuration_utility.model.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Group;
@@ -11,10 +11,10 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class RepositoryService {
 
-    @Autowired
-    private GroupRepository groupRepository;
+    private final GroupRepository groupRepository;
 
     public List<Group> getAllGroupsWithLazyInit() {
         List<Group> groups = new ArrayList<>();

@@ -15,6 +15,7 @@ import ru.fullrest.mfr.plugins_configuration_utility.manager.StageManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created on 01.11.2018
@@ -44,6 +45,9 @@ public class MainController implements AbstractController {
 
     @Autowired
     private View<HelpForProjectController> helpForProjectView;
+
+    @Autowired
+    private View<ProgressController> progressView;
 
     @Autowired
     private PropertiesConfiguration propertiesConfiguration;
@@ -114,6 +118,19 @@ public class MainController implements AbstractController {
         stageManager.getHelpForProjectStage().show();
     }
 
+    public void checkUpdate() {
+        progressView.getController().beforeOpen();
+        progressView.getController().checkApplicationUpdate();
+        stageManager.getProgressStage().showAndWait();
+        progressView.getController().beforeOpen();
+        progressView.getController().checkGameUpdate(propertiesConfiguration.getGameVersion(), false);
+        stageManager.getProgressStage().showAndWait();
+        String version = fileManager.checkVersion();
+        propertiesConfiguration.setGameVersion(Objects.requireNonNullElse(version, ""));
+        this.version.setText(version);
+
+    }
+
     public void openConfiguration() {
         pluginConfigurationView.getController().beforeOpen();
         stageManager.getApplicationStage().hide();
@@ -130,10 +147,5 @@ public class MainController implements AbstractController {
 
     public void close() {
         Platform.exit();
-    }
-
-    @Override
-    public void beforeOpen() {
-
     }
 }

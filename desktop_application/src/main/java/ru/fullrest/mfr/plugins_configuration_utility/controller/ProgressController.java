@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
-import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,12 @@ import org.springframework.web.client.RestTemplate;
 import ru.fullrest.mfr.common.Links;
 import ru.fullrest.mfr.common.Version;
 import ru.fullrest.mfr.plugins_configuration_utility.config.PropertiesConfiguration;
+import ru.fullrest.mfr.plugins_configuration_utility.exception.ApplicationUpdateException;
+import ru.fullrest.mfr.plugins_configuration_utility.exception.GameUpdateException;
+import ru.fullrest.mfr.plugins_configuration_utility.exception.RestException;
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.View;
 import ru.fullrest.mfr.plugins_configuration_utility.manager.FileManager;
+import ru.fullrest.mfr.plugins_configuration_utility.manager.StageManager;
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Details;
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Group;
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Release;
@@ -57,6 +61,12 @@ public class ProgressController implements AbstractController {
     @Autowired
     private FileManager fileManager;
 
+    @Autowired
+    private View<AlertController> alertView;
+
+    @Autowired
+    private StageManager stageManager;
+
     @FXML
     private ProgressIndicator progressBar;
 
@@ -83,78 +93,86 @@ public class ProgressController implements AbstractController {
         CheckApplicationUpdateTask checkApplicationUpdateTask = new CheckApplicationUpdateTask();
         headerLabel.setText("Проверяем обновление конфигуратора");
         closeButton.setVisible(false);
-        checkApplicationUpdateTask
-                .addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, checkApplicationUpdateTaskEvent -> {
-                    if (checkApplicationUpdateTask.getValue()) {
-                        closeButtonAction();
-                    } else {
-                        headerLabel.setText("Ошибка обновления конфигуратора");
-                        progressBar.progressProperty().unbind();
-                        progressBar.setProgress(0);
-                        closeButton.setDisable(false);
-                        closeButton.setVisible(true);
-                    }
+        checkApplicationUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, successEvent -> {
+            if (checkApplicationUpdateTask.getValue()) {
+                Button ok = new Button("Да");
+                Button cancel = new Button("Нет");
+                String text = "Доступно новая версия Plugin Configuration Utility\nХотите установить?";
+                alertView.getController().createAlert(text, cancel, ok);
+                ok.setOnAction(okEvent -> {
+                    ApplicationUpdateTask applicationUpdateTask = new ApplicationUpdateTask();
+                    headerLabel.setText("Обновляем конфигуратор");
+                    applicationUpdateTask
+                            .addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> closeButtonAction());
+                    applicationUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_FAILED, event ->
+                            exceptionHandler("Ошибка обновления конфигуратора", checkApplicationUpdateTask
+                                    .getException()));
+                    new Thread(applicationUpdateTask).start();
+                    stageManager.getAlertStage().close();
                 });
+                cancel.setOnAction(event -> {
+                    stageManager.getAlertStage().close();
+                    closeButtonAction();
+                });
+                stageManager.getAlertStage().showAndWait();
+            } else {
+                closeButtonAction();
+            }
+        });
+        checkApplicationUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_FAILED, failedEvent ->
+                exceptionHandler("Ошибка проверки обновлений для конфигуратора", checkApplicationUpdateTask
+                        .getException()));
         new Thread(checkApplicationUpdateTask).start();
     }
 
-    public void checkGameUpdate(String version) {
+    public void checkGameUpdate(String version, boolean silent) {
         CheckGameUpdateTask task = new CheckGameUpdateTask(version);
         headerLabel.setText("Проверка обновлений игры");
         closeButton.setVisible(false);
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
-            if (task.getValue()) {
-                headerLabel.setText("Обновление успешно завершено");
-                if (propertiesConfiguration.isRefreshSchema()) {
-                    File schema = fileManager.getSchemaFile();
-                    if (schema != null) {
-                        headerLabel.setText("Обновление конфигурации");
-                        List<Release> activeReleases = releaseRepository.findAllByAppliedIsTrue();
-                        groupRepository.deleteAll();
-                        ReadJsonTask readJsonTask = new ReadJsonTask(schema);
-                        readJsonTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, readJsonTaskEvent -> {
-                            if (readJsonTask.getValue()) {
-                                headerLabel.setText("Вычисляем активные плагины из прошлой конфигурации");
-                                List<Release> newReleases = (List<Release>) releaseRepository.findAll();
-                                Comparator<Release> comparator = (o1, o2) -> {
-                                    if (o1.getValue().equals(o2.getValue()) &&
-                                            o1.getGroup().getValue().equals(o2.getGroup().getValue())) {
-                                        return 0;
-                                    }
-                                    return -1;
-                                };
-                                newReleases.forEach(release ->
-                                        activeReleases.forEach(activeRelease -> {
-                                            if (comparator.compare(release, activeRelease) == 0) {
-                                                release.setApplied(true);
-                                            }
-                                        }));
-                                headerLabel.setText("Сохранение данных");
-                                releaseRepository.saveAll(newReleases);
-                                refreshApplied(true);
+            Version result = task.getValue();
+            if (result.isNeedUpdate() && result.getUpdatePlan() != null) {
+                Button ok = new Button("Да");
+                Button cancel = new Button("Нет");
+                String text = "Доступна новая версия M[FR]?\nХотите установить?";
+                alertView.getController().createAlert(text, cancel, ok);
+                ok.setOnAction(okEvent -> {
+                    GameUpdateTask gameUpdateTask = new GameUpdateTask(result);
+                    headerLabel.setText("Установка обновления");
+                    gameUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, successEvent -> {
+                        if (propertiesConfiguration.isRefreshSchema()) {
+                            refreshSchema();
+                        } else {
+                            if (propertiesConfiguration.isRefreshApplies()) {
+                                refreshApplied(false);
                             } else {
-                                headerLabel.setText("Не удалось прочитать новый файл схемы");
-                                closeButton.setVisible(true);
-                                closeButton.setDisable(false);
+                                closeButtonAction();
                             }
-                        });
-                        new Thread(readJsonTask).start();
-                    }
-                } else {
-                    if (propertiesConfiguration.isRefreshApplies()) {
-                        refreshApplied(false);
-                    } else {
-                        closeButtonAction();
-                    }
-                }
+                        }
+                    });
+                    gameUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_FAILED, failedEvent ->
+                            exceptionHandler("Ошибка обновления M[FR]", gameUpdateTask.getException()));
+                    new Thread(gameUpdateTask).start();
+                    stageManager.getAlertStage().close();
+                });
+                cancel.setOnAction(cancelEvent -> {
+                    stageManager.getAlertStage().close();
+                    closeButtonAction();
+                });
+                stageManager.getAlertStage().showAndWait();
             } else {
-                closeButton.setVisible(true);
-                closeButton.setDisable(false);
-                headerLabel.setText("Ошибка обновления!");
-                progressBar.progressProperty().unbind();
-                progressBar.setProgress(0);
+                if (silent) {
+                    Button ok = new Button("Ок");
+                    String text = "Установлена последняя версия";
+                    alertView.getController().createAlert(text, ok);
+                    ok.setOnAction(okEvent -> stageManager.getAlertStage().close());
+                    stageManager.getAlertStage().showAndWait();
+                }
+                closeButtonAction();
             }
         });
+        task.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event ->
+                exceptionHandler("Ошибка проверки обновлений для M[FR]", task.getException()));
         new Thread(task).start();
     }
 
@@ -220,48 +238,82 @@ public class ProgressController implements AbstractController {
         new Thread(readJsonTask).start();
     }
 
-    public void closeButtonAction() {
-        ((Stage) closeButton.getScene().getWindow()).close();
+    private void refreshSchema() {
+        File schema = fileManager.getSchemaFile();
+        headerLabel.setText("Обновление конфигурации");
+        List<Release> activeReleases = releaseRepository.findAllByAppliedIsTrue();
+        groupRepository.deleteAll();
+        ReadJsonTask readJsonTask = new ReadJsonTask(schema);
+        readJsonTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, readJsonTaskEvent -> {
+            if (readJsonTask.getValue()) {
+                headerLabel.setText("Вычисляем активные плагины из прошлой конфигурации");
+                List<Release> newReleases = (List<Release>) releaseRepository.findAll();
+                Comparator<Release> comparator = (o1, o2) -> {
+                    if (o1.getValue().equals(o2.getValue()) &&
+                            o1.getGroup().getValue().equals(o2.getGroup().getValue())) {
+                        return 0;
+                    }
+                    return -1;
+                };
+                newReleases.forEach(release ->
+                        activeReleases.forEach(activeRelease -> {
+                            if (comparator.compare(release, activeRelease) == 0) {
+                                release.setApplied(true);
+                            }
+                        }));
+                headerLabel.setText("Сохранение данных");
+                releaseRepository.saveAll(newReleases);
+                refreshApplied(true);
+            } else {
+                headerLabel.setText("Не удалось прочитать новый файл схемы");
+                closeButton.setVisible(true);
+                closeButton.setDisable(false);
+            }
+        });
+        new Thread(readJsonTask).start();
     }
 
     private void refreshApplied(boolean findActivePlugins) {
         headerLabel.setText("Обновление данных MD5");
         CalculateMD5Task calculateMD5Task = new CalculateMD5Task();
-        calculateMD5Task
-                .addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
-                        calculateMD5TaskEvent -> {
-                            headerLabel.setText("Переподключение активной конфигурации");
-                            List<Release> activeReleases = releaseRepository
-                                    .findAllByAppliedIsTrue();
-                            EnableReleasesTask enableReleasesTask =
-                                    new EnableReleasesTask(activeReleases);
-                            enableReleasesTask
-                                    .addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
-                                            enableReleasesTaskEvent -> {
-                                                if (findActivePlugins) {
-                                                    headerLabel
-                                                            .setText("Проверка активной конфигурации");
-                                                    FindActivePluginByMD5Task findActivePluginByMD5Task =
-                                                            new FindActivePluginByMD5Task();
-                                                    findActivePluginByMD5Task
-                                                            .addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
-                                                                    findActivePluginByMD5TaskEvent -> {
-                                                                        headerLabel
-                                                                                .setText("Обновление успешно " +
-                                                                                        "завершено");
-                                                                        closeButton.setDisable(false);
-                                                                        closeButton.setVisible(true);
-                                                                    });
-                                                    new Thread(findActivePluginByMD5Task).start();
-                                                } else {
-                                                    headerLabel.setText("Обновление успешно завершено");
-                                                    closeButton.setDisable(false);
-                                                    closeButton.setVisible(true);
-                                                }
-                                            });
-                            new Thread(enableReleasesTask).start();
-                        });
+        calculateMD5Task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, calculateMD5TaskEvent -> {
+            headerLabel.setText("Переподключение активной конфигурации");
+            List<Release> activeReleases = releaseRepository.findAllByAppliedIsTrue();
+            EnableReleasesTask enableReleasesTask = new EnableReleasesTask(activeReleases);
+            enableReleasesTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, enableReleasesTaskEvent -> {
+                if (findActivePlugins) {
+                    headerLabel.setText("Проверка активной конфигурации");
+                    FindActivePluginByMD5Task findActivePluginByMD5Task =
+                            new FindActivePluginByMD5Task();
+                    findActivePluginByMD5Task
+                            .addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, findActivePluginByMD5TaskEvent -> {
+                                headerLabel.setText("Обновление успешно завершено");
+                                closeButton.setDisable(false);
+                                closeButton.setVisible(true);
+                            });
+                    new Thread(findActivePluginByMD5Task).start();
+                } else {
+                    headerLabel.setText("Обновление успешно завершено");
+                    closeButton.setDisable(false);
+                    closeButton.setVisible(true);
+                }
+            });
+            new Thread(enableReleasesTask).start();
+        });
         new Thread(calculateMD5Task).start();
+    }
+
+    public void closeButtonAction() {
+        stageManager.getProgressStage().close();
+    }
+
+    private void exceptionHandler(String text, Throwable throwable) {
+        log.error(throwable);
+        headerLabel.setText(text);
+        progressBar.progressProperty().unbind();
+        progressBar.setProgress(0);
+        closeButton.setDisable(false);
+        closeButton.setVisible(true);
     }
 
     private void checkFutures(List<Future> futures) {
@@ -416,7 +468,7 @@ public class ProgressController implements AbstractController {
     private class CheckApplicationUpdateTask extends InnerTask<Boolean> {
 
         @Override
-        protected Boolean call() {
+        protected Boolean call() throws RestException, ApplicationUpdateException {
             HttpHeaders headers = new HttpHeaders();
             headers.add("version", propertiesConfiguration.getApplicationVersion());
             headers.add("platform", propertiesConfiguration.getPlatform());
@@ -429,64 +481,68 @@ public class ProgressController implements AbstractController {
                                 HttpMethod.GET, new HttpEntity<>(headers),
                                 Version.class);
             } catch (ResourceAccessException e) {
-                log.info("Can't connect to server");
                 this.updateMessage("Не удалось подключиться к серверу обновлений");
-                return false;
+                throw new RestException("Can't connect to server", e);
             }
             if (result != null && result.getBody() != null) {
                 if (result.getBody().isClientVersionIsDefined()) {
                     if (result.getBody().isNeedUpdate()) {
-                        ResponseEntity<byte[]> responseEntity;
-                        try {
-                            responseEntity = restTemplate.exchange(
-                                    String.format("%s%s%s%s", propertiesConfiguration.getUpdateLink(),
-                                            Links.PUBLIC_API_LINK, Links.PUBLIC_API_APPLICATION_UPDATE_LINK,
-                                            propertiesConfiguration.getPlatform()),
-                                    HttpMethod.GET, null, byte[].class);
-                        } catch (ResourceAccessException e) {
-                            log.info("Can't connect to server");
-                            this.updateMessage("Не удалось подключиться к серверу обновлений");
-                            return false;
-                        }
-                        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                            if (fileManager.downloadAndUpdateApplication(responseEntity.getBody())) {
-                                System.exit(0);
-                            } else {
-                                log.error("Can't install new application");
-                                this.updateMessage("Не удалось обновить конфигуратор");
-                                return false;
-                            }
-                        } else {
-                            log.error("Can't download update " + propertiesConfiguration.getPlatform());
-                            this.updateMessage("Не удалось скачать обновление");
-                            return false;
-                        }
-
+                        this.updateMessage("Доступно обновление для скачивания");
+                        return true;
                     } else {
                         this.updateMessage("Установлена последняя версия");
+                        return false;
                     }
                 } else {
-                    log.error("Application client platform is not found on server! Platform: " + propertiesConfiguration
-                            .getPlatform());
                     this.updateMessage("Операционная система не определена");
-                    return false;
+                    throw new ApplicationUpdateException("Application client platform is not found on server! " +
+                            "Platform: " + propertiesConfiguration
+                            .getPlatform());
                 }
             } else {
-                log.error("Application update result is null.\n" + result);
                 this.updateMessage("Некорректный ответ сервера");
-                return false;
+                throw new ApplicationUpdateException("Application update version is null.\n" + result);
             }
-            return true;
+        }
+    }
+
+    private class ApplicationUpdateTask extends InnerTask<Void> {
+
+        @Override
+        protected Void call() throws ApplicationUpdateException {
+            ResponseEntity<byte[]> responseEntity;
+            try {
+                responseEntity = restTemplate.exchange(
+                        String.format("%s%s%s%s", propertiesConfiguration.getUpdateLink(),
+                                Links.PUBLIC_API_LINK, Links.PUBLIC_API_APPLICATION_UPDATE_LINK,
+                                propertiesConfiguration.getPlatform()),
+                        HttpMethod.GET, null, byte[].class);
+            } catch (ResourceAccessException e) {
+                this.updateMessage("Не удалось подключиться к серверу обновлений");
+                throw new ApplicationUpdateException("Can't connect to server");
+            }
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                if (fileManager.downloadAndUpdateApplication(responseEntity.getBody())) {
+                    System.exit(0);
+                    return null;
+                } else {
+                    this.updateMessage("Не удалось обновить конфигуратор");
+                    throw new ApplicationUpdateException("Can't install new application");
+                }
+            } else {
+                this.updateMessage("Не удалось скачать обновление");
+                throw new ApplicationUpdateException("Can't download update " + propertiesConfiguration.getPlatform());
+            }
         }
     }
 
     @RequiredArgsConstructor
-    private class CheckGameUpdateTask extends InnerTask<Boolean> {
+    private class CheckGameUpdateTask extends InnerTask<Version> {
 
         private final String version;
 
         @Override
-        protected Boolean call() {
+        protected Version call() throws GameUpdateException, RestException {
             this.updateMessage("");
             HttpHeaders headers = new HttpHeaders();
             headers.add("version", version);
@@ -499,59 +555,62 @@ public class ProgressController implements AbstractController {
                                 HttpMethod.GET, new HttpEntity<>(headers),
                                 Version.class);
             } catch (ResourceAccessException e) {
-                log.info("Can't connect to server");
                 this.updateMessage("Не удалось подключиться к серверу обновлений");
-                return false;
+                throw new RestException("Can't connect to server");
             }
             if (result != null && result.getBody() != null) {
                 if (result.getBody().isClientVersionIsDefined()) {
-                    if (result.getBody().isNeedUpdate() && result.getBody().getUpdatePlan() != null) {
-                        propertiesConfiguration.setRefreshSchema(result.getBody().getUpdatePlan().isRefreshSchema());
-                        propertiesConfiguration.setRefreshApplies(result.getBody().getUpdatePlan().isRefreshApplied());
-                        for (int i = 0; i < result.getBody().getUpdatePlan().getUpdates().size(); i++) {
-                            this.updateProgress(i, result.getBody().getUpdatePlan().getUpdates().size());
-                            String update = result.getBody().getUpdatePlan().getUpdates().get(i);
-                            this.updateMessage("Скачивание обновления " + update);
-                            ResponseEntity<byte[]> responseEntity;
-                            try {
-                                responseEntity = restTemplate
-                                        .exchange(String.format("%s%s%s/%s/%s", propertiesConfiguration
-                                                        .getUpdateLink(), Links.PUBLIC_API_LINK,
-                                                Links.PUBLIC_API_GAME_UPDATE_LINK, propertiesConfiguration
-                                                        .getGamePlatform(), update),
-                                                HttpMethod.GET, null, byte[].class);
-                            } catch (ResourceAccessException e) {
-                                log.info("Can't connect to server");
-                                this.updateMessage("Не удалось подключиться к серверу обновлений");
-                                return false;
-                            }
-                            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                                this.updateMessage("Установка обновления " + update);
-                                if (!fileManager.downloadAndApplyGamePatch(responseEntity.getBody())) {
-                                    log.error("Can't install patch " + update);
-                                    this.updateMessage("Не удалось установить обновление " + update);
-                                    return false;
-                                }
-                            } else {
-                                log.error("Can't download update " + update);
-                                this.updateMessage("Не удалось скачать обновление " + update);
-                                return false;
-                            }
-                        }
-                        this.updateProgress(1, 1);
-                        return true;
-                    } else {
-                        return true;
+                    return result.getBody();
+                } else {
+                    this.updateMessage("Версия игры не найдена на сервере");
+                    throw new GameUpdateException("Game version is not found on server! Version: " + result);
+                }
+
+            } else {
+                this.updateMessage("Некорректный ответ сервера");
+                throw new GameUpdateException("Game update version is null.\n" + result);
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class GameUpdateTask extends InnerTask<Void> {
+
+        private final Version version;
+
+        @Override
+        protected Void call() throws RestException, GameUpdateException {
+            propertiesConfiguration.setRefreshSchema(version.getUpdatePlan().isRefreshSchema());
+            propertiesConfiguration.setRefreshApplies(version.getUpdatePlan().isRefreshApplied());
+            for (int i = 0; i < version.getUpdatePlan().getUpdates().size(); i++) {
+                this.updateProgress(i, version.getUpdatePlan().getUpdates().size());
+                String update = version.getUpdatePlan().getUpdates().get(i);
+                this.updateMessage("Скачивание обновления " + update);
+                ResponseEntity<byte[]> responseEntity;
+                try {
+                    responseEntity = restTemplate
+                            .exchange(String.format("%s%s%s/%s/%s", propertiesConfiguration
+                                            .getUpdateLink(), Links.PUBLIC_API_LINK,
+                                    Links.PUBLIC_API_GAME_UPDATE_LINK, propertiesConfiguration
+                                            .getGamePlatform(), update),
+                                    HttpMethod.GET, null, byte[].class);
+                } catch (ResourceAccessException e) {
+                    this.updateMessage("Не удалось подключиться к серверу обновлений");
+                    throw new RestException("Can't connect to server");
+                }
+                if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                    this.updateMessage("Установка обновления " + update);
+                    if (!fileManager.downloadAndApplyGamePatch(responseEntity.getBody())) {
+                        this.updateMessage("Не удалось установить обновление " + update);
+                        throw new GameUpdateException("Can't install patch " + update);
                     }
                 } else {
-                    log.error("Game version is not found on server! Version: " + version);
-                    this.updateMessage("Версия игры не найдена на сервере");
+                    this.updateMessage("Не удалось скачать обновление " + update);
+                    throw new GameUpdateException("Can't download update " + update);
                 }
-            } else {
-                log.error("Game update result is null.\n" + result);
-                this.updateMessage("Некорректный ответ сервера");
             }
-            return false;
+            this.updateProgress(1, 1);
+            return null;
         }
     }
 

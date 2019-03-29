@@ -22,5 +22,6 @@ public interface AbstractController {
 
     }
 
-    void beforeOpen();
+    default void beforeOpen() {
+    }
 }

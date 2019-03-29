@@ -62,6 +62,12 @@
                                 <Insets bottom="4.0"/>
                             </VBox.margin>
                         </Button>
+                        <Button mnemonicParsing="false" onAction="#checkUpdate" prefHeight="25.0" prefWidth="284.0"
+                                text="Проверить обновления">
+                            <VBox.margin>
+                                <Insets bottom="4.0"/>
+                            </VBox.margin>
+                        </Button>
                         <Button mnemonicParsing="false" onAction="#close" prefHeight="25.0" prefWidth="284.0"
                                 text="Выход">
                             <VBox.margin>
@@ -69,6 +75,12 @@
                             </VBox.margin>
                         </Button>
                     </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets top="7.0"/>
+                    </padding>
                 </VBox>
                 <HBox alignment="CENTER" prefHeight="46.0" prefWidth="700.0">
                     <children>

@@ -2,8 +2,8 @@ package ru.fullrest.mfr.plugins_configuration_utility.javafx;
 
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.fullrest.mfr.plugins_configuration_utility.config.PropertiesConfiguration;
 import ru.fullrest.mfr.plugins_configuration_utility.controller.HelpForProjectController;
@@ -22,30 +22,16 @@ import java.util.Objects;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class StartApplicationInstruction {
-    @Autowired
-    private View<MainController> mainView;
-
-    @Autowired
-    private View<ProgressController> progressView;
-
-    @Autowired
-    private View<HelpForProjectController> helpForProjectView;
-
-    @Autowired
-    private StageManager stageManager;
-
-    @Autowired
-    private FileManager fileManager;
-
-    @Autowired
-    private PropertiesRepository propertiesRepository;
-
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
-    private PropertiesConfiguration propertiesConfiguration;
+    private final View<MainController> mainView;
+    private final View<ProgressController> progressView;
+    private final View<HelpForProjectController> helpForProjectView;
+    private final StageManager stageManager;
+    private final FileManager fileManager;
+    private final PropertiesRepository propertiesRepository;
+    private final GroupRepository groupRepository;
+    private final PropertiesConfiguration propertiesConfiguration;
 
     public void startApplication(Stage primaryStage, String[] args) {
         log.info("Start application init");
@@ -95,7 +81,7 @@ public class StartApplicationInstruction {
         stageManager.getProgressStage().showAndWait();
         String version = fileManager.checkVersion();
         progressView.getController().beforeOpen();
-        progressView.getController().checkGameUpdate(version);
+        progressView.getController().checkGameUpdate(version, true);
         stageManager.getProgressStage().showAndWait();
         version = fileManager.checkVersion();
         propertiesConfiguration.setGameVersion(Objects.requireNonNullElse(version, ""));

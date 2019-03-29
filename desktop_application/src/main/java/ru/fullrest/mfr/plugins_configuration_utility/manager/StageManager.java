@@ -10,8 +10,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.fullrest.mfr.plugins_configuration_utility.controller.*;
 import ru.fullrest.mfr.plugins_configuration_utility.controller.details_editor.AddBaseEntityController;
@@ -22,44 +22,39 @@ import ru.fullrest.mfr.plugins_configuration_utility.javafx.View;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class StageManager {
 
-    @Autowired
-    private View<MainController> mainView;
+    private final View<MainController> mainView;
     @Getter
     private Stage applicationStage;
 
-    @Autowired
-    private View<PluginConfigurationController> pluginConfigurationView;
+    private final View<PluginConfigurationController> pluginConfigurationView;
     private Stage pluginConfigurationStage;
 
-    @Autowired
-    private View<ProgressController> progressView;
+    private final View<ProgressController> progressView;
     private Stage progressStage;
 
-    @Autowired
-    private View<DetailsEditorController> detailsEditorView;
+    private final View<DetailsEditorController> detailsEditorView;
     private Stage detailsEditorStage;
 
-    @Autowired
-    private View<MGEConfigurationController> mgeConfigurationView;
+    private final View<MGEConfigurationController> mgeConfigurationView;
     private Stage mgeConfigurationStage;
 
-    @Autowired
-    private View<ReadmeController> readmeView;
+    private final View<ReadmeController> readmeView;
     private Stage readmeStage;
 
-    @Autowired
-    private View<AddDetailsController> detailsView;
+    private final View<AddDetailsController> detailsView;
     private Stage addDetailsStage;
 
-    @Autowired
-    private View<AddBaseEntityController> addBaseEntityView;
+    private final View<AddBaseEntityController> addBaseEntityView;
     private Stage addBaseEntityStage;
 
-    @Autowired
-    private View<HelpForProjectController> helpForProjectView;
+    private final View<HelpForProjectController> helpForProjectView;
     private Stage helpForProjectStage;
+
+    private final View<AlertController> alertView;
+    private Stage alertStage;
 
     public void setApplicationStage(Stage applicationStage) {
         this.applicationStage = applicationStage;
@@ -128,6 +123,13 @@ public class StageManager {
             helpForProjectStage = initStage("Помочь проекту", helpForProjectView);
         }
         return helpForProjectStage;
+    }
+
+    public Stage getAlertStage() {
+        if (alertStage == null) {
+            alertStage = initStage("Помочь проекту", alertView);
+        }
+        return alertStage;
     }
 
     private Stage initStage(String title, View view) {
