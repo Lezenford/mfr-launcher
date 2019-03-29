@@ -143,6 +143,8 @@ public class ProgressController implements AbstractController {
                 } else {
                     if (propertiesConfiguration.isRefreshApplies()) {
                         refreshApplied(false);
+                    } else {
+                        closeButtonAction();
                     }
                 }
             } else {
