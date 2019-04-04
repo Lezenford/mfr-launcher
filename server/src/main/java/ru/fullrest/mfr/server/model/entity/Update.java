@@ -2,6 +2,7 @@ package ru.fullrest.mfr.server.model.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,11 +26,18 @@ public class Update extends FilePathEntity {
     private Date uploadDate = new Date();
 
     @Column(name = "SCHEMA_UPDATE")
+    @ColumnDefault("FALSE")
     private boolean schemaUpdate = false;
 
     @Column(name = "APPLIED_UPDATE")
+    @ColumnDefault("FALSE")
     private boolean appliedUpdate = false;
 
     @Column(name = "ACTIVE")
+    @ColumnDefault("TRUE")
     private boolean active = true;
+
+    @Column(name = "DOWNLOAD_COUNT")
+    @ColumnDefault("0")
+    private int downloadCount = 0;
 }

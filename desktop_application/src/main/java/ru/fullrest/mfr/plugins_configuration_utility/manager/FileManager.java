@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -186,17 +187,6 @@ public class FileManager {
         } catch (IOException e) {
             log.error("Error coping to game directory.", e);
         }
-    }
-
-    public InputStream getInputStreamFromFile(String path) {
-        if (path != null && !path.isBlank()) {
-            try {
-                return Files.newInputStream(Paths.get(getGamePath(true) + path));
-            } catch (IOException e) {
-                log.error("Error to getting file input stream: " + path + "\n", e);
-            }
-        }
-        return null;
     }
 
     public String getAbsolutePath(String path) {
@@ -375,13 +365,24 @@ public class FileManager {
                                 }
                             }
                             if (application != null) {
-                                writer.write("ECHO off\n");
-                                writer.write(String
-                                        .format("MOVE /Y \"%s\" \"pcu.exe\"\n", application.getAbsolutePath()));
-                                writer.write(String.format("pcu.exe -clean:%s\n", scriptFileName));
-                                writer.write(String
-                                        .format("RMDIR \"%s\"\n", application.getParentFile().getAbsolutePath()));
-                                writer.write(String.format("DEL /F /S /Q /A %s\n", scriptFileName));
+                                writer.write("@ECHO ========== Обновление конфигуратора, подождите, пожалуйста " +
+                                        "==========\n");
+                                writer.write("@ECHO ========== Plugins Configuration Utility is updating please wait " +
+                                        "==========\n");
+                                writer.write("@ECHO OFF\n");
+                                writer.write("ECHO START %date% %time%>>logs/update.log 2>&1\n");
+                                writer.write("ECHO WAIT>>logs/update.log 2>&1\n");
+                                writer.write(">NUL TIMEOUT /T 2\n");
+                                writer.write("ECHO MOVE>>logs/update.log 2>&1\n");
+                                writer.write(String.format("MOVE /Y \"%s\" \"pcu.exe\">>logs/update.log 2>&1\n",
+                                        application.getAbsolutePath()));
+                                writer.write("ECHO DELETE TEMP FOLDER>>logs/update.log 2>&1\n");
+                                writer.write(String.format("RMDIR /Q /S \"%s\">>logs/update.log 2>&1\n",
+                                        application.getParentFile().getAbsolutePath()));
+                                writer.write("ECHO START APP>>logs/update.log 2>&1\n");
+                                writer.write("START pcu.exe -deleteScript>>logs/update.log 2>&1\n");
+                                writer.write("ECHO END %date% %time%>>logs/update.log 2>&1\n");
+                                writer.write("EXIT\n");
                             } else {
                                 log.error("New application file doesn't exist");
                                 return false;
@@ -391,7 +392,8 @@ public class FileManager {
                             return false;
                         }
                     }
-                    Runtime.getRuntime().exec(scriptFileName);
+                    Runtime.getRuntime()
+                           .exec("cmd /c start " + scriptFileName, null, new File(getGamePath(true) + "MFRPCU"));
                     return true;
                 } else {
                     log.error("Operation system not support auto update");
@@ -434,9 +436,9 @@ public class FileManager {
                                                                                                    .toAbsolutePath()
                                                                                                    .toString(), ""));
                         if (Files.exists(gameFile)) {
-                            if (Files.notExists(backupFile.getParent()) && backupFile.getParent().toFile()
-                                                                                     .mkdirs() && Files
-                                    .notExists(backupFile.getParent())) {
+                            if (Files.notExists(backupFile.getParent()) &&
+                                    backupFile.getParent().toFile().mkdirs() &&
+                                    Files.notExists(backupFile.getParent())) {
                                 log.error("Can't create backup for patch!");
                                 return false;
                             }
@@ -464,10 +466,8 @@ public class FileManager {
                     if (backupDirectory != null) { //undo update changes
                         files = getFilesFromDirectory(backupDirectory.toFile(), new ArrayList<>());
                         for (File file : files) {
-                            Path gameFile = Paths.get(getGamePath(false) + file.getAbsolutePath()
-                                                                               .replace(backupDirectory.toAbsolutePath()
-                                                                                                       .toString(),
-                                                                                       ""));
+                            Path gameFile = Paths.get(getGamePath(false) +
+                                    file.getAbsolutePath().replace(backupDirectory.toAbsolutePath().toString(), ""));
                             Files.copy(file.toPath(), gameFile, StandardCopyOption.REPLACE_EXISTING);
                         }
                     }
@@ -495,6 +495,7 @@ public class FileManager {
 
     private boolean unzipFiles(Path archive, Path patchTempDirectory) {
         if (archive != null && patchTempDirectory != null) {
+            Map<File, FileTime> files = new HashMap<>();
             try (ZipInputStream inputStream = new ZipInputStream(new FileInputStream(archive.toFile()))) {
                 ZipEntry entry;
                 while ((entry = inputStream.getNextEntry()) != null) {
@@ -507,17 +508,25 @@ public class FileManager {
                         }
                     } else {
                         try (OutputStream outputStream = new FileOutputStream(file)) {
-                            byte[] buffer = new byte[2014];
+                            byte[] buffer = new byte[1024];
                             int count;
                             while ((count = inputStream.read(buffer)) > -1) {
                                 outputStream.write(buffer, 0, count);
                             }
+                            files.put(file, entry.getLastModifiedTime());
                         }
                     }
                 }
             } catch (IOException e) {
                 log.error("Error unzip file", e);
                 return false;
+            }
+            for (Map.Entry<File, FileTime> entry : files.entrySet()) {
+                try {
+                    Files.setLastModifiedTime(entry.getKey().toPath(), entry.getValue());
+                } catch (IOException e) {
+                    log.error("Can't set last modification time for file: " + entry.getKey().getAbsolutePath());
+                }
             }
             return true;
         } else {

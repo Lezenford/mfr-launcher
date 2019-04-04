@@ -134,7 +134,7 @@ public class ProgressController implements AbstractController {
             if (result.isNeedUpdate() && result.getUpdatePlan() != null) {
                 Button ok = new Button("Да");
                 Button cancel = new Button("Нет");
-                String text = "Доступна новая версия M[FR]?\nХотите установить?";
+                String text = "Доступна новая версия M[FR]\nХотите установить?";
                 alertView.getController().createAlert(text, cancel, ok);
                 ok.setOnAction(okEvent -> {
                     GameUpdateTask gameUpdateTask = new GameUpdateTask(result);
@@ -161,7 +161,7 @@ public class ProgressController implements AbstractController {
                 });
                 stageManager.getAlertStage().showAndWait();
             } else {
-                if (silent) {
+                if (!silent) {
                     Button ok = new Button("Ок");
                     String text = "Установлена последняя версия";
                     alertView.getController().createAlert(text, ok);
@@ -474,12 +474,9 @@ public class ProgressController implements AbstractController {
             headers.add("platform", propertiesConfiguration.getPlatform());
             ResponseEntity<Version> result;
             try {
-                result = restTemplate
-                        .exchange(String.format("%s%s%s", propertiesConfiguration
-                                        .getUpdateLink(), Links.PUBLIC_API_LINK,
-                                Links.PUBLIC_API_APPLICATION_VERSION_LINK),
-                                HttpMethod.GET, new HttpEntity<>(headers),
-                                Version.class);
+                result = restTemplate.exchange(String.format("%s%s%s", propertiesConfiguration.getUpdateLink(),
+                        Links.PUBLIC_API_LINK, Links.PUBLIC_API_APPLICATION_VERSION_LINK),
+                        HttpMethod.GET, new HttpEntity<>(headers), Version.class);
             } catch (ResourceAccessException e) {
                 this.updateMessage("Не удалось подключиться к серверу обновлений");
                 throw new RestException("Can't connect to server", e);
@@ -496,8 +493,7 @@ public class ProgressController implements AbstractController {
                 } else {
                     this.updateMessage("Операционная система не определена");
                     throw new ApplicationUpdateException("Application client platform is not found on server! " +
-                            "Platform: " + propertiesConfiguration
-                            .getPlatform());
+                            "Platform: " + propertiesConfiguration.getPlatform());
                 }
             } else {
                 this.updateMessage("Некорректный ответ сервера");

@@ -17,6 +17,9 @@ import ru.fullrest.mfr.plugins_configuration_utility.model.repository.GroupRepos
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -35,6 +38,7 @@ public class StartApplicationInstruction {
 
     public void startApplication(Stage primaryStage, String[] args) {
         log.info("Start application init");
+        checkStartAfterUpdate(args);
         checkGamePathProperty();
         checkVersion();
         stageManager.setApplicationStage(primaryStage);
@@ -134,18 +138,22 @@ public class StartApplicationInstruction {
 
     private void checkExtendedMod(String[] args) {
         log.info("Method checkExtendedMod started");
+
         for (String arg : args) {
-            if (arg.equals("-extend")) {
+            if (arg.toLowerCase().equals("-extend")) {
                 propertiesConfiguration.setExtendedMod(true);
                 log.info("Method checkExtendedMod finished");
                 return;
             }
         }
         propertiesConfiguration.setExtendedMod(false);
+
         log.info("Method checkExtendedMod finished");
     }
 
     private void checkFirstStart() {
+        log.info("Method checkFirstStart started");
+
         Properties firstStart = propertiesRepository.findByKey(PropertyKey.FIRST_START);
         if (firstStart == null) {
             helpForProjectView.getController().setFirstStart(true);
@@ -155,5 +163,26 @@ public class StartApplicationInstruction {
             firstStart.setKey(PropertyKey.FIRST_START);
             propertiesRepository.save(firstStart);
         }
+
+        log.info("Method checkFirstStart finished");
+    }
+
+    private void checkStartAfterUpdate(String[] args) {
+        log.info("Method checkStartAfterUpdate started");
+
+        for (String arg : args) {
+            if (arg.toLowerCase().equals("-deletescript")) {
+                try {
+                    Files.deleteIfExists(Paths.get(new File("").getAbsolutePath() + File.separator +
+                            "update_script.bat"));
+                } catch (IOException e) {
+                    log.error("Can't delete update script file!", e);
+                }
+                log.info("Method checkStartAfterUpdate finished");
+                return;
+            }
+        }
+
+        log.info("Method checkStartAfterUpdate finished");
     }
 }

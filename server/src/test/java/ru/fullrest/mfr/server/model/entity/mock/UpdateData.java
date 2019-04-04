@@ -21,6 +21,7 @@ public class UpdateData {
             update.setAppliedUpdate(i > maxCount / 3);
             update.setSchemaUpdate(i > maxCount / 2);
             update.setPath(String.format("testUpdate%s.zip", i));
+            update.setDownloadCount(0);
             updates.add(update);
         }
     }

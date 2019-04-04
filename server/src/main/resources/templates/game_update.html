@@ -14,6 +14,7 @@
         <th>Дата загрузки</th>
         <th>Обновление<br>схемы</th>
         <th>Обнолвение<br>установленных<br>компонентов</th>
+        <th>Количество<br>скачиваний</th>
         <th>Активировано</th>
     </tr>
     <tr th:each="update : ${updates}" align="center">
@@ -21,6 +22,7 @@
         <td th:text="${#dates.format(update.uploadDate, 'dd-MM-yyyy')}"></td>
         <td th:text="${update.schemaUpdate}"></td>
         <td th:text="${update.appliedUpdate}"></td>
+        <td th:text="${update.downloadCount}"></td>
         <td th:text="${update.active}"></td>
         <td>
             <a th:text="${update.active} ? 'Деактивировать' : 'Активировать'"
