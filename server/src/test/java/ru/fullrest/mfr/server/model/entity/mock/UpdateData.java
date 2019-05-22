@@ -24,5 +24,17 @@ public class UpdateData {
             update.setDownloadCount(0);
             updates.add(update);
         }
+
+        for (int i = 0; i < maxCount; i++) {
+            Update update = new Update();
+            update.setVersion("1." + i);
+            update.setPlatform("second");
+            update.setUploadDate(new Date());
+            update.setAppliedUpdate(i > maxCount / 3);
+            update.setSchemaUpdate(i > maxCount / 2);
+            update.setPath(String.format("secondTestUpdate%s.zip", i));
+            update.setDownloadCount(0);
+            updates.add(update);
+        }
     }
 }

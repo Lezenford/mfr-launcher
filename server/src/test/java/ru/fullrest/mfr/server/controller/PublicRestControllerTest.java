@@ -53,23 +53,37 @@ public class PublicRestControllerTest {
     private ApplicationRepository applicationRepository;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp()  {
         updateRepository.saveAll(updateData.getUpdates());
         for (Update update : updateData.getUpdates()) {
-            Files.createFile(Paths.get(update.getPath()));
+            try {
+                Files.createFile(Paths.get(update.getPath()));
+            } catch (IOException ignored) {
+
+            }
         }
         applicationRepository.save(applicationData.getApplication());
-        Files.createFile(Paths.get(applicationData.getApplication().getPath()));
+        try {
+            Files.createFile(Paths.get(applicationData.getApplication().getPath()));
+        } catch (IOException ignored) {
+
+        }
     }
 
     @After
-    public void clean() throws IOException {
+    public void clean()  {
         updateRepository.deleteAll();
         for (Update update : updateData.getUpdates()) {
-            Files.deleteIfExists(Paths.get(update.getPath()));
+            try {
+                Files.deleteIfExists(Paths.get(update.getPath()));
+            } catch (IOException ignored) {
+            }
         }
         applicationRepository.deleteAll();
-        Files.deleteIfExists(Paths.get(applicationData.getApplication().getPath()));
+        try {
+            Files.deleteIfExists(Paths.get(applicationData.getApplication().getPath()));
+        } catch (IOException ignored) {
+        }
     }
 
     @Test

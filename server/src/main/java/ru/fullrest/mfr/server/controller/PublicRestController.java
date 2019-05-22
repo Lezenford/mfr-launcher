@@ -110,9 +110,8 @@ public class PublicRestController {
             RequestMethod.GET)
     public ResponseEntity<?> downloadPatch(@PathVariable String platform, @PathVariable String version) {
         Update update = updateRepository.findByVersionAndPlatform(version, platform);
-        if (update != null) {//TODO проверить логику
-            update.setDownloadCount(update.getDownloadCount() + 1);
-            updateRepository.save(update);
+        if (update != null) {
+            updateRepository.incrementDownloadCount(update.getId());
         }
         return sendFile(update);
     }

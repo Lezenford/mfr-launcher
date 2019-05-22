@@ -36,8 +36,4 @@ public class Update extends FilePathEntity {
     @Column(name = "ACTIVE")
     @ColumnDefault("TRUE")
     private boolean active = true;
-
-    @Column(name = "DOWNLOAD_COUNT")
-    @ColumnDefault("0")
-    private int downloadCount = 0;
 }
