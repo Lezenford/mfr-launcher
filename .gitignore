@@ -1,6 +1,8 @@
 .gradle
 /build/
 !gradle/wrapper/gradle-wrapper.jar
+*.log
+/server/download/
 
 ### STS ###
 .apt_generated
@@ -26,4 +28,5 @@
 /.nb-gradle/
 
 ### Project DB ###
-*.mv.db
+*.db
+/logs/

@@ -1,0 +1,44 @@
+<div id="header" xmlns:th="http://www.thymeleaf.org" th:fragment="header">
+    <div class="center">
+        <div id="logo"><a th:href="@{/admin/}">Панель управления MFR Plugin Configuration Utility</a></div>
+        <!--Menu Begin-->
+        <div id="menu">
+            <ul>
+                <li>
+                    <a th:class="${@adminSession.getContentType() eq T(ru.fullrest.mfr.server.mvc.ContentType).GAME } ? 'active'"
+                       th:href="@{/admin/game/update}"><span>Репак</span></a></li>
+                <li>
+                    <a th:class="${@adminSession.getContentType() eq T(ru.fullrest.mfr.server.mvc.ContentType).APPLICATION} ? 'active'"
+                       th:href="@{/admin/application}"><span>Конфигуратор</span></a></li>
+            </ul>
+        </div>
+        <!--Menu END-->
+    </div>
+</div>
+<div id="toprowsub" xmlns:th="http://www.thymeleaf.org" th:fragment="submenu (sub_header)">
+    <div class="center">
+        <div id="sublogo">
+            <h2 th:text="${sub_header}"></h2>
+        </div>
+        <!--Menu Begin-->
+        <div id="submenu">
+            <ul>
+                <li th:if="${@adminSession.getContentType() eq T(ru.fullrest.mfr.server.mvc.ContentType).GAME }"
+                    th:each="platform : ${@updateRepository.findAllPlatformByOrderByPlatformAsc()}">
+                    <a th:class="${@adminSession.getPlatform()} eq ${platform} ? 'active'"
+                       th:href="@{'/admin/game/update/'+${platform}}"><span th:text="${platform}"></span></a>
+                </li>
+                <li th:if="${@adminSession.getContentType() eq T(ru.fullrest.mfr.server.mvc.ContentType).GAME }">
+                    <a th:href="@{/admin/game/update/create}"><span>+</span></a></li>
+                <li th:if="${@adminSession.getContentType() eq T(ru.fullrest.mfr.server.mvc.ContentType).APPLICATION }">
+                    <a th:href="@{/admin/application/upload}"><span>+</span></a></li>
+            </ul>
+        </div>
+        <!--Menu END-->
+    </div>
+</div>
+<div id="footer" xmlns:th="http://www.thymeleaf.org" th:fragment="footer">
+    <div class="foot"><span>Calliope</span> by <a href="http://www.towfiqi.com">Towfiq I.</a> is licensed under a <a
+            href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License.</a>
+    </div>
+</div>

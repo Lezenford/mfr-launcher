@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Обновление конфигуратора</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:insert="~{_template :: header}"/>
+<th:block th:insert="~{_template :: submenu (${title})}"/>
+<div id="midrow">
+    <label th:text="${error}"></label>
+    <form th:object="${app}" method="POST"
+          th:action="(${app.id} != null) ? @{/admin/application/update} : @{/admin/application/upload}"
+          enctype="multipart/form-data">
+        <input type="text" th:field="*{id}" hidden/>
+        <table border="1px">
+            <tr>
+                <td><label>Операционная система:</label></td>
+                <td><input type="text" th:field="*{operationSystem}" required/></td>
+            </tr>
+            <tr>
+                <td><label>Платформа:</label></td>
+                <td th:if="${app.id} == 0">
+                    <input type="text" th:field="*{shortName}">
+                </td>
+                <td th:if="${app.id} != 0">
+                    <input type="hidden" th:text="${app.shortName}" th:field="*{shortName}">
+                </td>
+            </tr>
+            <tr>
+                <td><label>Версия:</label></td>
+                <td><input type="text" th:field="*{version}" required/></td>
+            </tr>
+            <tr>
+                <td><label>Загрузить файл: </label></td>
+                <td><input type="file" name="file" accept="application/zip" required/></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="Применить" th:disabled="${error} eq ''">
+                </td>
+            </tr>
+        </table>
+        <!--<input type="text" th:field="*{shortName}" hidden/>-->
+        <!--<input type="submit" value="Применить" th:disabled="${error} ne ''">-->
+    </form>
+</div>
+<th:block th:insert="~{_template :: footer}"/>
+</body>
+</html>

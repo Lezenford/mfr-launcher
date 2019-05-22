@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Обновления игры</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<th:block th:insert="~{_template :: header}"/>
+<th:block th:if="${@adminSession.getPlatform() == null}" th:insert="~{_template :: submenu ('Платформы')}"/>
+<th:block th:if="${@adminSession.getPlatform() != null}" th:insert="~{_template :: submenu ('Список обновлений')}"/>
+<div id="midrow">
+    <table th:if="${@adminSession.getPlatform() != null}" border="1px">
+        <tr align="center">
+            <th>Версия</th>
+            <th>Дата загрузки</th>
+            <th>Обновление<br>схемы</th>
+            <th>Обновление<br>установленных<br>компонентов</th>
+            <th>Количество<br>скачиваний</th>
+            <th>Активно</th>
+        </tr>
+        <tr th:each="update : ${updates}" align="center">
+            <td th:text="${update.version}"></td>
+            <td th:text="${#dates.format(update.uploadDate, 'dd-MM-yyyy')}"></td>
+            <td th:text="${update.schemaUpdate} ? 'да' : 'нет'"></td>
+            <td th:text="${update.appliedUpdate} ? 'да' : 'нет'"></td>
+            <td th:text="${update.downloadCount}"></td>
+            <td th:text="${update.active} ? 'да' : 'нет'"></td>
+            <td>
+                <a th:text="${update.active} ? 'Деактивировать' : 'Активировать'"
+                   th:href="@{/admin/game/update/{platform}/{id}/change(platform=${update.platform}, id=${update.id}, active=${!update.active})}"></a>
+            </td>
+        </tr>
+        <tr style="height: 20px"></tr>
+        <tr>
+            <td><a th:href="@{/admin/game/update/upload}">Добавить</a></td>
+        </tr>
+    </table>
+</div>
+<th:block th:insert="~{_template :: footer}"/>
+</body>
+</html>

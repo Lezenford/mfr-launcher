@@ -1,0 +1,52 @@
+<div id="midrow" xmlns:th="http://www.thymeleaf.org" th:fragment="game_upload_step1 (exist, error)">
+    <label th:text="${error}" style="color: red;"></label>
+    <form method="POST"
+          th:action="@{/admin/game/update/upload/step1}" enctype="multipart/form-data">
+        <input type="hidden" name="exist" th:value="${exist}">
+        <input th:if="${exist} == true" type="hidden" name="platform"
+               th:value="${@adminSession.getPlatform()}">
+        <table>
+            <tr th:if="(${exist} eq null) or (${exist} == false)">
+                <td><label>Название</label></td>
+                <td><input type="text" name="platform" required></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="file" name="file" accept="application/zip" required/></td>
+            </tr>
+            <tr style="height: 20px"></tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="Загрузить"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="midrow" xmlns:th="http://www.thymeleaf.org" th:fragment="game_upload_step2 (update, error)">
+    <label th:text="${error}" style="color: red;"></label>
+    <form th:object="${update}" method="POST"
+          th:action="@{/admin/game/update/upload/step2}" enctype="multipart/form-data">
+        <input type="hidden" th:value="${update.path}" th:field="*{path}">
+        <table>
+            <tr>
+                <td><label>Платформа:</label></td>
+                <td><input type="hidden" th:text="${update.platform}" th:field="*{platform}"></td>
+            </tr>
+            <tr>
+                <td><label>Версия:</label></td>
+                <td><input type="hidden" th:text="${update.version}" th:field="*{version}"></td>
+            </tr>
+            <tr>
+                <td><label>Обновить схему:</label></td>
+                <td><label> <input type="checkbox" th:field="*{schemaUpdate}"/> </label></td>
+            </tr>
+            <tr>
+                <td><label>Обновить подключенные плагины:</label></td>
+                <td><label> <input type="checkbox" th:field="*{appliedUpdate}"/></label></td>
+            </tr>
+            <tr style="height: 20px"></tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="Сохранить" th:disabled="${error} ne ''"></td>
+            </tr>
+        </table>
+
+    </form>
+</div>
