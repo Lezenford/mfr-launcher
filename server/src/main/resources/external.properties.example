@@ -8,3 +8,5 @@ server.port=8089
 #defaul login properties
 login=
 password=
+telegram.chat_id=
+telegram.bot_token=

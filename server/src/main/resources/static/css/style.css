@@ -14,7 +14,15 @@ body {
 
 table {
     margin: auto;
-    border: 1px;
+    border: 1px solid #9a9a9a;
+    border-collapse: collapse;
+}
+
+table td, table th {
+    padding: 4px 8px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: inherit;
 }
 
 /*Fonts*/

@@ -16,6 +16,7 @@ import ru.fullrest.mfr.server.model.entity.Application;
 import ru.fullrest.mfr.server.model.entity.Update;
 import ru.fullrest.mfr.server.model.repository.ApplicationRepository;
 import ru.fullrest.mfr.server.model.repository.UpdateRepository;
+import ru.fullrest.mfr.server.model.service.NotificationService;
 import ru.fullrest.mfr.server.mvc.AdminSession;
 import ru.fullrest.mfr.server.mvc.ContentType;
 
@@ -23,10 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -44,6 +42,8 @@ public class AdminController {
     private final ApplicationRepository applicationRepository;
 
     private final LinkConfiguration linkConfiguration;
+
+    private final NotificationService notificationService;
 
     @GetMapping(value = {"/", ""})
     public String welcome() {
@@ -149,6 +149,9 @@ public class AdminController {
             try {
                 updateRepository.save(update);
                 session.setPlatform(update.getPlatform());
+                notificationService.sendNotification(String
+                        .format("Загружено новое обновлени. \nВремя: %s\nПлатформа: %s\nВерсия: %s", update
+                                .getUploadDate(), update.getPlatform(), update.getVersion()));
                 return "redirect:/admin/game/update/" + session.getPlatform();
             } catch (Exception e) {
                 throw new InternalServerException(e);
@@ -199,6 +202,9 @@ public class AdminController {
             error = checkApplication(app);
             if (error.isBlank()) {
                 applicationRepository.save(app);
+                notificationService.sendNotification(String
+                        .format("Загружено новая версия конфигуратора. \nВремя: %s\nПлатформа: %s\nВерсия: %s",
+                                new Date(), app.getShortName(), app.getVersion()));
                 return "redirect:/admin/application";
             }
 
