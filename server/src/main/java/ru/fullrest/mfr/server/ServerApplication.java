@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.fullrest.mfr.server.config.PropertiesConfiguration;
 import ru.fullrest.mfr.server.config.SecurityConfiguration;
 import ru.fullrest.mfr.server.model.entity.Role;
@@ -13,6 +14,7 @@ import ru.fullrest.mfr.server.model.repository.UserRepository;
 
 @PropertySource(value = "file:external.properties")
 @SpringBootApplication
+@EnableScheduling
 @RequiredArgsConstructor
 public class ServerApplication implements CommandLineRunner {
 

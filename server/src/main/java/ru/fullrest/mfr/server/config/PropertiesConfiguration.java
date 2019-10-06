@@ -13,4 +13,10 @@ public class PropertiesConfiguration {
 
     @Value("${password}")
     private String defaultPassword;
+
+    @Value("${telegram.chat_id}")
+    private long chatId;
+
+    @Value("${telegram.bot_token}")
+    private String token;
 }
