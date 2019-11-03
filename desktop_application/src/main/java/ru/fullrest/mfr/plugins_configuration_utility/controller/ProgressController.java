@@ -65,6 +65,9 @@ public class ProgressController implements AbstractController {
     private View<AlertController> alertView;
 
     @Autowired
+    private View<AlertNewsController> alertNewsView;
+
+    @Autowired
     private StageManager stageManager;
 
     @FXML
@@ -131,44 +134,71 @@ public class ProgressController implements AbstractController {
         closeButton.setVisible(false);
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
             Version result = task.getValue();
-            if (result.isNeedUpdate() && result.getUpdatePlan() != null) {
-                Button ok = new Button("Да");
-                Button cancel = new Button("Нет");
-                String text = "Доступна новая версия M[FR]\nХотите установить?";
-                alertView.getController().createAlert(text, cancel, ok);
-                ok.setOnAction(okEvent -> {
-                    GameUpdateTask gameUpdateTask = new GameUpdateTask(result);
-                    headerLabel.setText("Установка обновления");
-                    gameUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, successEvent -> {
-                        if (propertiesConfiguration.isRefreshSchema()) {
-                            refreshSchema();
-                        } else {
-                            if (propertiesConfiguration.isRefreshApplies()) {
-                                refreshApplied(false);
-                            } else {
-                                closeButtonAction();
-                            }
+            String[] split = version.trim().split("\\.");
+            boolean latVersion = false;
+            if (split.length >= 3) {
+                if (split[0].equals("3")) {
+                    if (split[1].equals("1")) {
+                        if (split[2].equals("09")) {
+                            latVersion = true;
+                            Button ok = new Button("Ок");
+                            String text = "Что ж, уважаемые любители Morrowind, вот и наступил новый виток жизни " +
+                                    "проекта M[FR]! \n" + "В связи с многочисленными изменениями, такими как новые " +
+                                    "движки и оптимизация их запуска из одной папки, обновление необходимо скачать " +
+                                    "вручную. \n" + "Для обновления с версии 3.1.09 или более ранней, необходимо " +
+                                    "скачать свежий инсталятор игры от 03.11.2019!\n" + "Не все идеи были " +
+                                    "реализованы, в данный момент упор был сделан на ликвидацию всех найденных багов " +
+                                    "за многолетнюю историю проекта. Но и без нововведений мы вас не оставили, со " +
+                                    "списком свежего контента можно ознакомиться в ченджлоге.";
+                            alertNewsView.getController().createAlert(text, ok);
+                            ok.setOnAction(okEvent -> stageManager.getAlertNewsStage().close());
+                            stageManager.getAlertNewsStage().showAndWait();
+                            closeButtonAction();
                         }
-                    });
-                    gameUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_FAILED, failedEvent ->
-                            exceptionHandler("Ошибка обновления M[FR]", gameUpdateTask.getException()));
-                    new Thread(gameUpdateTask).start();
-                    stageManager.getAlertStage().close();
-                });
-                cancel.setOnAction(cancelEvent -> {
-                    stageManager.getAlertStage().close();
-                    closeButtonAction();
-                });
-                stageManager.getAlertStage().showAndWait();
-            } else {
-                if (!silent) {
-                    Button ok = new Button("Ок");
-                    String text = "Установлена последняя версия";
-                    alertView.getController().createAlert(text, ok);
-                    ok.setOnAction(okEvent -> stageManager.getAlertStage().close());
-                    stageManager.getAlertStage().showAndWait();
+                    }
                 }
-                closeButtonAction();
+            }
+            if (!latVersion) {
+                if (result.isNeedUpdate() && result.getUpdatePlan() != null) {
+                    Button ok = new Button("Да");
+                    Button cancel = new Button("Нет");
+                    String text = "Доступна новая версия M[FR]\nХотите установить?";
+                    alertView.getController().createAlert(text, cancel, ok);
+                    ok.setOnAction(okEvent -> {
+                        GameUpdateTask gameUpdateTask = new GameUpdateTask(result);
+                        headerLabel.setText("Установка обновления");
+                        gameUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, successEvent -> {
+                            if (propertiesConfiguration.isRefreshSchema()) {
+                                refreshSchema();
+                            } else {
+                                if (propertiesConfiguration.isRefreshApplies()) {
+                                    refreshApplied(false);
+                                } else {
+                                    closeButtonAction();
+                                }
+                            }
+                        });
+                        gameUpdateTask.addEventFilter(WorkerStateEvent.WORKER_STATE_FAILED,
+                                failedEvent -> exceptionHandler("Ошибка обновления M[FR]",
+                                        gameUpdateTask.getException()));
+                        new Thread(gameUpdateTask).start();
+                        stageManager.getAlertStage().close();
+                    });
+                    cancel.setOnAction(cancelEvent -> {
+                        stageManager.getAlertStage().close();
+                        closeButtonAction();
+                    });
+                    stageManager.getAlertStage().showAndWait();
+                } else {
+                    if (!silent) {
+                        Button ok = new Button("Ок");
+                        String text = "Установлена последняя версия";
+                        alertView.getController().createAlert(text, ok);
+                        ok.setOnAction(okEvent -> stageManager.getAlertStage().close());
+                        stageManager.getAlertStage().showAndWait();
+                    }
+                    closeButtonAction();
+                }
             }
         });
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event ->
