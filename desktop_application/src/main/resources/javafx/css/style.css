@@ -43,6 +43,15 @@
     -fx-min-width: 480px;
 }
 
+.progressNewsPageRoot {
+    /*-fx-background-image: url(image/progress-page-background.png);*/
+    -fx-background-color: rgb(0, 0, 0);
+    -fx-max-height: 371px;
+    -fx-max-width: 480px;
+    -fx-min-height: 371px;
+    -fx-min-width: 480px;
+}
+
 .readmePageRoot {
     -fx-background-color: rgba(0, 0, 0, 255);
     -fx-border-width: 2px;

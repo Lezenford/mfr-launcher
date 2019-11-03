@@ -72,6 +72,11 @@ public class ControllerConfiguration {
         return new View<>("javafx/alert.fxml");
     }
 
+    @Bean
+    public View<AlertNewsController> alertNewsView() throws IOException {
+        return new View<>("javafx/alert_news.fxml");
+    }
+
     /**
      * С помощью этих методов мы добавиляем контроллеры в контекст спринга,
      */
@@ -123,5 +128,10 @@ public class ControllerConfiguration {
     @Bean
     public AlertController alertController() throws IOException {
         return alertView().getController();
+    }
+
+    @Bean
+    public AlertNewsController alertNewsController() throws IOException {
+        return alertNewsView().getController();
     }
 }

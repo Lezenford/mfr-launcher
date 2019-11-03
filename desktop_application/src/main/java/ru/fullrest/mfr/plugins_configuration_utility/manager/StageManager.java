@@ -56,6 +56,9 @@ public class StageManager {
     private final View<AlertController> alertView;
     private Stage alertStage;
 
+    private final View<AlertNewsController> alertNewsView;
+    private Stage alertNewsStage;
+
     public void setApplicationStage(Stage applicationStage) {
         this.applicationStage = applicationStage;
         initStage(applicationStage, "M[FR] Настройки репака", mainView);
@@ -130,6 +133,13 @@ public class StageManager {
             alertStage = initStage("Помочь проекту", alertView);
         }
         return alertStage;
+    }
+
+    public Stage getAlertNewsStage() {
+        if (alertNewsStage == null) {
+            alertNewsStage = initStage("Помочь проекту", alertNewsView);
+        }
+        return alertNewsStage;
     }
 
     private Stage initStage(String title, View view) {

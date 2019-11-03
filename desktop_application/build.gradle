@@ -9,7 +9,7 @@ ext {
     platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
 }
 
-version = '1.1'
+version = '1.1.3'
 mainClassName = 'ru.fullrest.mfr.plugins_configuration_utility.PluginsConfigurationUtilityApplication'
 
 dependencies {
