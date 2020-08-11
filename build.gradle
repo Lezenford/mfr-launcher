@@ -1,35 +1,49 @@
-plugins {
-    id "idea"
-    id "java"
-}
+configure([project(':desktop:application'),
+           project(':desktop:updater'),
+           project(':desktop:javafx'),
+           project(':server:admin-server'),
+           project(':server:file-server'),
+           project(':server:beta-server'),
+           project(':api')]) {
 
-group = 'ru.fullrest.mfr'
-
-subprojects {
     apply plugin: 'java'
+    apply plugin: 'idea'
+
+    group = 'ru.fullrest.mfr'
+
+    idea {
+        module {
+            downloadJavadoc = true
+            downloadSources = true
+        }
+    }
+
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
 
     ext {
-        lombokVersion = '1.18.6'
         apacheCommonVersion = '1.3.2'
-        jacksonVersion = '2.9.8'
+        jacksonVersion = '2.11.1'
+        kotlinVersion = '1.3.72'
+        kotlinCoroutinesVersion = '1.3.7'
+        springBootVersion = '2.3.0.RELEASE'
+        springDependencyManagementVerson = '1.0.9.RELEASE'
+        liquidbaseVersion = '3.10.1'
+        lombokVersion = '5.1.0'
+        jjwtVersion = '0.11.2'
+        telegramBotVersion = '4.9'
     }
 
     repositories {
         mavenCentral()
     }
 
-    dependencies {
-        //	lombok
-        compileOnly("org.projectlombok:lombok:$lombokVersion")
-        annotationProcessor("org.projectlombok:lombok:$lombokVersion")
-    }
-
     tasks.withType(JavaCompile) {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-}
 
-wrapper {
-    gradleVersion = '5.2.1'
+    wrapper {
+        gradleVersion = '6.4.1'
+    }
 }

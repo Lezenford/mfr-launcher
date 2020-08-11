@@ -1,6 +1,7 @@
 .gradle
 */build/
-!gradle/wrapper/gradle-wrapper.jar
+build/
+gradle
 *.log
 /server/download/
 
@@ -30,3 +31,4 @@
 ### Project DB ###
 *.db
 /logs/
+*.gz

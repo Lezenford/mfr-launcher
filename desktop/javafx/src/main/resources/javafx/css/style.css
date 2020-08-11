@@ -1,0 +1,1952 @@
+@font-face {
+    font-family: "Magic Cards";
+    src: url(font/MagicCardsRussian.ttf) format('truetype');
+}
+
+* {
+    -fx-font-family: "Magic Cards", Helvetica, sans-serif;
+    -fx-text-fill: #ffffff;
+}
+
+.text-area,
+.text-area .content,
+.text-area .viewport,
+.text-area .text {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-wrap-text: true;
+}
+
+.launcherWindow {
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.launcherWindow.default {
+    -fx-min-width: 838px;
+    -fx-min-height: 707px;
+    -fx-pref-width: 838px;
+    -fx-pref-height: 707px;
+    -fx-font-size: 16px;
+}
+
+.launcherWindow.default .launcherShadow {
+    -fx-background-image: url(images/shadow2.png) top center no-repeat;
+    -fx-padding: 47px 0 96px;
+}
+
+.launcherWindow .launcherHeader {
+    -fx-min-height: 194px;
+    -fx-pref-height: 194px;
+    -fx-background-image: url(images/launcher_header.png);
+    -fx-background-position: top center;
+    -fx-background-repeat: no-repeat;
+}
+
+.launcherWindow.default .launcherFooter {
+    -fx-min-height: 72px;
+    -fx-pref-height: 72px;
+    -fx-background-image: url(images/launcher_footer2.png);
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: bottom center;
+}
+
+.launcherWindow .launcherWrap {
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: top center;
+}
+
+.launcherWindow.default .launcherWrap {
+    -fx-min-height: 516px;
+    -fx-pref-height: 516px;
+    -fx-padding: 77px 0 0 0;
+    -fx-background-image: url(images/bg_default.png);
+}
+
+.launcherWindow.start {
+    -fx-min-width: 838px;
+    -fx-pref-width: 838px;
+    -fx-min-height: 319px;
+    -fx-pref-height: 319px;
+}
+
+.launcherWindow.update {
+    -fx-min-width: 838px;
+    -fx-pref-width: 838px;
+    -fx-min-height: 484px;
+    -fx-pref-height: 484px;
+}
+
+.launcherWindow.start .launcherShadow,
+.launcherWindow.update .launcherShadow {
+    -fx-background-image: url(images/shadow.png);
+    -fx-background-position: top center;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 47px 0 20px 0;
+    -fx-min-width: 838px;
+    -fx-pref-width: 838px;
+    -fx-min-height: 319px;
+    -fx-pref-height: 319px;
+}
+
+.launcherWindow.start .launcherWrap {
+    -fx-min-height: 155px;
+    -fx-pref-height: 155px;
+    -fx-background-image: url(images/bg_start.png);
+}
+
+.launcherWindow.update .launcherWrap {
+    -fx-min-height: 360px;
+    -fx-pref-height: 360px;
+    -fx-padding: 91px 0 0 0;
+    -fx-background-image: url(images/bg_update.png);
+}
+
+.launcherWindow.start .launcherFooter,
+.launcherWindow.update .launcherFooter {
+    -fx-min-height: 81px;
+    -fx-pref-height: 81px;
+    -fx-background-image: url(images/launcher_footer.png);
+    -fx-background-position: bottom center;
+    -fx-background-repeat: no-repeat;
+}
+
+.launcherDialog {
+    -fx-alignment: center;
+    -fx-padding: 58px 0 0 0;
+}
+
+.launcherDialog .label {
+    -fx-font-size: 21px;
+}
+
+.launcherDialog .dialogChoice {
+    -fx-min-height: 79px;
+    -fx-pref-height: 79px;
+    -fx-min-width: 838px;
+    -fx-pref-width: 838px;
+    -fx-padding: 32px 0 0 0;
+    -fx-alignment: center;
+}
+
+.configWindow.mge {
+    -fx-min-height: 420px;
+    -fx-pref-height: 420px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.openmw {
+    -fx-min-height: 360px;
+    -fx-pref-height: 360px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.gratitude {
+    -fx-min-height: 550px;
+    -fx-pref-height: 550px;
+    -fx-min-width: 536px;
+    -fx-pref-width: 536px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.config {
+    -fx-min-height: 622px;
+    -fx-pref-height: 622px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.editor {
+    -fx-min-height: 779px;
+    -fx-pref-height: 779px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.insert-key {
+    -fx-min-height: 180px;
+    -fx-pref-height: 180px;
+    -fx-min-width: 536px;
+    -fx-pref-width: 536px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.editor.field {
+    -fx-min-height: 105px;
+    -fx-pref-height: 105px;
+    -fx-min-width: 400px;
+    -fx-pref-width: 400px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.progress,
+.configWindow.alert {
+    -fx-min-height: 250px;
+    -fx-pref-height: 250px;
+    -fx-min-width: 367px;
+    -fx-pref-width: 367px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow.mge .configWindowContainer {
+    -fx-min-height: 370px;
+    -fx-pref-height: 370px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+}
+
+.configWindow.openmw .configWindowContainer {
+    -fx-min-height: 300px;
+    -fx-pref-height: 300px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+}
+
+.configWindow.gratitude .configWindowContainer {
+    -fx-min-height: 480px;
+    -fx-pref-height: 480px;
+    -fx-min-width: 536px;
+    -fx-pref-width: 536px;
+}
+
+.configWindow.insert-key .configWindowContainer {
+    -fx-min-height: 130px;
+    -fx-pref-height: 130px;
+    -fx-min-width: 536px;
+    -fx-pref-width: 536px;
+}
+
+.configWindow.config .configWindowContainer {
+    -fx-min-height: 572px;
+    -fx-pref-height: 572px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+}
+
+.configWindow.editor .configWindowContainer {
+    -fx-min-height: 752px;
+    -fx-pref-height: 752px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+}
+
+.configWindow.editor.field .configWindowContainer {
+    -fx-min-height: 55px;
+    -fx-pref-height: 55px;
+    -fx-min-width: 400px;
+    -fx-pref-width: 400px;
+}
+
+.configWindow.mge .configWindowContainer .configBody.in,
+.configWindow.mge .configWindowContainer .configBody.out {
+    -fx-min-height: 370px;
+    -fx-pref-height: 370px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+}
+
+.configWindow.openmw .configWindowContainer .configBody.in,
+.configWindow.openmw .configWindowContainer .configBody.out {
+    -fx-min-height: 300px;
+    -fx-pref-height: 300px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+}
+
+.configWindow.gratitude .configWindowContainer .configBody.in,
+.configWindow.gratitude .configWindowContainer .configBody.out {
+    -fx-min-height: 480px;
+    -fx-pref-height: 480px;
+    -fx-min-width: 536px;
+    -fx-pref-width: 536px;
+}
+
+.configWindow.insert-key .configWindowContainer .configBody.in,
+.configWindow.insert-key .configWindowContainer .configBody.out {
+    -fx-min-height: 130px;
+    -fx-pref-height: 130px;
+    -fx-min-width: 536px;
+    -fx-pref-width: 536px;
+}
+
+.configWindow.config .configWindowContainer .configBody.in,
+.configWindow.config .configWindowContainer .configBody.out {
+    -fx-min-height: 572px;
+    -fx-pref-height: 572px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+}
+
+.configWindow.editor .configWindowContainer .configBody.in.top,
+.configWindow.editor .configWindowContainer .configBody.out.top {
+    -fx-min-height: 577px;
+    -fx-pref-height: 577px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+}
+
+.configWindow.editor.field .configWindowContainer .configBody.in,
+.configWindow.editor.field .configWindowContainer .configBody.out {
+    -fx-min-height: 55px;
+    -fx-pref-height: 55px;
+    -fx-min-width: 400px;
+    -fx-pref-width: 400px;
+}
+
+.configWindow.editor .configWindowContainer .configBody.in.bottom,
+.configWindow.editor .configWindowContainer .configBody.out.bottom {
+    -fx-min-height: 2px;
+    -fx-max-height: 150px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+    -fx-padding: 0;
+}
+
+.configWindow.progress .configWindowContainer .configBody.in,
+.configWindow.alert .configWindowContainer .configBody.in,
+.configWindow.progress .configWindowContainer .configBody.out,
+.configWindow.alert .configWindowContainer .configBody.out {
+    -fx-min-height: 208px;
+    -fx-pref-height: 208px;
+    -fx-min-width: 367px;
+    -fx-pref-width: 367px;
+}
+
+.configWindow .configWindowContainer .configBody.out {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-background-image: url(images/borders/top.png),
+    url(images/borders/right.png),
+    url(images/borders/bottom.png),
+    url(images/borders/left.png);
+    -fx-background-repeat: repeat-x, repeat-y, repeat-x, repeat-y;
+    -fx-background-position: top, right, bottom, left;
+}
+
+.configWindow .configWindowContainer .configBody.in {
+    -fx-padding: 13px 10px 10px 10px;
+    -fx-background-image: url(images/borders/rt.png),
+    url(images/borders/rb.png),
+    url(images/borders/lb.png),
+    url(images/borders/lt.png);
+    -fx-background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    -fx-background-position: top right, bottom right, bottom left, top left;
+}
+
+.configWindow.editor.field .configWindowContainer .configBody.in {
+    -fx-padding: 5px 10px 10px 10px;
+}
+
+.configWindow.editor.field .configWindowContainer .configBody.in .text-field {
+    -fx-min-width: 350px;
+    -fx-pref-width: 350px;
+}
+
+.configWindow .configWindowContainer .configBody.out.top {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-background-image: url(images/borders/top.png),
+    url(images/borders/right.png),
+    url(images/borders/left.png);
+    -fx-background-repeat: repeat-x, repeat-y, repeat-y;
+    -fx-background-position: top, right, left;
+}
+
+.configWindow .configWindowContainer .configBody.in.top {
+    -fx-padding: 3px 3px 3px 3px;
+    -fx-background-image: url(images/borders/rt.png),
+    url(images/borders/lt.png);
+    -fx-background-repeat: no-repeat, no-repeat;
+    -fx-background-position: top right, top left;
+}
+
+.configWindow .configWindowContainer .configBody.out.bottom {
+    -fx-background-color: rgba(0, 0, 0, 0.9);
+    -fx-background-image: url(images/borders/right.png),
+    url(images/borders/bottom.png),
+    url(images/borders/left.png);
+    -fx-background-repeat: repeat-y, repeat-x, repeat-y;
+    -fx-background-position: right, bottom, left;
+}
+
+.configWindow .configWindowContainer .configBody.in.bottom {
+    -fx-background-image: url(images/borders/rb.png),
+    url(images/borders/lb.png);
+    -fx-background-repeat: no-repeat, no-repeat;
+    -fx-background-position: bottom right, bottom left;
+}
+
+.configWindow.editor .configWindowContainer .configBody.in.bottom .wrapper {
+    -fx-min-height: 177px;
+    -fx-pref-height: 177px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-background-image: url(images/config_bg.png);
+    -fx-background-repeat: repeat-x;
+}
+
+.configWindow.editor .configWindowContainer .configBody.in.bottom .wrapper .header {
+    -fx-min-height: 0px;
+    -fx-pref-height: 1px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-background-color: #616f81;
+}
+
+.configWindow.editor .configWindowContainer .configBody.in.bottom .wrapper .body {
+    -fx-background-color: linear-gradient(to bottom, rgba(35, 54, 83, 0.75) 0%, rgba(35, 54, 83, 0) 50%);
+    -fx-min-height: 0px;
+    -fx-pref-height: 146px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-font-size: 16px;
+}
+
+.configWindow.editor .line {
+    -fx-min-height: 29px;
+    -fx-pref-height: 29px;
+    -fx-min-width: 680px;
+    -fx-pref-width: 680px;
+    -fx-padding: -2px, 0px, 0, 0px;
+}
+
+.configWindow.editor .line .left,
+.configWindow.editor .line .middle {
+    -fx-min-height: 25px;
+    -fx-pref-height: 25px;
+    -fx-min-width: 292px;
+    -fx-pref-width: 292px;
+    -fx-alignment: center left;
+}
+
+.configWindow.editor .line .right {
+    -fx-min-height: 25px;
+    -fx-pref-height: 25px;
+    -fx-min-width: 110px;
+    -fx-pref-width: 110px;
+    -fx-alignment: center left;
+}
+
+.globSep {
+    -fx-min-height: 1px;
+    -fx-pref-height: 1px;
+}
+
+.globSep.light.red {
+    -fx-background-color: linear-gradient(to right, rgba(233, 193, 116, 0.05) 0%, rgba(233, 193, 116, 1) 50%, rgba(233, 193, 116, 0.05) 100%);
+}
+
+.globSep.dark.red {
+    -fx-background-color: linear-gradient(to right, rgba(234, 65, 47, 0.05) 0%, rgba(234, 65, 47, 1) 50%, rgba(234, 65, 47, 0.05) 100%);
+}
+
+.globSep {
+    -fx-min-height: 1px;
+    -fx-pref-height: 1px;
+}
+
+.globSep.light.blue {
+    -fx-background-color: linear-gradient(to right, rgba(127, 120, 233, 0.05) 0%, rgba(127, 120, 233, 1) 50%, rgba(127, 120, 233, 0.05) 100%);
+}
+
+.globSep.dark.blue {
+    -fx-background-color: linear-gradient(to right, rgba(51, 142, 244, 0.05) 0%, rgba(51, 142, 244, 1) 50%, rgba(51, 142, 244, 0.05) 100%);
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu {
+    fx-min-height: 434px;
+    -fx-pref-height: 434px;
+    -fx-min-width: 228px;
+    -fx-pref-width: 228px;
+    -fx-padding: 32px 0 0 0;
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem {
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem .toggle-button {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 228px;
+    -fx-pref-width: 228px;
+    -fx-background-color: transparent;
+    -fx-text-alignment: center;
+    -fx-text-fill: #d6c6ac;
+    -fx-effect: dropshadow(three-pass-box, rgba(40, 32, 24, 0.45), 2, 1, 0, 1);
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem .startButton:hover,
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem .toggle-button:hover,
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem .toggle-button:selected {
+    -fx-background-image: url(images/mge_hover.png);
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem .startButton:hover,
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem .button:pressed {
+    -fx-opacity: 0.7;
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem .startButton {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 228px;
+    -fx-pref-width: 228px;
+    -fx-background-color: transparent;
+    -fx-text-alignment: center;
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu .sep {
+    -fx-min-height: 43px;
+    -fx-pref-height: 43px;
+    -fx-background-image: url(images/mge_sep.png);
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+.configWindow .configWindowContainer .configBody .mgeMenu .menuItem.list {
+    -fx-min-height: 100px;
+    -fx-pref-height: 100px;
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+}
+
+.configWindow .configWindowContainer .configBody .gratitude {
+    -fx-min-height: 420px;
+    -fx-pref-height: 420px;
+    -fx-min-width: 536px;
+    -fx-pref-width: 536px;
+    -fx-padding: 12px 0 0 0;
+}
+
+.configWindow .configWindowContainer .configBody .insert-key {
+    -fx-min-height: 115px;
+    -fx-pref-height: 115px;
+    -fx-min-width: 506px;
+    -fx-pref-width: 506px;
+    -fx-padding: 12px 0 0 0;
+}
+
+.configWindow .configWindowContainer .configBody .insert-key .menuItem,
+.configWindow .configWindowContainer .configBody .gratitude .menuItem {
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+    -fx-padding: 10px 0 0px 0;
+}
+
+.configWindow .configWindowContainer .configBody .insert-key .text-field {
+    -fx-alignment: center;
+    -fx-background-color: linear-gradient(to right, rgba(170, 55, 43, 0) 0%, rgba(170, 55, 43, 0.35) 100%);
+}
+
+.configWindow .configWindowContainer .configBody .insert-key .menuItem.bright .label,
+.configWindow .configWindowContainer .configBody .gratitude .menuItem.bright .label {
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+}
+
+.configWindow .configWindowContainer .configBody .gratitude .menuItem.simple .text-area,
+.configWindow .configWindowContainer .configBody .gratitude .menuItem.simple .text-area *,
+.configWindow .configWindowContainer .configBody .gratitude .menuItem.simple .label {
+    -fx-text-alignment: center;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+.configWindow .configWindowContainer .configBody .subHeader {
+    -fx-min-height: 85px;
+    -fx-pref-height: 85px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-alignment: center;
+    -fx-padding: 20px 21px 20px 21px;
+    -fx-background-color: linear-gradient(rgba(50, 5, 0, 1) 0%, rgba(50, 5, 0, 0) 100%);
+}
+
+.configWindow .configWindowContainer .configBody .subHeader.blue {
+    -fx-min-height: 85px;
+    -fx-pref-height: 85px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-alignment: center;
+    -fx-padding: 33px 12px 16px 12px;
+    -fx-background-color: linear-gradient(rgba(42, 98, 170, 0.35) 0%, rgba(42, 98, 170, 0) 50%, rgba(42, 98, 170, 0.35) 100%);
+}
+
+.configWindow .configWindowContainer .configBody .subHeader.blue .wrapper {
+    -fx-min-width: 349px;
+    -fx-pref-width: 349px;
+    -fx-font-size: 19px;
+}
+
+.configWindow.editor .text-field,
+.configWindow.editor .combo-box-popup .list-cell {
+    -fx-background-color: linear-gradient(to right, rgba(7, 62, 93, 0.85) 0%, rgba(7, 62, 93, 0.25) 100%);
+    -fx-font-size: 16px;
+}
+
+.configWindow.editor .combo-box-popup .list-cell:hover,
+.configWindow.editor .combo-box-popup .list-cell:selected:focused {
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 255, 1), 10, 0.2, 0, 0);
+}
+
+.configWindow.editor .text-field {
+    -fx-min-width: 284px;
+    -fx-pref-width: 284px;
+    -fx-min-height: 35px;
+    -fx-pref-height: 35px;
+    -fx-background-insets: 6px 0;
+}
+
+.configWindow.editor .listView.short {
+    -fx-background-color: transparent;
+    -fx-min-height: 59px;
+    -fx-pref-height: 59px;
+    -fx-min-width: 698px;
+    -fx-pref-width: 698px;
+}
+
+.configWindow.editor .listView {
+    -fx-background-color: transparent;
+    -fx-min-height: 146px;
+    -fx-pref-height: 146px;
+    -fx-min-width: 698px;
+    -fx-pref-width: 698px;
+}
+
+.configWindow.editor .combo-box-popup > .list-view {
+    -fx-min-width: 168px;
+    -fx-pref-width: 168px;
+    -fx-min-height: 1px;
+    -fx-max-height: 200px;
+    -fx-font-size: 16px;
+}
+
+.configWindow.editor .combo-box-popup > .list-view > .list-cell {
+    -fx-background-color: linear-gradient(to right, rgba(7, 62, 93, 0.85) 0%, rgba(7, 62, 93, 0.25) 100%);
+    -fx-background-insets: 6px 0;
+}
+
+.configWindow.editor .combo-box {
+    -fx-min-width: 168px;
+    -fx-pref-width: 168px;
+    -fx-min-height: 35px;
+    -fx-pref-height: 35px;
+    -fx-font-size: 16px;
+    -fx-background-color: linear-gradient(to right, rgba(7, 62, 93, 0.85) 0%, rgba(7, 62, 93, 0.25) 100%);
+    -fx-background-insets: 6px 0;
+}
+
+.configWindow.editor .combo-box-popup,
+.configWindow.editor .combo-box-popup .list-view,
+.configWindow.editor .listView .list-cell:selected,
+.configWindow.editor .listView .list-cell:selected:focused,
+.configWindow.editor .listView .list-cell {
+    -fx-background-color: transparent;
+}
+
+.configWindow.editor .combo-box .arrow,
+.configWindow.editor .combo-box .arrow-button {
+    -fx-min-width: 0px;
+    -fx-pref-width: 0px;
+    -fx-background-color: transparent;
+}
+
+
+.configWindow .configWindowContainer .configBody .redHeader {
+    -fx-min-height: 106px;
+    -fx-pref-height: 106px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-alignment: center;
+    -fx-padding: 30px 48px 20px 48px;
+    -fx-background-color: linear-gradient(rgba(50, 5, 0, 1) 0%, rgba(50, 5, 0, 0) 100%);
+}
+
+.redHeader .viewPort,
+.redHeader .text-area,
+.redHeader .viewPort,
+.redHeader .content {
+    -fx-min-width: 626px;
+    -fx-pref-width: 626px;
+    -fx-min-height: 60px;
+    -fx-pref-height: 60px;
+    -fx-font-size: 19px;
+
+}
+
+.redHeader .text {
+    -fx-text-alignment: center;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap {
+    -fx-min-height: 481px;
+    -fx-pref-height: 481px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-padding: 3px 0 0 3px;
+}
+
+.configWindow .configWindowContainer .configBody.in.top .cellWrap {
+    -fx-min-height: 487px;
+    -fx-pref-height: 487px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-padding: 12px, 12px, 12px, 12px;
+}
+
+.configWindow .configWindowContainer .configBody.in.top .cellWrap .topWrap {
+    -fx-min-height: 195px;
+    -fx-pref-height: 195px;
+    -fx-min-width: 698px;
+    -fx-pref-width: 698px;
+    -fx-font-size: 16px;
+}
+
+.configWindow .configWindowContainer .configBody.in.top .cellWrap .bottomWrap {
+    -fx-min-height: 276px;
+    -fx-pref-height: 276px;
+    -fx-min-width: 722px;
+    -fx-pref-width: 722px;
+    -fx-background-image: url(images/config_bg.png);
+    -fx-background-repeat: repeat-y;
+    -fx-padding: 0, 12px;
+    -fx-font-size: 16px;
+}
+
+.configWindow .configWindowContainer .configBody.in.top .cellWrap .bottomWrap .buttonWrap {
+    -fx-alignment: center;
+}
+
+.configWindow.editor .topWrap .left {
+    -fx-min-width: 470px;
+    -fx-pref-width: 470px;
+}
+
+.configWindow.editor .topWrap .middle {
+    -fx-min-width: 173px;
+    -fx-pref-width: 173px;
+}
+
+.configWindow.editor .topWrap .right {
+    -fx-min-width: 40px;
+    -fx-pref-width: 40px;
+    -fx-alignment: center center;
+    -fx-padding: 60px, 0, 0, 0;
+}
+
+.configWindow.editor .configWindowContainer .configBody.in.top .cellWrap .topWrap .left .text-area {
+    -fx-border-color: #9c7c5a;
+    -fx-min-width: 470px;
+    -fx-pref-width: 470px;
+    -fx-min-height: 175px;
+    -fx-pref-height: 175px;
+    -fx-padding: 5px;
+}
+
+.configWindow .configWindowContainer .configBody.in.top .cellWrap .topWrap .middle .image {
+    -fx-border-color: #9c7c5a;
+    -fx-min-width: 173px;
+    -fx-pref-width: 173px;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .leftList {
+    -fx-min-height: 481px;
+    -fx-pref-height: 481px;
+    -fx-min-width: 283px;
+    -fx-pref-width: 283px;
+    -fx-background-image: url(images/left_menu_bg.png);
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 20px, 0px, 0px, 30px;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .leftList .toggle-button {
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-min-width: 233px;
+    -fx-pref-width: 233px;
+    -fx-text-fill: #ffd7a3;
+    -fx-background-color: transparent;
+    -fx-font-size: 19px;
+    -fx-text-alignment: left center;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .leftList .toggle-button:hover,
+.configWindow .configWindowContainer .configBody .cellWrap .leftList .toggle-button:selected {
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .leftList .toggle-button:pressed {
+    -fx-opacity: 0.7;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList {
+    -fx-min-height: 481px;
+    -fx-pref-height: 481px;
+    -fx-min-width: 439px;
+    -fx-pref-width: 439px;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header {
+    -fx-min-height: 188px;
+    -fx-pref-height: 188px;
+    -fx-padding: 0, 10px, 0, 0;
+    -fx-alignment: center right;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(40, 32, 24, 0.45), 2, 1, 0, 1);
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .body {
+    -fx-min-height: 292px;
+    -fx-pref-height: 292px;
+    -fx-min-width: 439px;
+    -fx-pref-width: 439px;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .box .list-cell:selected,
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .box .list-cell:selected:focused,
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .box .list-cell {
+    -fx-background-color: transparent;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .box {
+    -fx-min-height: 170px;
+    -fx-pref-height: 270px;
+    -fx-max-height: 270px;
+    -fx-min-width: 213px;
+    -fx-pref-width: 213px;
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .radio-button {
+    -fx-min-height: 30px;
+    -fx-pref-height: 30px;
+    -fx-min-width: 140px;
+    -fx-pref-width: 140px;
+    -fx-text-fill: #ffd7a3;
+    -fx-background-color: transparent;
+    -fx-font-size: 16px;
+}
+
+.radio-button .radio {
+    -fx-background-color: transparent;
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .radio-button .dot {
+    -fx-min-height: 24px;
+    -fx-pref-height: 24px;
+    -fx-min-width: 24px;
+    -fx-pref-width: 24px;
+    -fx-background-position: center;
+    -fx-background-image: url(images/radioButtonDisable.png);
+}
+
+.configWindow .configWindowContainer .configBody .cellWrap .rightList .header .radio-button:selected .dot {
+    -fx-min-height: 24px;
+    -fx-pref-height: 24px;
+    -fx-min-width: 24px;
+    -fx-pref-width: 24px;
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-background-image: url(images/radioButtonEnable.png);
+}
+
+.configWindow .configWindowContainer .configBody .webWrap {
+    -fx-min-height: 572px;
+    -fx-pref-height: 572px;
+    -fx-min-width: 728px;
+    -fx-pref-width: 728px;
+    -fx-padding: 2px, 2px, 2px, 2px;
+}
+
+.redGradRight {
+    -fx-background-color: linear-gradient(to right, rgba(170, 55, 43, 0) 0%, rgba(170, 55, 43, 0.35) 100%);
+    -fx-padding: 0, 0, 0, 0;
+}
+
+.redGradRight .viewPort {
+    -fx-min-height: 75px;
+    -fx-pref-height: 75px;
+}
+
+.redGradRight .text-area,
+.redGradRight .text {
+    -fx-font-size: 16px;
+    -fx-text-alignment: right;
+}
+
+.configHeader {
+    -fx-min-height: 41px;
+    -fx-pref-height: 41px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+    -fx-alignment: center;
+}
+
+.configHeader.red .label {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.configHeader.red .item.left {
+    -fx-min-height: 41px;
+    -fx-pref-height: 41px;
+    -fx-min-width: 35px;
+    -fx-pref-width: 35px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-image: url(images/headers/red_left.png);
+}
+
+.configHeader.red .item.right {
+    -fx-min-height: 41px;
+    -fx-pref-height: 41px;
+    -fx-min-width: 35px;
+    -fx-pref-width: 35px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-image: url(images/headers/red_right.png);
+}
+
+.configHeader.red .item.center {
+    -fx-min-height: 41px;
+    -fx-pref-height: 41px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-padding: 5px 0 0 0;
+    -fx-background-image: url(images/headers/red_center.png);
+}
+
+.configHeader.blue .label {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ceeafa;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 255, 1), 10, 0.2, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.configHeader.blue .item.left {
+    -fx-min-height: 41px;
+    -fx-pref-height: 41px;
+    -fx-min-width: 35px;
+    -fx-pref-width: 35px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-image: url(images/headers/blue_left.png);
+}
+
+.configHeader.blue .item.right {
+    -fx-min-height: 41px;
+    -fx-pref-height: 41px;
+    -fx-min-width: 35px;
+    -fx-pref-width: 35px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-image: url(images/headers/blue_right.png);
+}
+
+.configHeader.blue .item.center {
+    -fx-min-height: 41px;
+    -fx-pref-height: 41px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-padding: 5px 0 0 0;
+    -fx-background-image: url(images/headers/blue_center.png);
+}
+
+.configWindow .configWindowContainer .configFooter {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+    -fx-alignment: center;
+}
+
+.configWindow.editor.field .configWindowContainer .configFooter {
+    -fx-min-height: 35px;
+    -fx-pref-height: 35px;
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+    -fx-alignment: center;
+}
+
+.button42 .buttonShadow {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 42px;
+    -fx-pref-width: 42px;
+    -fx-background-image: url(images/buttons/s42_shadow.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button42 .buttonBackground {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 42px;
+    -fx-pref-width: 42px;
+    -fx-background-image: url(images/buttons/s42_blue.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button42 .buttonHover {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 42px;
+    -fx-pref-width: 42px;
+}
+
+.button42 .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s42_blue_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button42 .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.button42 .button {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 42px;
+    -fx-pref-width: 42px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 192, 255, 0.75), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.button59 .buttonShadow {
+    -fx-min-height: 33px;
+    -fx-pref-height: 33px;
+    -fx-min-width: 59px;
+    -fx-pref-width: 59px;
+    -fx-background-image: url(images/buttons/s59_shadow.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button59 .buttonBackground {
+    -fx-min-height: 33px;
+    -fx-pref-height: 33px;
+    -fx-min-width: 59px;
+    -fx-pref-width: 59px;
+    -fx-background-image: url(images/buttons/s59_blue.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button59.file .buttonBackground {
+    -fx-min-height: 33px;
+    -fx-pref-height: 33px;
+    -fx-min-width: 59px;
+    -fx-pref-width: 59px;
+    -fx-background-image: url(images/buttons/s59_blue_file.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button59.folder .buttonBackground {
+    -fx-min-height: 33px;
+    -fx-pref-height: 33px;
+    -fx-min-width: 59px;
+    -fx-pref-width: 59px;
+    -fx-background-image: url(images/buttons/s59_blue_folder.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button59 .buttonHover {
+    -fx-min-height: 33px;
+    -fx-pref-height: 33px;
+    -fx-min-width: 59px;
+    -fx-pref-width: 59px;
+}
+
+.button59 .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s59_blue_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button59.file .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s59_blue_file_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button59.folder .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s59_blue_folder_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button59 .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.button59 .button {
+    -fx-min-height: 33px;
+    -fx-pref-height: 33px;
+    -fx-min-width: 59px;
+    -fx-pref-width: 59px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 192, 255, 0.75), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.button125 .buttonShadow {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 125px;
+    -fx-pref-width: 125px;
+    -fx-background-image: url(images/buttons/s125_shadow.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button125 .buttonBackground {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 125px;
+    -fx-pref-width: 125px;
+    -fx-background-image: url(images/buttons/s125_red.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button125 .buttonHover {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 125px;
+    -fx-pref-width: 125px;
+}
+
+.button125 .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s125_red_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button125 .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.button125 .button {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 125px;
+    -fx-pref-width: 125px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.button154 .buttonShadow {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 154px;
+    -fx-pref-width: 154px;
+    -fx-background-image: url(images/buttons/s154_shadow.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button154 .buttonBackground {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 154px;
+    -fx-pref-width: 154px;
+    -fx-background-image: url(images/buttons/s154_red.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button154 .buttonHover {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 154px;
+    -fx-pref-width: 154px;
+}
+
+.button154 .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s154_red_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button154 .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.button154 .button {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 154px;
+    -fx-pref-width: 154px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.button184 .buttonShadow {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 184px;
+    -fx-pref-width: 184px;
+    -fx-background-image: url(images/buttons/s184_shadow.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button184 .buttonBackground {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 184px;
+    -fx-pref-width: 184px;
+    -fx-background-image: url(images/buttons/s184_red.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button184 .buttonHover {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 184px;
+    -fx-pref-width: 184px;
+}
+
+.button184 .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s184_red_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button184 .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.button184 .button {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 184px;
+    -fx-pref-width: 184px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.button184.blue .buttonBackground {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 184px;
+    -fx-pref-width: 184px;
+    -fx-background-image: url(images/buttons/s184_blue.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button184.blue .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s184_blue_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button184 .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.button184.blue .button {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 184px;
+    -fx-pref-width: 184px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 255, 1), 10, 0.2, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.button229 .buttonShadow {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 229px;
+    -fx-pref-width: 229px;
+    -fx-background-image: url(images/buttons/s229_shadow.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button229 .buttonBackground {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 229px;
+    -fx-pref-width: 229px;
+    -fx-background-image: url(images/buttons/s229_brown.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button229 .buttonHover {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 229px;
+    -fx-pref-width: 229px;
+}
+
+.button229 .buttonHover:hover {
+    -fx-background-image: url(images/buttons/s229_brown_hover.png);
+    -fx-background-repeat: no-repeat;
+}
+
+.button229 .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.button229 .button {
+    -fx-min-height: 47px;
+    -fx-pref-height: 47px;
+    -fx-min-width: 229px;
+    -fx-pref-width: 229px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 19px;
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 4px 0;
+}
+
+.launcherHeart {
+    top: 37px;
+    left: 236px;
+    -fx-min-width: 357px;
+    -fx-min-height: 327px;
+    -fx-pref-width: 357px;
+    -fx-pref-height: 327px;
+    -fx-background-image: url(images/launcher_heart.png);
+    -fx-background-position: top center;
+    -fx-background-repeat: no-repeat;
+}
+
+.launcherMenuWrap {
+    -fx-min-width: 838px;
+    -fx-min-height: 302px;
+    -fx-pref-width: 838px;
+    -fx-pref-height: 302px;
+    -fx-padding: 30px 0 0 0;
+    -fx-font-size: 21px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+.launcherMenuWrap .menuCell {
+    -fx-min-width: 200px;
+    -fx-pref-width: 200px;
+}
+
+.launcherMenuWrap .menuCell .cellList {
+    -fx-min-width: 200px;
+    -fx-pref-width: 200px;
+}
+
+.launcherMenuWrap .menuCell.center {
+    -fx-padding: 55px 0 0 0;
+}
+
+.launcherMenuWrap .menuCell.center .beta {
+    -fx-min-height: 34px;
+    -fx-max-height: 34px;
+    -fx-min-width: 111px;
+    -fx-max-width: 111px;
+    -fx-background-image: url(images/beta.png);
+}
+
+.launcherMenuWrap .cellHead {
+    -fx-min-height: 74px;
+    -fx-pref-height: 74px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: top center;
+}
+
+.launcherMenuWrap .menuCell .cellHead .leftLabel {
+    -fx-min-height: 74px;
+    -fx-pref-height: 74px;
+    -fx-min-width: 210px;
+    -fx-pref-width: 210px;
+    -fx-background-image: url(images/text/classic.png);
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+.launcherMenuWrap .menuCell .cellHead .rightLabel {
+    -fx-min-height: 74px;
+    -fx-pref-height: 74px;
+    -fx-min-width: 210px;
+    -fx-pref-width: 210px;
+    -fx-background-image: url(images/text/openmw.png);
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+.launcherMenuWrap .itemHover {
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: top center;
+    -fx-alignment: center;
+    -fx-opacity: 1.0;
+}
+
+.launcherMenuWrap .itemHover .button {
+    -fx-min-width: 254px;
+    -fx-pref-width: 254px;
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #d6c6ac;
+    -fx-effect: dropshadow(three-pass-box, rgba(40, 32, 24, 0.45), 2, 1, 0, 1);
+    -fx-text-alignment: center;
+    -fx-font-size: 21px;
+    -fx-alignment: center;
+
+}
+
+.launcherMenuWrap .itemHover:hover {
+    -fx-background-image: url(images/launcher_menu_hover_40p.png);
+}
+
+.launcherMenuWrap .itemHover .button:pressed {
+    -fx-opacity: 0.7;
+}
+
+.launcherFooterWrap {
+    -fx-min-height: 90px;
+    -fx-pref-height: 90px;
+}
+
+.launcherFooterWrap .footerTitles {
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-padding: 0 24px 0 24px;
+}
+
+.launcherFooterWrap .footerTitles .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+}
+
+.launcherFooterWrap .settingsButton .buttonHover {
+    -fx-min-width: 292px;
+    -fx-pref-width: 292px;
+    -fx-min-height: 94px;
+    -fx-pref-height: 94px;
+}
+
+.launcherFooterWrap .settingsButton {
+    -fx-min-height: 60px;
+    -fx-pref-height: 60px;
+    -fx-padding: 0 0 0 24px;
+    -fx-cursor: pointer;
+}
+
+.launcherFooterWrap .settingsButton .buttonHover .button {
+    -fx-min-height: 60px;
+    -fx-pref-height: 60px;
+    -fx-min-width: 172px;
+    -fx-pref-width: 172px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-background-image: url(images/text/mfr_settings.png);
+}
+
+.launcherFooterWrap .settingsButton .buttonHover .button:pressed {
+    -fx-opacity: 0.7;
+}
+
+.launcherFooterWrap .settingsButton .buttonHover:hover {
+    -fx-background-image: url(images/launcher_footer_left_hover.png);
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: bottom left;
+}
+
+.launcherFooterWrap .settingsButton .buttonHover:pressed {
+    -fx-opacity: 0.7;
+}
+
+.launcherFooterWrap .pathSection {
+    -fx-min-height: 60px;
+    -fx-pref-height: 60px;
+    -fx-min-width: 238px;
+    -fx-pref-width: 238px;
+    -fx-cursor: pointer;
+}
+
+.launcherFooterWrap .pathSection .pathIcon {
+    -fx-min-width: 21px;
+    -fx-pref-width: 21px;
+    -fx-min-height: 21px;
+    -fx-pref-height: 21px;
+    -fx-background-image: url(images/search.png);
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+.launcherFooterWrap .pathSection .pathText {
+    -fx-font-size: 16px;
+    -fx-padding: 0 14px 0 47px;
+    -fx-min-width: 220px;
+    -fx-pref-width: 220px;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: linear-gradient(from 0% 0% to 25% 25%, rgba(0, 0, 0, 0), black, black 100%);
+    text-align: right;
+}
+
+.launcherFooterWrap .updateButton {
+    -fx-min-width: 275px;
+    -fx-pref-width: 275px;
+    -fx-min-height: 70px;
+    -fx-pref-height: 70px;
+    -fx-background-image: url(images/button_update.png);
+    -fx-background-position: top center;
+    -fx-background-repeat: no-repeat;
+    -fx-cursor: pointer;
+    -fx-text-alignment: center;
+    -fx-font-size: 21px;
+    -fx-text-fill: #ffd7a3;
+}
+
+.launcherFooterWrap .updateButton .buttonHover {
+    -fx-min-height: 70px;
+    -fx-pref-height: 70px;
+}
+
+.launcherFooterWrap .updateButton .buttonHover .button {
+    -fx-min-height: 64px;
+    -fx-pref-height: 64px;
+    -fx-min-width: 275px;
+    -fx-pref-width: 275px;
+    -fx-padding: 0 32px 0 0;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #ffd7a3;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+}
+
+.launcherFooterWrap .updateButton .refreshIcon {
+    -fx-min-width: 57px;
+    -fx-pref-width: 57px;
+    -fx-min-height: 57px;
+    -fx-pref-height: 57px;
+    -fx-background-image: url(images/refresh.png);
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+.launcherFooterWrap .updateButton .buttonHover:hover {
+    -fx-background-image: url(images/button_update_hover.png);
+}
+
+.launcherFooterWrap .updateButton .buttonHover:pressed {
+    -fx-background-image: null;
+}
+
+.launcherFooterWrap .updateButton .buttonLava {
+    -fx-min-height: 70px;
+    -fx-pref-height: 70px;
+}
+
+.launcherFooterWrap .updateButton.found .buttonLava {
+    -fx-background-image: url(images/button_update_lava.png);
+}
+
+.closeHover {
+    -fx-min-height: 64px;
+    -fx-pref-height: 64px;
+    -fx-min-width: 64px;
+    -fx-pref-width: 64px;
+    -fx-background-repeat: no-repeat;
+}
+
+.closeHover .closeCross {
+    -fx-min-height: 64px;
+    -fx-pref-height: 64px;
+    -fx-min-width: 64px;
+    -fx-pref-width: 64px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-background-image: url(images/close.png);
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.closeHover:hover {
+    -fx-background-image: url(images/close_hover.png);
+}
+
+.closeHover .closeCross:pressed {
+    -fx-opacity: 0.7;
+}
+
+.configWindow.alert .information {
+    -fx-min-height: 153px;
+    -fx-pref-height: 153px;
+    -fx-min-width: 341px;
+    -fx-pref-width: 341px;
+    -fx-alignment: center;
+}
+
+.configWindow.alert .information .description,
+.configWindow.alert .information .description .content,
+.configWindow.alert .information .description .viewport,
+.configWindow.alert .information .description .text {
+    -fx-padding: 10px, 0, 0, 0;
+    -fx-font-size: 16px;
+    -fx-text-alignment: center;
+}
+
+.configWindow.progress .information {
+    -fx-min-height: 51px;
+    -fx-pref-height: 51px;
+    -fx-min-width: 341px;
+    -fx-pref-width: 341px;
+    -fx-alignment: center;
+}
+
+.configWindow.progress .information .description {
+    -fx-font-size: 16px;
+}
+
+.configWindow.progress .information .progress {
+    -fx-font-size: 24px;
+    -fx-text-fill: #ffb975;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+}
+
+.progressBarWrapper {
+    -fx-min-height: 62px;
+    -fx-pref-height: 62px;
+    -fx-min-width: 340px;
+    -fx-pref-width: 340px;
+}
+
+.progressBarWrapper.empty,
+.progressBarWrapper.enable .image {
+    -fx-background-image: url(images/bar_border_enable.png);
+}
+
+.progressBarWrapper.disable {
+    -fx-background-image: url(images/bar_border_disable.png);
+}
+
+.progressBarWrapper.full {
+    -fx-background-image: url(images/bar_border_full.png);
+}
+
+.progressBarWrapper.enable .start {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 32px;
+    -fx-pref-width: 32px;
+    -fx-background-image: url(images/bar_start.png);
+    -fx-background-position: left;
+    -fx-background-repeat: no-repeat;
+}
+
+.progressBarWrapper.enable .progressBar {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 340px;
+    -fx-pref-width: 340px;
+    -fx-max-width: 340px;
+}
+
+.progressBarWrapper.enable .middle {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 0px;
+    -fx-max-width: 250px;
+    -fx-background-image: url(images/bar_texture.png);
+    -fx-background-position: left;
+    -fx-background-repeat: repeat-x;
+}
+
+.progressBarWrapper.enable .end {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 10px;
+    -fx-max-width: 30px;
+    -fx-background-image: url(images/bar_end.png);
+    -fx-background-position: left;
+    -fx-background-repeat: no-repeat;
+}
+
+.uploadProgressBarWrapper {
+    -fx-min-height: 200px;
+    -fx-pref-height: 200px;
+    -fx-min-width: 791px;
+    -fx-pref-width: 791px;
+}
+
+.uploadProgressBarWrapper.empty .image,
+.uploadProgressBarWrapper.enable .image {
+    -fx-background-image: url(images/loading_border_enable.png);
+}
+
+.uploadProgressBarWrapper.empty,
+.uploadProgressBarWrapper.enable,
+.uploadProgressBarWrapper.full {
+    -fx-background-image: url(images/loading_circle.png);
+}
+
+.uploadProgressBarWrapper.empty,
+.uploadProgressBarWrapper.enable,
+.uploadProgressBarWrapper.full {
+    -fx-background-image: url(images/loading_circle.png);
+}
+
+.uploadProgressBarWrapper.disable {
+    -fx-background-image: url(images/loading_circle_failed.png);
+}
+
+.uploadProgressBarWrapper .image {
+    -fx-min-height: 200px;
+    -fx-pref-height: 200px;
+    -fx-min-width: 791px;
+    -fx-pref-width: 791px;
+}
+
+.uploadProgressBarWrapper .ellipse {
+    -fx-min-height: 42px;
+    -fx-pref-height: 42px;
+    -fx-min-width: 41px;
+    -fx-pref-width: 41px;
+    -fx-max-width: 41px;
+    -fx-alignment: center;
+}
+
+.uploadProgressBarWrapper.enable .ellipse,
+.uploadProgressBarWrapper.empty .ellipse,
+.uploadProgressBarWrapper.full .ellipse {
+    -fx-background-image: url(images/progress_ellipse.png);
+}
+
+.uploadProgressBarWrapper.disable .ellipse {
+    -fx-background-image: url(images/progress_ellipse_failed.png);
+}
+
+.uploadProgressBarWrapper .ellipse .label {
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 10, 0.8, 0, 0);
+    -fx-font-size: 16px;
+    -fx-text-fill: #ffb975;
+}
+
+.uploadProgressBarWrapper .comment {
+    -fx-min-height: 22px;
+    -fx-pref-height: 22px;
+    -fx-alignment: center;
+}
+
+.uploadProgressBarWrapper .comment .label {
+    -fx-font-size: 18px;
+}
+
+.uploadProgressBarWrapper .continueWrapper {
+    -fx-min-height: 76px;
+    -fx-pref-height: 76px;
+    -fx-alignment: center;
+}
+
+.uploadProgressBarWrapper .continueWrapper .buttonHover {
+    -fx-min-width: 198px;
+    -fx-pref-width: 198px;
+    -fx-max-width: 198px;
+}
+
+.uploadProgressBarWrapper .continueWrapper .buttonHover:hover {
+    -fx-background-image: url(images/continue_hover.png);
+}
+
+.uploadProgressBarWrapper .continueWrapper .buttonHover .button {
+    -fx-min-height: 76px;
+    -fx-pref-height: 76px;
+    -fx-min-width: 198px;
+    -fx-pref-width: 198px;
+    -fx-background-color: transparent;
+    -fx-background-image: url(images/continue.png);
+}
+
+.uploadProgressBarWrapper .continueWrapper .buttonHover .button:pressed {
+    -fx-opacity: 0.7;
+}
+
+.uploadProgressBarWrapper.disable .image {
+    -fx-background-image: url(images/loading_border_disable.png);
+}
+
+.uploadProgressBarWrapper.full .image {
+    -fx-background-image: url(images/loading_border_full.png);
+}
+
+.uploadProgressBarWrapper.enable .start {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 32px;
+    -fx-pref-width: 32px;
+    -fx-background-image: url(images/bar_start.png);
+    -fx-background-position: left;
+    -fx-background-repeat: no-repeat;
+}
+
+.uploadProgressBarWrapper .progressBar {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 791px;
+    -fx-pref-width: 791px;
+    -fx-max-width: 791px;
+}
+
+.uploadProgressBarWrapper.enable .middle {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 0px;
+    -fx-max-width: 490px;
+    -fx-background-image: url(images/bar_texture.png);
+    -fx-background-position: left;
+    -fx-background-repeat: repeat-x;
+}
+
+.uploadProgressBarWrapper.enable .end {
+    -fx-min-height: 20px;
+    -fx-pref-height: 20px;
+    -fx-min-width: 10px;
+    -fx-max-width: 30px;
+    -fx-background-image: url(images/bar_end.png);
+    -fx-background-position: left;
+    -fx-background-repeat: no-repeat;
+}
+
+.configWindow .scroll-bar {
+    -fx-pref-width: 14px;
+    -fx-pref-height: 14px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.configWindow .scroll-bar:vertical .track {
+    -fx-background-color: linear-gradient(from 40% 0% to 60% 0%, rgba(0, 0, 0, 0), rgba(178, 160, 104, 0.25), rgba(178, 160, 104, 1), rgba(0, 0, 0, 0)),
+    linear-gradient(from 40% 0% to 60% 0%, rgba(0, 0, 0, 0), rgba(153, 68, 49, 0.15), rgba(153, 68, 49, 1), rgba(0, 0, 0, 0));
+    -fx-background-repeat: no-repeat;
+}
+
+.configWindow .scroll-bar:vertical .thumb {
+    -fx-background-color: linear-gradient(#e8ddad, #b5a36a);
+    -fx-background-radius: 0;
+    -fx-background-insets: 4 5 4 5;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 0, 0.5), 8, 0.1, 0, 0);
+}
+
+.configWindow .scroll-bar:vertical .decrement-button,
+.configWindow .scroll-bar:vertical .increment-button {
+    -fx-opacity: 0;
+    -fx-max-width: 0px;
+    -fx-max-height: 0px;
+    -fx-pref-width: 0px;
+    -fx-pref-height: 0px;
+}
+
+.configWindow .list-view .corner,
+.configWindow .scroll-bar:horizontal * {
+    -fx-opacity: 0;
+    -fx-max-width: 0px;
+    -fx-max-height: 0px;
+    -fx-pref-width: 0px;
+    -fx-pref-height: 0px;
+}
+
+.configWindow.editor .scroll-bar:vertical .track {
+    -fx-background-color: linear-gradient(from 40% 0% to 60% 0%, rgba(0, 0, 0, 0), rgba(106, 124, 180, 0.25), rgba(106, 124, 180, 1), rgba(106, 124, 180, 0.25), rgba(0, 0, 0, 0));
+    -fx-background-repeat: no-repeat;
+}
+
+.configWindow.editor .scroll-bar:vertical .thumb {
+    -fx-background-color: linear-gradient(#e8ddad, #b5a36a);
+    -fx-background-radius: 0;
+    -fx-background-insets: 4 5 4 5;
+    -fx-effect: dropshadow(gaussian, #849DD2, 8, 0.1, 0, 0);
+}
+
+.social {
+    -fx-min-height: 72;
+    -fx-max-height: 72;
+    -fx-min-width: 216;
+    -fx-max-width: 216;
+}
+
+.social .vk {
+    -fx-min-height: 72;
+    -fx-max-height: 72;
+    -fx-min-width: 72;
+    -fx-max-width: 72;
+    -fx-background-color: transparent;
+    -fx-background-image: url(images/vk_icon.png)
+}
+
+.social .vk:hover {
+    -fx-background-image: url(images/vk_icon_select.png);
+}
+
+.social .vk:pressed {
+    -fx-opacity: 0.7;
+}
+
+.social .yt {
+    -fx-min-height: 72;
+    -fx-max-height: 72;
+    -fx-min-width: 72;
+    -fx-max-width: 72;
+    -fx-background-color: transparent;
+    -fx-background-image: url(images/yt_icon.png)
+}
+
+.social .yt:hover {
+    -fx-background-image: url(images/yt_icon_select.png);
+}
+
+.social .yt:pressed {
+    -fx-opacity: 0.7;
+}
+
+.social .discord {
+    -fx-min-height: 72;
+    -fx-max-height: 72;
+    -fx-min-width: 72;
+    -fx-max-width: 72;
+    -fx-background-color: transparent;
+    -fx-background-image: url(images/dcord_icon.png)
+}
+
+.social .discord:hover {
+    -fx-background-image: url(images/dcord_icon_selected.png);
+}
+
+.social .discord:pressed {
+    -fx-opacity: 0.7;
+}
+
+.context-menu {
+    -fx-background-color: black;
+    -fx-border-color: #9c7c5a;
+}

@@ -1,0 +1,80 @@
+plugins {
+    id "application"
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+    id "io.spring.dependency-management" version "$springDependencyManagementVerson"
+    id "org.springframework.boot" version "$springBootVersion"
+    id "org.openjfx.javafxplugin" version '0.0.8'
+    id "org.jetbrains.kotlin.plugin.spring" version "$kotlinVersion"
+    id "org.jetbrains.kotlin.plugin.jpa" version "$kotlinVersion"
+}
+
+javafx {
+    version = "11.0.2"
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.web']
+}
+
+version = '2.0.1'
+
+dependencies {
+    //	spring-boot
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('org.springframework.boot:spring-boot-starter-data-rest')
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    //  kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$kotlinCoroutinesVersion"
+
+
+    //	database
+    runtimeOnly('com.h2database:h2')
+    implementation("org.liquibase:liquibase-core:$liquidbaseVersion")
+
+    //  apache-commons
+    implementation("org.apache.commons:commons-io:$apacheCommonVersion")
+
+    //  jackson
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
+    //  modules
+    implementation project(':api')
+    implementation project(':desktop:javafx')
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
+
+bootRun {
+//    doFirst {
+//        jvmArgs = [
+//                '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000'
+//        ]
+//    }
+    workingDir = new File('C:/Games/Morrowind Fullrest Repack')
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Morrowind Fullrest Repack Plugins Configuration Utility',
+                'Implementation-Version': archiveVersion
+    }
+}
+
+task moveJar(dependsOn: build) {
+    doLast {
+        copy {
+            from '/build/libs'
+            into 'C:/Games/morrowind-fullrest-repack/MFRPCU'
+        }
+    }
+}

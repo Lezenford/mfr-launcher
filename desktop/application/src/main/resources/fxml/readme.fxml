@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../../../../../javafx/src/main/resources/javafx/css/style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.ReadmeController">
+    <styleClass>
+        <String fx:value="configWindow" />
+        <String fx:value="config" />
+    </styleClass>
+    <children>
+        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="configWindowContainer" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                            <styleClass>
+                                <String fx:value="configBody" />
+                                <String fx:value="in" />
+                            </styleClass>
+                            <children>
+                                <HBox fx:id="mainPane" minHeight="420.0" prefHeight="420.0" prefWidth="200.0" styleClass="webWrap">
+                                    <!--                           <children>-->
+                                    <!--                              <WebView fx:id="webView"/>-->
+                                    <!--                           </children>-->
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                    <styleClass>
+                        <String fx:value="configBody" />
+                        <String fx:value="out" />
+                    </styleClass>
+                </VBox>
+                <HBox prefHeight="200.0" prefWidth="100.0">
+                    <VBox.margin>
+                        <Insets top="-591.0" />
+                    </VBox.margin>
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                            <styleClass>
+                                <String fx:value="item" />
+                                <String fx:value="left" />
+                            </styleClass>
+                        </VBox>
+                        <VBox minWidth="250.0" prefHeight="200.0" prefWidth="250.0">
+                            <styleClass>
+                                <String fx:value="item" />
+                                <String fx:value="center" />
+                            </styleClass>
+                            <children>
+                                <Label text="ReadMe" />
+                            </children>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                            <styleClass>
+                                <String fx:value="item" />
+                                <String fx:value="right" />
+                            </styleClass>
+                        </VBox>
+                    </children>
+                    <styleClass>
+                        <String fx:value="configHeader" />
+                        <String fx:value="red" />
+                    </styleClass>
+                </HBox>
+                <HBox prefHeight="200.0" prefWidth="100.0" styleClass="configFooter">
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="button154">
+                            <children>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonShadow">
+                                    <VBox.margin>
+                                        <Insets bottom="-49.0" />
+                                    </VBox.margin>
+                                </VBox>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonBackground">
+                                    <children>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonHover">
+                                            <children>
+                                                <Button mnemonicParsing="false" onAction="#openInBrowser" text="В браузере" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </VBox>
+                            </children>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="button154">
+                            <children>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonShadow">
+                                    <VBox.margin>
+                                        <Insets bottom="-49.0" />
+                                    </VBox.margin>
+                                </VBox>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonBackground">
+                                    <children>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonHover">
+                                            <children>
+                                                <Button mnemonicParsing="false" onAction="#back" text="Назад" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </VBox>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="-4.0" />
+                            </HBox.margin>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="button154">
+                            <children>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonShadow">
+                                    <VBox.margin>
+                                        <Insets bottom="-49.0" />
+                                    </VBox.margin>
+                                </VBox>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonBackground">
+                                    <children>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonHover">
+                                            <children>
+                                                <Button mnemonicParsing="false" onAction="#hide" text="Закрыть" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </VBox>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="-4.0" />
+                            </HBox.margin>
+                        </VBox>
+                    </children>
+                    <VBox.margin>
+                        <Insets top="526.0" />
+                    </VBox.margin>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
