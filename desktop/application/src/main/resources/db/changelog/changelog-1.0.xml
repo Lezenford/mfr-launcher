@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <changeSet id="create property table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="PROPERTY"/>
+            </not>
+        </preConditions>
+        <createTable tableName="PROPERTY">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="KEY" type="varchar(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="VALUE" type="varchar(255)"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="PROPERTY"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create plugin group table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="PLUGIN_GROUP"/>
+            </not>
+        </preConditions>
+        <createTable tableName="PLUGIN_GROUP">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="VALUE" type="varchar(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="PLUGIN_GROUP"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create release table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="RELEASE"/>
+            </not>
+        </preConditions>
+        <createTable tableName="RELEASE">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="APPLIED" type="boolean"/>
+            <column name="DESCRIPTION" type="varchar(255)"/>
+            <column name="IMAGE_PATH" type="varchar(255)"/>
+            <column name="VALUE" type="varchar(255)"/>
+            <column name="PLUGIN_GROUP_ID" type="int"/>
+        </createTable>
+        <addDefaultValue tableName="RELEASE" columnName="APPLIED" defaultValueBoolean="true"/>
+        <addForeignKeyConstraint baseTableName="RELEASE" baseColumnNames="PLUGIN_GROUP_ID"
+                                 constraintName="FR_RELEASE_GROUP"
+                                 referencedTableName="PLUGIN_GROUP"
+                                 referencedColumnNames="ID"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+        <addUniqueConstraint tableName="RELEASE" columnNames="PLUGIN_GROUP_ID, VALUE"/>
+    </changeSet>
+
+    <changeSet id="create details table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="DETAILS"/>
+            </not>
+        </preConditions>
+        <createTable tableName="DETAILS">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="GAME_PATH" type="varchar(255)"/>
+            <column name="STORAGE_PATH" type="varchar(255)"/>
+            <column name="RELEASE_ID" type="int"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="DETAILS" baseColumnNames="RELEASE_ID"
+                                 constraintName="FK_DETAILS_RELEASE"
+                                 referencedTableName="RELEASE"
+                                 referencedColumnNames="ID"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+        <addUniqueConstraint tableName="DETAILS" columnNames="RELEASE_ID, STORAGE_PATH"/>
+    </changeSet>
+</databaseChangeLog>

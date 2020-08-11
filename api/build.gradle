@@ -1,0 +1,14 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+    id "io.freefair.lombok" version "4.1.6"
+}
+version = '0.1-SNAPSHOT'
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

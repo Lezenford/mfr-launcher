@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <changeSet id="create telegram user table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="TelegramUser"/>
+            </not>
+        </preConditions>
+        <createTable tableName="TelegramUser">
+            <column name="UserId" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Username" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Role" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="TelegramUser"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create keys table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="AccessKey"/>
+            </not>
+        </preConditions>
+        <createTable tableName="AccessKey">
+            <column name="AccessKeyId" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Username" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Key" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="Used" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CreateDate" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CreateUser" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="AccessKey" baseColumnNames="CreateUser"
+                                 constraintName="FK_AccessKey_TelegramUser"
+                                 referencedTableName="TelegramUser"
+                                 referencedColumnNames="UserId"/>
+        <rollback>
+            <dropTable tableName="AccessKey"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create property table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ServerProperty"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ServerProperty">
+            <column name="PropertyId" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Type" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="Value" type="varchar(255)"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="ServerProperty"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

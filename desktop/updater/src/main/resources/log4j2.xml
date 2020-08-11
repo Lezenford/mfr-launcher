@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+
+        <RollingFile name="update.log" fileName="logs/update.log"
+                     append="true" immediateFlush="false" filePattern="logs/update.log.$${date:yyyy-MM}/%d{MM-dd-yyyy}-%i">
+            <PatternLayout pattern="%d %-5p [%t] %c (%F:%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+    </Appenders>
+    <Loggers>
+        <Root level="ERROR">
+            <AppenderRef ref="update.log" />
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+
+        <Logger name="ru.fullrest.mfr" level="INFO" />
+    </Loggers>
+</Configuration>

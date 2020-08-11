@@ -1,0 +1,3 @@
+FROM openjdk:11.0.2
+WORKDIR /app
+CMD java -jar /app/file-server-0.1.jar
