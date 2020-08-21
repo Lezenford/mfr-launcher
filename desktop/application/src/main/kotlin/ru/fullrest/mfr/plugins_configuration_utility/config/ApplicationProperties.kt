@@ -20,6 +20,15 @@ class ApplicationProperties(
     @Value("\${application.game.main.data_files}")
     val dataFiles: String,
 
+    @Value("\${application.game.main.morrowind_esm}")
+    val morrowindEsm: String,
+
+    @Value("\${application.game.main.tribual_esm}")
+    val tribunalEsm: String,
+
+    @Value("\${application.game.main.bloodmoon_esm}")
+    val bloodmoonEsm: String,
+
     @Value("\${application.game.main.morrowind}")
     val morrowind: String,
 

@@ -70,7 +70,11 @@ class StartController : FxController(), CommandLineRunner {
         checkBetaKey()
         checkApplicationVersion()
         if (propertiesRepository.existsByKey(PropertyKey.INSTALLED).not()) {
-            gameInstallController.showAndWaitDownloadGame()
+            if (files.checkInstall()) {
+                propertiesRepository.save(Properties(PropertyKey.INSTALLED))
+            } else {
+                gameInstallController.showAndWaitDownloadGame()
+            }
         }
         if (propertiesRepository.existsByKey(PropertyKey.INSTALLED)) {
             files.init()

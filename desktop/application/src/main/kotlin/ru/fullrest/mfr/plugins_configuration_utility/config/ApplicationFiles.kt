@@ -38,6 +38,13 @@ class ApplicationFiles(
     lateinit var lowPerformanceOpenMwFolder: File
     lateinit var necroPerformanceOpenMwFolder: File
 
+    fun checkInstall(): Boolean {
+        val morrowindEsmFile = File(properties.gamePath + File.separator + properties.morrowindEsm)
+        val tribunalEsmFile = File(properties.gamePath + File.separator + properties.tribunalEsm)
+        val bloodmoonEsmFile = File(properties.gamePath + File.separator + properties.bloodmoonEsm)
+        return morrowindEsmFile.exists() && tribunalEsmFile.exists() && bloodmoonEsmFile.exists()
+    }
+
     /**
      * Init all files after game install
      */
