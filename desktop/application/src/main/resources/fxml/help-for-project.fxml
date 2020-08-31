@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -9,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../../../../../javafx/src/main/resources/javafx/css/style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.HelpForProjectController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../../../../../javafx/src/main/resources/javafx/css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.HelpForProjectController">
    <styleClass>
       <String fx:value="configWindow" />
       <String fx:value="gratitude" />
@@ -51,7 +55,7 @@
                                  <children>
                                     <HBox prefHeight="200.0" prefWidth="100.0">
                                        <children>
-                                          <Label text="Карта Сбербанка: 4817-7600-1514-8392." />
+                                          <Label text="Карта Сбербанка: 4274-3200-4920-6280." />
                                        </children>
                                        <styleClass>
                                           <String fx:value="menuItem" />

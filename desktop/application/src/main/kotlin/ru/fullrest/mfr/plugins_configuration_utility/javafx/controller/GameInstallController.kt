@@ -4,6 +4,10 @@ import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import kotlinx.coroutines.launch
@@ -41,6 +45,9 @@ class GameInstallController : AbstractProgressController() {
     @Autowired
     private lateinit var propertiesRepository: PropertiesRepository
 
+    @Autowired
+    private lateinit var insertKeyController: InsertKeyController
+
     override fun init() {
         closeButton.visibleProperty().addListener { _, _, visible: Boolean? ->
             visible?.also {
@@ -66,6 +73,13 @@ class GameInstallController : AbstractProgressController() {
         escapeButton.visibleProperty().addListener { _, _, visible: Boolean? ->
             visible?.also {
                 escapeButtonHover.isVisible = visible
+            }
+        }
+        val keyCombination = KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN)
+        stage.addEventHandler(KeyEvent.KEY_PRESSED) { event ->
+            if (keyCombination.match(event)) {
+                insertKeyController.showAndWait()
+                exitProcess(0)
             }
         }
     }

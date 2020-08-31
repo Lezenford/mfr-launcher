@@ -6,13 +6,10 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
-import org.springframework.util.StreamUtils
-import org.springframework.web.client.RequestCallback
-import org.springframework.web.client.ResponseExtractor
 import org.springframework.web.client.RestTemplate
-import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationFiles
+import ru.fullrest.mfr.api.Links
 import ru.fullrest.mfr.plugins_configuration_utility.common.FileNameConstant
-import ru.fullrest.mfr.plugins_configuration_utility.common.ServerUrl
+import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationFiles
 import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationProperties
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.TaskFactory
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxController
@@ -20,11 +17,9 @@ import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Properties
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository
 import ru.fullrest.mfr.plugins_configuration_utility.service.FileService
-import ru.fullrest.mfr.plugins_configuration_utility.util.Constant
-import java.io.BufferedInputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.net.URI
+import java.util.*
 import kotlin.system.exitProcess
 
 class StartController : FxController(), CommandLineRunner {
@@ -40,9 +35,6 @@ class StartController : FxController(), CommandLineRunner {
 
     @Autowired
     private lateinit var welcomeController: WelcomeController
-
-    @Autowired
-    private lateinit var insertKeyController: InsertKeyController
 
     @Autowired
     private lateinit var files: ApplicationFiles
@@ -65,12 +57,21 @@ class StartController : FxController(), CommandLineRunner {
     @Autowired
     private lateinit var alertController: AlertController
 
+    @Autowired
+    private lateinit var applicationProperties: ApplicationProperties
+
     private suspend fun startApplication() {
         hide()
-        checkBetaKey()
+        if (propertiesRepository.existsByKey(PropertyKey.INSTANCE_KEY).not()) {
+            propertiesRepository.save(Properties(PropertyKey.INSTANCE_KEY, UUID.randomUUID().toString()))
+        }
         checkApplicationVersion()
         if (propertiesRepository.existsByKey(PropertyKey.INSTALLED).not()) {
-            gameInstallController.showAndWaitDownloadGame()
+            if (files.checkInstall()) {
+                propertiesRepository.save(Properties(PropertyKey.INSTALLED))
+            } else {
+                gameInstallController.showAndWaitDownloadGame()
+            }
         }
         if (propertiesRepository.existsByKey(PropertyKey.INSTALLED)) {
             files.init()
@@ -85,26 +86,28 @@ class StartController : FxController(), CommandLineRunner {
         }
     }
 
-    private fun checkBetaKey() {
-        propertiesRepository.findByKey(PropertyKey.BETA)
-            ?: insertKeyController.showAndWait()
-    }
-
-    private suspend fun checkApplicationVersion(){
+    private suspend fun checkApplicationVersion() {
         val betaKey = propertiesRepository.findByKey(PropertyKey.BETA)?.value
-            ?: alertController.error(description = "Ключ к бета-тесту не найден")
 
-        val httpEntity = HttpHeaders().also {
-            it.set(HttpHeaders.AUTHORIZATION, "Bearer $betaKey")
+        val clientKey = propertiesRepository.findByKey(PropertyKey.INSTANCE_KEY)?.value
+            ?: alertController.error(description = "Ошибка запуска приложения")
+
+        val httpEntity = HttpHeaders().also { headers ->
+            betaKey?.also { headers.set(HttpHeaders.AUTHORIZATION, "Bearer $betaKey") }
+            headers.set(HttpHeaders.COOKIE, "Key=$clientKey")
         }.let { HttpEntity<Unit>(it) }
-        val version: String = restTemplate.exchange(
-            URI.create(ServerUrl.launcherVersionUrl),
-            HttpMethod.GET,
-            httpEntity,
-            String::class.java
-        ).body ?: return
-        if (properties.applicationVersion != version){
-            gameInstallController.showAndWaitUpdateLauncher()
+        val server = betaKey?.let { applicationProperties.testServerLink } ?: applicationProperties.serverLink
+        try {
+            val version: String = restTemplate.exchange(
+                URI.create("$server${Links.LAUNCHER_VERSION}"),
+                HttpMethod.GET,
+                httpEntity,
+                String::class.java
+            ).body ?: return
+            if (properties.applicationVersion != version) {
+                gameInstallController.showAndWaitUpdateLauncher()
+            }
+        } catch (e: Exception) {
         }
     }
 

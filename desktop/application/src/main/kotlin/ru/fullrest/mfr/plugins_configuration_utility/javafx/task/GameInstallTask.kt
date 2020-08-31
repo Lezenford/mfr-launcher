@@ -15,7 +15,8 @@ import org.springframework.web.client.RequestCallback
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.ResponseExtractor
 import org.springframework.web.client.RestTemplate
-import ru.fullrest.mfr.plugins_configuration_utility.common.ServerUrl
+import ru.fullrest.mfr.api.Links
+import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationProperties
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxTask
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.AlertController
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
@@ -35,13 +36,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
-import kotlin.system.exitProcess
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class GameInstallTask(
     private val restTemplate: RestTemplate,
     private val propertiesRepository: PropertiesRepository,
+    private val applicationProperties: ApplicationProperties,
     private val alertController: AlertController
 ) : FxTask<Boolean>() {
 
@@ -53,12 +54,21 @@ class GameInstallTask(
         progressController.setDescription("Подготовка к скачиванию")
 
         val betaKey = propertiesRepository.findByKey(PropertyKey.BETA)?.value
-            ?: alertController.error(description = "Ключ к бета-тесту не найден")
+
+        val clientKey = propertiesRepository.findByKey(PropertyKey.INSTANCE_KEY)?.value
+            ?: alertController.error(description = "Ошибка запуска приложения")
+
+        val server = betaKey?.let { applicationProperties.testServerLink } ?: applicationProperties.serverLink
 
         val fileName: String = try {
             val headers = restTemplate.getHeaders(
-                url = ServerUrl.gameDownloadUrl,
-                headers = mapOf(HttpHeaders.AUTHORIZATION to "Bearer $betaKey")
+                url = "$server${Links.GAME_DOWNLOAD}",
+                headers = betaKey?.let {
+                    mapOf(
+                        HttpHeaders.AUTHORIZATION to "Bearer $it",
+                        HttpHeaders.COOKIE to "Key=$clientKey"
+                    )
+                } ?: mapOf(HttpHeaders.COOKIE to "Key=$clientKey")
             )
             val header = headers[HttpHeaders.CONTENT_DISPOSITION]?.first()
                 ?: throw IllegalArgumentException("Header ${HttpHeaders.CONTENT_DISPOSITION} not found")
@@ -73,11 +83,14 @@ class GameInstallTask(
 
         try {
             restTemplate.execute(
-                ServerUrl.gameDownloadUrl,
+                "$server${Links.GAME_DOWNLOAD}",
                 HttpMethod.GET,
                 RequestCallback { clientHttpRequest ->
                     clientHttpRequest.headers["Range-From"] = "${file.length()}"
-                    clientHttpRequest.headers[HttpHeaders.AUTHORIZATION] = "Bearer $betaKey"
+                    betaKey?.also {
+                        clientHttpRequest.headers[HttpHeaders.AUTHORIZATION] = "Bearer $betaKey"
+                    }
+                    clientHttpRequest.headers[HttpHeaders.COOKIE] = "Key=$clientKey"
                 },
                 ResponseExtractor { clientHttpResponse ->
                     val fileLength = clientHttpResponse.headers[HttpHeaders.CONTENT_LENGTH]?.first()?.toLong() ?: 0
@@ -154,20 +167,19 @@ class GameInstallTask(
         progressController.updateProgress(1, 1)
         progressController.setDescription("Игра успешно установлена")
         installed.set(true)
+        Files.deleteIfExists(archive.toPath())
     }
 
     private fun copyBetaKey() {
-        val file = File("game/lua.bin").also {
-            if (it.exists().not()) {
-                it.createNewFile()
+        propertiesRepository.findByKey(PropertyKey.BETA)?.value?.also {key ->
+            val file = File("game/lua.bin").also {
+                if (it.exists().not()) {
+                    it.createNewFile()
+                }
             }
-        }
-        val key: String = propertiesRepository.findByKey(PropertyKey.BETA)?.value ?: kotlin.run {
-            log().error("Beta key not found")
-            exitProcess(0)
-        }
-        FileWriter(file).use { writer ->
-            writer.write(key)
+            FileWriter(file).use { writer ->
+                writer.write(key)
+            }
         }
     }
 

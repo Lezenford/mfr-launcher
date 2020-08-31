@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import liquibase.pro.packaged.fi
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.http.HttpHeaders
@@ -15,7 +14,8 @@ import org.springframework.web.client.RequestCallback
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.ResponseExtractor
 import org.springframework.web.client.RestTemplate
-import ru.fullrest.mfr.plugins_configuration_utility.common.ServerUrl
+import ru.fullrest.mfr.api.Links
+import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationProperties
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxTask
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.AlertController
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
@@ -40,6 +40,7 @@ import kotlin.system.exitProcess
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class LauncherUpdateTask(
     private val propertiesRepository: PropertiesRepository,
+    private val applicationProperties: ApplicationProperties,
     private val alertController: AlertController,
     private val restTemplate: RestTemplate
 ) : FxTask<Boolean>() {
@@ -51,12 +52,21 @@ class LauncherUpdateTask(
         progressController.setDescription("Подготовка к скачиванию")
 
         val betaKey = propertiesRepository.findByKey(PropertyKey.BETA)?.value
-            ?: alertController.error(description = "Ключ к бета-тесту не найден")
+
+        val clientKey = propertiesRepository.findByKey(PropertyKey.INSTANCE_KEY)?.value
+            ?: alertController.error(description = "Ошибка запуска приложения")
+
+        val server = betaKey?.let { applicationProperties.testServerLink } ?: applicationProperties.serverLink
 
         val launcherFileName: String = try {
             val headers = restTemplate.getHeaders(
-                url = ServerUrl.launcherDownloadUrl,
-                headers = mapOf(HttpHeaders.AUTHORIZATION to "Bearer $betaKey")
+                url = "$server${Links.LAUNCHER_DOWNLOAD}",
+                headers = betaKey?.let {
+                    mapOf(
+                        HttpHeaders.AUTHORIZATION to "Bearer $it",
+                        HttpHeaders.COOKIE to "Key=$clientKey"
+                    )
+                } ?: mapOf(HttpHeaders.COOKIE to "Key=$clientKey")
             )
             val header = headers[HttpHeaders.CONTENT_DISPOSITION]?.first()
                 ?: throw IllegalArgumentException("Header ${HttpHeaders.CONTENT_DISPOSITION} not found")
@@ -69,8 +79,13 @@ class LauncherUpdateTask(
 
         val updaterFileName: String = try {
             val headers = restTemplate.getHeaders(
-                url = ServerUrl.updaterDownloadUrl,
-                headers = mapOf(HttpHeaders.AUTHORIZATION to "Bearer $betaKey")
+                url = "$server${Links.LAUNCHER_UPDATER_DOWNLOAD}",
+                headers = betaKey?.let {
+                    mapOf(
+                        HttpHeaders.AUTHORIZATION to "Bearer $it",
+                        HttpHeaders.COOKIE to "Key=$clientKey"
+                    )
+                } ?: mapOf(HttpHeaders.COOKIE to "Key=$clientKey")
             )
             val header = headers[HttpHeaders.CONTENT_DISPOSITION]?.first()
                 ?: throw IllegalArgumentException("Header ${HttpHeaders.CONTENT_DISPOSITION} not found")
@@ -86,11 +101,14 @@ class LauncherUpdateTask(
 
         try {
             restTemplate.execute(
-                ServerUrl.launcherDownloadUrl,
+                "$server${Links.LAUNCHER_DOWNLOAD}",
                 HttpMethod.GET,
                 RequestCallback { clientHttpRequest ->
                     clientHttpRequest.headers["Range-From"] = "${launcher.length()}"
-                    clientHttpRequest.headers[HttpHeaders.AUTHORIZATION] = "Bearer $betaKey"
+                    betaKey?.also {
+                        clientHttpRequest.headers[HttpHeaders.AUTHORIZATION] = "Bearer $betaKey"
+                    }
+                    clientHttpRequest.headers[HttpHeaders.COOKIE] = "Key=$clientKey"
                 },
                 ResponseExtractor { clientHttpResponse ->
                     val fileLength = clientHttpResponse.headers[HttpHeaders.CONTENT_LENGTH]?.first()?.toLong() ?: 0
@@ -122,11 +140,14 @@ class LauncherUpdateTask(
 
         try {
             restTemplate.execute(
-                ServerUrl.updaterDownloadUrl,
+                "$server${Links.LAUNCHER_UPDATER_DOWNLOAD}",
                 HttpMethod.GET,
                 RequestCallback { clientHttpRequest ->
                     clientHttpRequest.headers["Range-From"] = "${updater.length()}"
-                    clientHttpRequest.headers[HttpHeaders.AUTHORIZATION] = "Bearer $betaKey"
+                    betaKey?.also {
+                        clientHttpRequest.headers[HttpHeaders.AUTHORIZATION] = "Bearer $betaKey"
+                    }
+                    clientHttpRequest.headers[HttpHeaders.COOKIE] = "Key=$clientKey"
                 },
                 ResponseExtractor { clientHttpResponse ->
                     val fileLength = clientHttpResponse.headers[HttpHeaders.CONTENT_LENGTH]?.first()?.toLong() ?: 0
@@ -156,15 +177,19 @@ class LauncherUpdateTask(
             return false
         }
 
-        val file =  try {
+        val file = try {
             val file = File("update")
             Files.move(updater.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
             file
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             alertController.error(exception = e)
             return false
         }
-        Runtime.getRuntime().exec("\"${File("jdk/bin/java.exe").absoluteFile}\" -jar \"${file.absoluteFile}\"", null, File("").absoluteFile)
+        Runtime.getRuntime().exec(
+            "\"${File("jdk/bin/java.exe").absoluteFile}\" -jar \"${file.absoluteFile}\"",
+            null,
+            File("").absoluteFile
+        )
         exitProcess(0)
     }
 

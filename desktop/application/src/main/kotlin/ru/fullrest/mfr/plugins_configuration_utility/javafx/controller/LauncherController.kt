@@ -168,6 +168,7 @@ class LauncherController : FxController() {
         try {
             Runtime.getRuntime().exec("\"${files.mcp}\"", null, files.gameFolder)
         } catch (e: IOException) {
+            log().error(e)
             var exception = e
             if (exception.message!!.contains("error=740")) {
                 exception = IOException("Перезапустите конфигуратор от имени администратора")
@@ -201,6 +202,14 @@ class LauncherController : FxController() {
         application.hostServices.showDocument(applicationProperties.discordLink)
     }
 
+    fun openYoutube(){
+        application.hostServices.showDocument(applicationProperties.youtubeLink)
+    }
+
+    fun openVk(){
+        application.hostServices.showDocument(applicationProperties.vkLink)
+    }
+
     fun checkUpdate() {
     }
 
@@ -212,7 +221,7 @@ class LauncherController : FxController() {
     private fun createAlertForException(e: Throwable, message: String) {
         launch {
             alertController.error(
-                title = message,
+                description = message,
                 exception = e,
                 closeButtonEvent = EventHandler { alertController.hide() }
             )
