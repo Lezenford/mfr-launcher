@@ -1,10 +1,12 @@
 plugins {
-    id 'io.spring.dependency-management' version '1.0.7.RELEASE'
-    id "org.springframework.boot" version "2.1.3.RELEASE"
-    id "application"
+    id 'java'
+    id 'application'
+    id 'io.spring.dependency-management' version "$springDependencyManagementVerson"
+    id 'org.springframework.boot' version "$springBootVersion"
+    id 'io.freefair.lombok' version "$lombokVersion"
 }
 
-version = '1.2'
+version = '2.0'
 mainClassName = "ru.fullrest.mfr.server.ServerApplication"
 
 dependencies {
@@ -12,27 +14,31 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
 
     //	database
-    runtimeOnly('com.h2database:h2')
-    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+    compile('com.h2database:h2')
+    compile('mysql:mysql-connector-java:8.0.15')
+    implementation("org.liquibase:liquibase-core:$liquidbaseVersion")
 
     // telegramBot
-    // https://mvnrepository.com/artifact/org.telegram/telegrambots
-    compile group: 'org.telegram', name: 'telegrambots', version: '4.2'
+    compile("org.telegram:telegrambots:$telegramBotVersion")
+    compile("org.telegram:telegrambotsextensions:$telegramBotVersion")
+
+    //  jwt
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    runtime("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    runtime("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
     //  common objects
-    compile project(':common')
+    compile project(':api')
 }
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Morrowind Fullrest Repack Plugins Configuration Utility Server',
+        attributes 'Implementation-Title': 'Morrowind Fullrest Repack Server',
                 'Implementation-Version': version,
                 'Main-Class': mainClassName
     }

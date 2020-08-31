@@ -1,0 +1,78 @@
+logging:
+  file:
+    name: logs/application.log
+  level:
+    root: INFO
+  pattern:
+    file: '"%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"'
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./pcudb;TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=1;MV_STORE=TRUE;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ''
+    #    sql-script-encoding: UTF-8
+    hikari:
+      maximum-pool-size: 1
+  jmx:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  liquibase:
+    change-log: classpath:/db/changelog/changelog-master.xml
+    enabled: true
+  main:
+    banner-mode: off
+    web-application-type: none
+
+application:
+  version: 2.0.3
+  platform: win
+  forum_link: http://www.fullrest.ru/forum/forum/300-morrowind-fullrest-repack-i-drugie-proekty-ot-ela/
+  discord_link: https://discord.gg/3JkpGj
+  youtube_link: https://youtu.be/sSTdCzhMwCw
+  vk_link: https://vk.com/club198345102
+  server_link: https://mfr.fullrest.ru/
+  test_server_link: https://mfr-beta.lezenford.com/
+  game:
+    main:
+      morrowind: Morrowind.exe
+      launcher: Morrowind Launcher.exe
+      data_files: Data Files
+      optional: Optional
+      readme: Manual\readme\index.html
+      schema_file:  Optional\schema
+      update_link:  http://mfr.fullrest.ru
+      version_file: Optional\version
+      morrowind_esm: Data Files\Morrowind.esm
+      tribual_esm: Data Files\Tribunal.esm
+      bloodmoon_esm: Data Files\Bloodmoon.esm
+    classic:
+      mcp: Morrowind Code Patch.exe
+      mge:
+        application: MGEXEgui.exe
+        folder: mge3
+        config:
+          backup: mge3\backup\MGE.ini
+          current: mge3\MGE.ini
+          template:
+            high_quality: Optional\MGE\top_PC\MGE.ini
+            middle_quality: Optional\MGE\mid_PC\MGE.ini
+            low_quality: Optional\MGE\low_PC\MGE.ini
+            basic_quality: Optional\MGE\necro_PC\MGE.ini
+    openmw:
+      application: OpenMW\openmw.exe
+      launcher: OpenMW\openmw-launcher.exe
+      config:
+        folder: documents\My Games\OpenMW
+        backup: OpenMW\OpenMW_Config\backup
+        change_value: D:\Games\Morrowind [Fullrest Repack] 3.2\Data Files
+        template:
+          high_quality: OpenMW\OpenMW_Config\top_PC
+          middle_quality: OpenMW\OpenMW_Config\mid_PC
+          low_quality: OpenMW\OpenMW_Config\low_PC
+          basic_quality:  OpenMW\OpenMW_Config\necro_PC

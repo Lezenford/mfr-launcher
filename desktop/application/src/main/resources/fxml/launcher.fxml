@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<AnchorPane prefHeight="707.0" prefWidth="838.0"
+            stylesheets="@../../../../../javafx/src/main/resources/javafx/css/style.css"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.LauncherController">
+    <children>
+        <VBox prefHeight="707.0" prefWidth="838.0" styleClass="launcherShadow" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="launcherWrap">
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="launcherHeart">
+                            <VBox.margin>
+                                <Insets top="-37.0"/>
+                            </VBox.margin>
+                        </VBox>
+                        <HBox prefHeight="200.0" prefWidth="100.0" styleClass="launcherMenuWrap">
+                            <children>
+                                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="menuCell">
+                                    <children>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="cellHead">
+                                            <children>
+                                                <Label styleClass="leftLabel"/>
+                                            </children>
+                                            <VBox.margin>
+                                                <Insets/>
+                                            </VBox.margin>
+                                        </VBox>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="cellList">
+                                            <children>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button fx:id="playMge" mnemonicParsing="false"
+                                                                onAction="#startGame" text="Играть">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                            <opaqueInsets>
+                                                                <Insets/>
+                                                            </opaqueInsets>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button fx:id="launcher" mnemonicParsing="false"
+                                                                onAction="#startLauncher" text="Launcher">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button fx:id="mcp" mnemonicParsing="false" onAction="#startMCP"
+                                                                text="MCP">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button fx:id="mge" mnemonicParsing="false" onAction="#startMGE"
+                                                                text="MGE">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                            </children>
+                                            <padding>
+                                                <Insets left="-22.0"/>
+                                            </padding>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                                <VBox prefHeight="200.0" prefWidth="100.0">
+                                    <styleClass>
+                                        <String fx:value="menuCell"/>
+                                        <String fx:value="center"/>
+                                    </styleClass>
+                                    <children>
+                                        <VBox fx:id="betaLabel" prefHeight="200.0" prefWidth="100.0" styleClass="beta">
+                                            <VBox.margin>
+                                                <Insets left="115.0" top="-5.0"/>
+                                            </VBox.margin>
+                                        </VBox>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="cellList">
+                                            <children>
+                                                <VBox styleClass="itemHover">
+                                                    <VBox.margin>
+                                                        <Insets left="-27.0"/>
+                                                    </VBox.margin>
+                                                    <children>
+                                                        <Button mnemonicParsing="false" onAction="#openReadme"
+                                                                text="Readme">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                </VBox>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button mnemonicParsing="false" onAction="#openForum"
+                                                                text="Обсудить на форуме">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets left="-27.0"/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button mnemonicParsing="false" onAction="#helpForProject"
+                                                                text="Помочь проекту">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets left="-27.0"/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                            </children>
+                                            <VBox.margin>
+                                                <Insets top="85.0"/>
+                                            </VBox.margin>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="menuCell">
+                                    <children>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="cellHead">
+                                            <children>
+                                                <Label styleClass="rightLabel"/>
+                                            </children>
+                                        </VBox>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="cellList">
+                                            <children>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button fx:id="openMw" mnemonicParsing="false"
+                                                                onAction="#startOpenMw" text="Играть">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button fx:id="openMwLauncher" mnemonicParsing="false"
+                                                                onAction="#startOpenMwLauncher" text="Launcher">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets/>
+                                                    </VBox.margin>
+                                                </VBox>
+                                                <VBox styleClass="itemHover">
+                                                    <children>
+                                                        <Button mnemonicParsing="false" onAction="#startOpenMwConfig"
+                                                                text="Настройка">
+                                                            <VBox.margin>
+                                                                <Insets/>
+                                                            </VBox.margin>
+                                                        </Button>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                            <VBox.margin>
+                                                <Insets left="-22.0"/>
+                                            </VBox.margin>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                            <VBox.margin>
+                                <Insets top="-300.0"/>
+                            </VBox.margin>
+                        </HBox>
+                    </children>
+                    <VBox.margin>
+                        <Insets top="71.0"/>
+                    </VBox.margin>
+                </VBox>
+                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="launcherHeader">
+                    <VBox.margin>
+                        <Insets top="-589.0"/>
+                    </VBox.margin>
+                </VBox>
+                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="launcherFooterWrap">
+                    <VBox.margin>
+                        <Insets top="282.0"/>
+                    </VBox.margin>
+                    <children>
+                        <HBox prefHeight="60.0" prefWidth="200.0">
+                            <VBox.margin>
+                                <Insets top="20.0"/>
+                            </VBox.margin>
+                            <children>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="settingsButton">
+                                    <children>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonHover">
+                                            <children>
+                                                <Button mnemonicParsing="false" onAction="#openConfiguration">
+                                                    <VBox.margin>
+                                                        <Insets top="34.0"/>
+                                                    </VBox.margin>
+                                                </Button>
+                                            </children>
+                                            <VBox.margin>
+                                                <Insets top="-31.0"/>
+                                            </VBox.margin>
+                                            <padding>
+                                                <Insets left="24.0"/>
+                                            </padding>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="updateButton">
+                                    <HBox.margin>
+                                        <Insets left="-33.0" top="31.0"/>
+                                    </HBox.margin>
+                                    <children>
+                                        <HBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonHover">
+                                            <children>
+                                                <Button mnemonicParsing="false" text="Обновление"/>
+                                                <Label styleClass="refreshIcon">
+                                                    <HBox.margin>
+                                                        <Insets left="-116.0" top="3.0"/>
+                                                    </HBox.margin>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                        <VBox disable="true" prefHeight="200.0" prefWidth="100.0"
+                                              styleClass="buttonLava">
+                                            <VBox.margin>
+                                                <Insets top="-70.0"/>
+                                            </VBox.margin>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                                <HBox prefHeight="200.0" prefWidth="100.0" styleClass="pathSection">
+                                    <children>
+                                        <Label id="gamePath" fx:id="gamePath" styleClass="pathText">
+                                            <HBox.margin>
+                                                <Insets left="30.0" top="23.0"/>
+                                            </HBox.margin>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="footerTitles">
+                            <VBox.margin>
+                                <Insets top="-150.0"/>
+                            </VBox.margin>
+                            <children>
+                                <VBox>
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="390.0">
+                                            <children>
+                                                <Label text="Версия игры ">
+                                                    <padding>
+                                                        <Insets left="24.0"/>
+                                                    </padding>
+                                                </Label>
+                                                <Label fx:id="gameVersion"/>
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="390.0">
+                                            <children>
+                                                <Label text="Версия конфигуратора ">
+                                                    <padding>
+                                                        <Insets left="24.0"/>
+                                                    </padding>
+                                                </Label>
+                                                <Label fx:id="applicationVersion"/>
+                                            </children>
+                                            <VBox.margin>
+                                                <Insets bottom="10.0"/>
+                                            </VBox.margin>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                                <VBox>
+                                    <children>
+                                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="390.0">
+                                            <padding>
+                                                <Insets left="24.0"/>
+                                            </padding>
+                                            <children>
+                                                <Label visible="false">
+                                                    <padding>
+                                                        <Insets right="24.0"/>
+                                                    </padding>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="390.0">
+                                            <children>
+                                                <Label text="Путь к папке с игрой">
+                                                    <padding>
+                                                        <Insets right="24.0"/>
+                                                    </padding>
+                                                </Label>
+                                            </children>
+                                            <padding>
+                                                <Insets left="24.0"/>
+                                            </padding>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" styleClass="social">
+                            <VBox.margin>
+                                <Insets left="310.0" top="-33.0"/>
+                            </VBox.margin>
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#openVk" styleClass="vk"/>
+                                <Button mnemonicParsing="false" onAction="#openYoutube" styleClass="yt"/>
+                                <Button mnemonicParsing="false" onAction="#openDiscord" styleClass="discord"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+                <HBox disable="true" prefHeight="200.0" prefWidth="100.0" styleClass="launcherFooter">
+                    <VBox.margin>
+                        <Insets top="-72.0"/>
+                    </VBox.margin>
+                </HBox>
+                <HBox alignment="CENTER_RIGHT">
+                    <VBox.margin>
+                        <Insets top="-495.0"/>
+                    </VBox.margin>
+                    <children>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="100.0" styleClass="closeHover">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#close" styleClass="closeCross">
+                                    <HBox.margin>
+                                        <Insets/>
+                                    </HBox.margin>
+                                </Button>
+                            </children>
+                            <HBox.margin>
+                                <Insets right="25.0"/>
+                            </HBox.margin>
+                        </HBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+    <styleClass>
+        <String fx:value="launcherWindow"/>
+        <String fx:value="default"/>
+    </styleClass>
+</AnchorPane>
