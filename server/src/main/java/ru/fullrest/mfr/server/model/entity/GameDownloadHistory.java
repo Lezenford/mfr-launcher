@@ -13,6 +13,6 @@ public class GameDownloadHistory {
     @Column(name = "HistoryId")
     private int id;
 
-    @Column(name = "Key")
+    @Column(name = "ClientKey")
     private String clientKey;
 }

@@ -37,10 +37,12 @@ public class ClientController {
                                                            ) throws IOException {
         if (cookie != null) {
             String key = getKeyFromCookie(cookie);
-            if (!gameDownloadHistoryRepository.existsByClientKey(key)) {
-                GameDownloadHistory gameDownloadHistory = new GameDownloadHistory();
-                gameDownloadHistory.setClientKey(key);
-                gameDownloadHistoryRepository.save(gameDownloadHistory);
+            if (key != null) {
+                if (!gameDownloadHistoryRepository.existsByClientKey(key)) {
+                    GameDownloadHistory gameDownloadHistory = new GameDownloadHistory();
+                    gameDownloadHistory.setClientKey(key);
+                    gameDownloadHistoryRepository.save(gameDownloadHistory);
+                }
             }
         }
         return downloadFile(PropertyType.GAME_ARCHIVE, range);
@@ -66,10 +68,12 @@ public class ClientController {
         File file = new File(update.getPath());
         if (cookie != null) {
             String key = getKeyFromCookie(cookie);
-            if (!updateDownloadHistoryRepository.existsByClientKey(key)) {
-                UpdateDownloadHistory updateDownloadHistory = new UpdateDownloadHistory();
-                updateDownloadHistory.setClientKey(key);
-                updateDownloadHistoryRepository.save(updateDownloadHistory);
+            if (key != null) {
+                if (!updateDownloadHistoryRepository.existsByClientKey(key)) {
+                    UpdateDownloadHistory updateDownloadHistory = new UpdateDownloadHistory();
+                    updateDownloadHistory.setClientKey(key);
+                    updateDownloadHistoryRepository.save(updateDownloadHistory);
+                }
             }
         }
         return downloadFile(file, range);
@@ -83,10 +87,12 @@ public class ClientController {
                                                                ) throws IOException {
         if (cookie != null) {
             String key = getKeyFromCookie(cookie);
-            if (!applicationDownloadHistoryRepository.existsByClientKey(key)) {
-                ApplicationDownloadHistory applicationDownloadHistory = new ApplicationDownloadHistory();
-                applicationDownloadHistory.setClientKey(key);
-                applicationDownloadHistoryRepository.save(applicationDownloadHistory);
+            if (key != null) {
+                if (!applicationDownloadHistoryRepository.existsByClientKey(key)) {
+                    ApplicationDownloadHistory applicationDownloadHistory = new ApplicationDownloadHistory();
+                    applicationDownloadHistory.setClientKey(key);
+                    applicationDownloadHistoryRepository.save(applicationDownloadHistory);
+                }
             }
         }
         return downloadFile(PropertyType.LAUNCHER, range);

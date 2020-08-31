@@ -119,15 +119,10 @@
             <column name="HistoryId" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="Key" type="varchar(255)"/>
+            <column name="ClientKey" type="varchar(255)"/>
             <column name="Version" type="varchar(255)"/>
         </createTable>
-        <createIndex tableName="UpdateDownloadHistory" indexName="UpdateDownloadHistoryIndex" unique="true">
-            <column name="Key"/>
-            <column name="Varsion"/>
-        </createIndex>
         <rollback>
-            <dropIndex tableName="UpdateDownloadHistory" indexName="UpdateDownloadHistoryIndex"/>
             <dropTable tableName="UpdateDownloadHistory"/>
         </rollback>
     </changeSet>
@@ -141,15 +136,10 @@
             <column name="HistoryId" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="Key" type="varchar(255)"/>
+            <column name="ClientKey" type="varchar(255)"/>
             <column name="Version" type="varchar(255)"/>
         </createTable>
-        <createIndex tableName="ApplicationDownloadHistory" indexName="ApplicationDownloadHistoryIndex" unique="true">
-            <column name="Key"/>
-            <column name="Varsion"/>
-        </createIndex>
         <rollback>
-            <dropIndex tableName="ApplicationDownloadHistory" indexName="ApplicationDownloadHistoryIndex"/>
             <dropTable tableName="ApplicationDownloadHistory"/>
         </rollback>
     </changeSet>
@@ -163,12 +153,32 @@
             <column name="HistoryId" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="Key" type="varchar(255)">
+            <column name="ClientKey" type="varchar(255)">
                 <constraints unique="true"/>
             </column>
         </createTable>
         <rollback>
             <dropTable tableName="GameDownloadHistory"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create history indexes" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="UpdateDownloadHistory"/>
+                <indexExists indexName="ApplicationDownloadHistory"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="UpdateDownloadHistory" indexName="UpdateDownloadHistoryIndex" unique="true">
+            <column name="ClientKey"/>
+            <column name="Version"/>
+        </createIndex>
+        <createIndex tableName="ApplicationDownloadHistory" indexName="ApplicationDownloadHistoryIndex" unique="true">
+            <column name="ClientKey"/>
+            <column name="Version"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="UpdateDownloadHistory" indexName="UpdateDownloadHistoryIndex"/>
+            <dropIndex tableName="ApplicationDownloadHistory" indexName="ApplicationDownloadHistoryIndex"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

@@ -20,6 +20,7 @@ dependencies {
 
     //	database
     compile('com.h2database:h2')
+    compile('mysql:mysql-connector-java:8.0.15')
     implementation("org.liquibase:liquibase-core:$liquidbaseVersion")
 
     // telegramBot

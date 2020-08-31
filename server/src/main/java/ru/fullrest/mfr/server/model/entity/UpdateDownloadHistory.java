@@ -13,7 +13,7 @@ public class UpdateDownloadHistory {
     @Column(name = "HistoryId")
     private int id;
 
-    @Column(name = "Key")
+    @Column(name = "ClientKey")
     private String clientKey;
 
     @Column(name = "Version")
