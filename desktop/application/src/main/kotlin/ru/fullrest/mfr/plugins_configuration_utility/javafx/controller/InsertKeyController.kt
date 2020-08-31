@@ -43,7 +43,7 @@ class InsertKeyController : FxController() {
         }
         stage.addEventHandler(KeyEvent.KEY_PRESSED) { event: KeyEvent ->
             if (event.code == KeyCode.ESCAPE) {
-                Platform.exit()
+                hide()
             }
             if (event.code == KeyCode.ENTER && acceptButton.isDisable.not()) {
                 accept()

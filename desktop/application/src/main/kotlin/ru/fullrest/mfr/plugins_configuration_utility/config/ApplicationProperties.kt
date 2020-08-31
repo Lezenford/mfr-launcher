@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import ru.fullrest.mfr.plugins_configuration_utility.exception.ApplicationStartException
 import ru.fullrest.mfr.plugins_configuration_utility.logging.Loggable
+import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
+import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -16,6 +18,12 @@ class ApplicationProperties(
 
     @Value("\${application.discord_link}")
     val discordLink: String,
+
+    @Value("\${application.youtube_link}")
+    val youtubeLink: String,
+
+    @Value("\${application.vk_link}")
+    val vkLink: String,
 
     @Value("\${application.game.main.data_files}")
     val dataFiles: String,
@@ -68,6 +76,12 @@ class ApplicationProperties(
     @Value("\${application.game.main.update_link}")
     val updateLink: String,
 
+    @Value("\${application.server_link}")
+    val serverLink: String,
+
+    @Value("\${application.test_server_link}")
+    val testServerLink: String,
+
     @Value("\${application.game.classic.mge.folder}")
     val mgeFolder: String,
 
@@ -108,13 +122,16 @@ class ApplicationProperties(
     val necroPerformanceOpenMwConfigFolder: String,
 
     @Value("\${application.game.openmw.config.change_value}")
-    val openMwPathChangeValue: String
+    val openMwPathChangeValue: String,
+
+    private val propertiesRepository: PropertiesRepository
 ) : Loggable {
     val openMwConfigFiles: List<String> = listOf("input_v3.xml", "openmw.cfg", "settings.cfg", "launcher.cfg")
 
     val gamePath: String = File("game").absoluteFile.toString()
 
-    val beta = true
+    val beta
+        get() = propertiesRepository.findByKey(PropertyKey.BETA)?.let { true } ?: false
 
     lateinit var gameVersion: String
 

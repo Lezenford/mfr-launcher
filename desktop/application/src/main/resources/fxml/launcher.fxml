@@ -351,8 +351,8 @@
                                 <Insets left="310.0" top="-33.0"/>
                             </VBox.margin>
                             <children>
-                                <Button mnemonicParsing="false" styleClass="vk"/>
-                                <Button mnemonicParsing="false" styleClass="yt"/>
+                                <Button mnemonicParsing="false" onAction="#openVk" styleClass="vk"/>
+                                <Button mnemonicParsing="false" onAction="#openYoutube" styleClass="yt"/>
                                 <Button mnemonicParsing="false" onAction="#openDiscord" styleClass="discord"/>
                             </children>
                         </HBox>

@@ -30,10 +30,13 @@ spring:
     web-application-type: none
 
 application:
-  version: 2.0.2
+  version: 2.0.3
   platform: win
   forum_link: http://www.fullrest.ru/forum/forum/300-morrowind-fullrest-repack-i-drugie-proekty-ot-ela/
   discord_link: https://discord.gg/3JkpGj
+  youtube_link: https://youtu.be/sSTdCzhMwCw
+  vk_link: https://vk.com/club198345102
+  server_link: https://mfr.fullrest.ru/
   test_server_link: https://mfr-beta.lezenford.com/
   game:
     main:

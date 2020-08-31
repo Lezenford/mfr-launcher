@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'io.spring.dependency-management' version "$springDependencyManagementVerson"
+    id 'org.springframework.boot' version "$springBootVersion"
+    id 'io.freefair.lombok' version "$lombokVersion"
+}
+
+version = '2.0'
+mainClassName = "ru.fullrest.mfr.server.ServerApplication"
+
+dependencies {
+    //  spring-boot
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.security:spring-security-test')
+
+    //	database
+    compile('com.h2database:h2')
+    implementation("org.liquibase:liquibase-core:$liquidbaseVersion")
+
+    // telegramBot
+    compile("org.telegram:telegrambots:$telegramBotVersion")
+    compile("org.telegram:telegrambotsextensions:$telegramBotVersion")
+
+    //  jwt
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    runtime("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    runtime("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+
+    //  common objects
+    compile project(':api')
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Morrowind Fullrest Repack Server',
+                'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
