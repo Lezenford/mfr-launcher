@@ -30,7 +30,7 @@ spring:
     web-application-type: none
 
 application:
-  version: 2.0.3
+  version: 2.0.4
   platform: win
   forum_link: http://www.fullrest.ru/forum/forum/300-morrowind-fullrest-repack-i-drugie-proekty-ot-ela/
   discord_link: https://discord.gg/3JkpGj
@@ -70,7 +70,7 @@ application:
       config:
         folder: documents\My Games\OpenMW
         backup: OpenMW\OpenMW_Config\backup
-        change_value: D:\Games\Morrowind [Fullrest Repack] 3.2\Data Files
+        change_value: D:\Games\MFR\game\Data Files
         template:
           high_quality: OpenMW\OpenMW_Config\top_PC
           middle_quality: OpenMW\OpenMW_Config\mid_PC

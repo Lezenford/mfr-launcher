@@ -9,26 +9,26 @@ import ru.fullrest.mfr.server.model.entity.Property;
 import ru.fullrest.mfr.server.model.entity.PropertyType;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
-import ru.fullrest.mfr.server.model.repository.PropertyRepository;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
-import ru.fullrest.mfr.server.telegram.CallbackAnswer;
+import ru.fullrest.mfr.server.service.PropertyService;
+import ru.fullrest.mfr.server.service.TelegramUserService;
+import ru.fullrest.mfr.server.telegram.component.CallbackAnswer;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
+import ru.fullrest.mfr.server.telegram.component.SecureBotCommand;
 
 import java.io.File;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class SetUpdaterFileCommand extends SecureBotCommand {
 
     private final ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap;
-    private final PropertyRepository propertyRepository;
+    private final PropertyService propertyService;
 
-    public SetUpdaterFileCommand(TelegramUserRepository telegramUserRepository, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
-            PropertyRepository propertyRepository) {
-        super("setupdater", "set launch updater", telegramUserRepository, UserRole.ADMIN);
+    public SetUpdaterFileCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
+            PropertyService propertyService) {
+        super("setupdater", "set launch updater", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
-        this.propertyRepository = propertyRepository;
+        this.propertyService = propertyService;
     }
 
     @Override
@@ -36,16 +36,13 @@ public class SetUpdaterFileCommand extends SecureBotCommand {
         callbackAnswerMap.put(chat.getId(), message -> {
             File file = new File(message);
             if (file.exists() && !file.isDirectory()) {
-                Optional<Property> optional = propertyRepository.findByType(PropertyType.LAUNCHER_UPDATER);
-                Property property;
-                if (optional.isPresent()) {
-                    property = optional.get();
-                } else {
+                Property property = propertyService.findByType(PropertyType.LAUNCHER_UPDATER);
+                if (property  == null ) {
                     property = new Property();
                     property.setType(PropertyType.LAUNCHER_UPDATER);
                 }
                 property.setValue(message);
-                propertyRepository.save(property);
+                propertyService.save(property);
                 absSender.execute(new SendMessage(chat.getId(), "Установлен новый апдейтер для лаунчера: " + message));
             } else {
                 absSender.execute(new SendMessage(chat.getId(), "Файл не найден на сервере. Попробуйте еще раз /setupdater"));

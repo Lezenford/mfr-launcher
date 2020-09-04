@@ -6,7 +6,7 @@ plugins {
     id 'io.freefair.lombok' version "$lombokVersion"
 }
 
-version = '2.0'
+version = '2.0.2'
 mainClassName = "ru.fullrest.mfr.server.ServerApplication"
 
 dependencies {
@@ -14,6 +14,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-cache')
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
@@ -22,6 +23,10 @@ dependencies {
     compile('com.h2database:h2')
     compile('mysql:mysql-connector-java:8.0.15')
     implementation("org.liquibase:liquibase-core:$liquidbaseVersion")
+
+    //  cache
+    compile("com.github.ben-manes.caffeine:caffeine:$caffeinVersion")
+
 
     // telegramBot
     compile("org.telegram:telegrambots:$telegramBotVersion")
@@ -39,7 +44,7 @@ dependencies {
 jar {
     manifest {
         attributes 'Implementation-Title': 'Morrowind Fullrest Repack Server',
-                'Implementation-Version': version,
+                'Implementation-Version': archiveVersion,
                 'Main-Class': mainClassName
     }
     from {
