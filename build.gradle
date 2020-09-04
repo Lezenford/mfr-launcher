@@ -30,6 +30,7 @@ configure([project(':desktop:application'),
         lombokVersion = '5.1.0'
         jjwtVersion = '0.11.2'
         telegramBotVersion = '4.9'
+        caffeinVersion = '2.8.5'
     }
 
     repositories {

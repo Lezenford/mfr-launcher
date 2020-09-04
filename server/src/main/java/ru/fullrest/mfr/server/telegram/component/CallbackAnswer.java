@@ -1,4 +1,4 @@
-package ru.fullrest.mfr.server.telegram;
+package ru.fullrest.mfr.server.telegram.component;
 
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 

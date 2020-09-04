@@ -8,7 +8,9 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.CommandRegistry;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ru.fullrest.mfr.server.telegram.CallbackAnswer;
+import ru.fullrest.mfr.server.telegram.component.CallbackAnswer;
+import ru.fullrest.mfr.server.telegram.component.CallbackModuleRegistry;
+import ru.fullrest.mfr.server.telegram.component.SecureCallbackModule;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +30,13 @@ public class TelegramConfiguration {
         commands.forEach(commandRegistry::register);
         commandRegistry.registerDefaultAction(defaultCommand);
         return commandRegistry;
+    }
+
+    @Bean
+    public CallbackModuleRegistry callbackModuleRegistry(Collection<SecureCallbackModule> callbackModules) {
+        CallbackModuleRegistry callbackModuleRegistry = new CallbackModuleRegistry();
+        callbackModules.forEach(callbackModuleRegistry::register);
+        return callbackModuleRegistry;
     }
 
     @Bean

@@ -9,39 +9,36 @@ import ru.fullrest.mfr.server.model.entity.Property;
 import ru.fullrest.mfr.server.model.entity.PropertyType;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
-import ru.fullrest.mfr.server.model.repository.PropertyRepository;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
-import ru.fullrest.mfr.server.telegram.CallbackAnswer;
+import ru.fullrest.mfr.server.service.PropertyService;
+import ru.fullrest.mfr.server.service.TelegramUserService;
+import ru.fullrest.mfr.server.telegram.component.CallbackAnswer;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
+import ru.fullrest.mfr.server.telegram.component.SecureBotCommand;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class SetLauncherVersionCommand extends SecureBotCommand {
     private final ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap;
-    private final PropertyRepository propertyRepository;
+    private final PropertyService propertyService;
 
-    public SetLauncherVersionCommand(TelegramUserRepository telegramUserRepository, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
-            PropertyRepository propertyRepository) {
-        super("setlauncherversion", "set game launcher version", telegramUserRepository, UserRole.ADMIN);
+    public SetLauncherVersionCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
+            PropertyService propertyService) {
+        super("setlauncherversion", "set game launcher version", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
-        this.propertyRepository = propertyRepository;
+        this.propertyService = propertyService;
     }
 
     @Override
     public void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
         callbackAnswerMap.put(chat.getId(), message -> {
-            Optional<Property> optional = propertyRepository.findByType(PropertyType.LAUNCHER_VERSION);
-            Property property;
-            if (optional.isPresent()) {
-                property = optional.get();
-            } else {
+            Property property = propertyService.findByType(PropertyType.LAUNCHER_VERSION);
+            if (property == null) {
                 property = new Property();
                 property.setType(PropertyType.LAUNCHER_VERSION);
             }
             property.setValue(message);
-            propertyRepository.save(property);
+            propertyService.save(property);
             absSender.execute(new SendMessage(chat.getId(), "Установлен новая версия лаунчера: " + message));
         });
         absSender.execute(new SendMessage(chat.getId(), "Введите версию ланчера"));

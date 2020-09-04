@@ -1,4 +1,4 @@
-package ru.fullrest.mfr.server.telegram.command;
+package ru.fullrest.mfr.server.telegram.component;
 
 import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -9,37 +9,34 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
+import ru.fullrest.mfr.server.service.TelegramUserService;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
-
-import java.util.Optional;
 
 @Log4j2
 public abstract class SecureBotCommand extends BotCommand {
 
-    protected final TelegramUserRepository telegramUserRepository;
+    protected final TelegramUserService telegramUserService;
     private final UserRole accessRole;
 
     /**
      * Construct a command
      *
-     * @param commandIdentifier      the unique identifier of this command (e.g. the command string to
-     *                               enter into chat)
-     * @param description            the description of this command
-     * @param telegramUserRepository repository with user for check rules
-     * @param accessRole             role with access to start command
+     * @param commandIdentifier   the unique identifier of this command (e.g. the command string to
+     *                            enter into chat)
+     * @param description         the description of this command
+     * @param telegramUserService repository with user for check rules
+     * @param accessRole          role with access to start command
      */
-    public SecureBotCommand(String commandIdentifier, String description, TelegramUserRepository telegramUserRepository, UserRole accessRole) {
+    public SecureBotCommand(String commandIdentifier, String description, TelegramUserService telegramUserService, UserRole accessRole) {
         super(commandIdentifier, description);
-        this.telegramUserRepository = telegramUserRepository;
+        this.telegramUserService = telegramUserService;
         this.accessRole = accessRole;
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
-        Optional<TelegramUser> optional = telegramUserRepository.findById(user.getId());
-        if (optional.isPresent()) {
-            TelegramUser telegramUser = optional.get();
+        TelegramUser telegramUser = telegramUserService.findById(user.getId());
+        if (telegramUser != null) {
             if (telegramUser.getRole() == accessRole) {
                 try {
                     execute((TelegramBot) absSender, user, telegramUser, chat, arguments);

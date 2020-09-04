@@ -10,7 +10,9 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.CommandRegi
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.fullrest.mfr.server.telegram.callbackQuery.SetUserRoleCallback;
+import ru.fullrest.mfr.server.telegram.callback_module.UserRoleCallbackModule;
+import ru.fullrest.mfr.server.telegram.component.CallbackAnswer;
+import ru.fullrest.mfr.server.telegram.component.CallbackModuleRegistry;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -30,8 +32,9 @@ public class TelegramBot extends TelegramWebhookBot {
     private String botPath;
 
     private final CommandRegistry commandRegistry;
+    private final CallbackModuleRegistry callbackModuleRegistry;
     private final ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap;
-    private final SetUserRoleCallback setUserRoleCallback;
+    private final UserRoleCallbackModule userRoleCallbackModule;
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
@@ -45,13 +48,19 @@ public class TelegramBot extends TelegramWebhookBot {
         }
         if (update.hasCallbackQuery()) {
             try {
-                callbackAnswerMap.remove(update.getCallbackQuery().getMessage().getChat().getId());
-                setUserRoleCallback.execute(
-                        this, update.getCallbackQuery().getFrom(), update.getCallbackQuery().getMessage().getChat(), update);
+                return callbackModuleRegistry.execute(update);
             } catch (TelegramApiException e) {
                 log.error(e);
             }
             return null;
+//            try {
+//                callbackAnswerMap.remove(update.getCallbackQuery().getMessage().getChat().getId());
+//                setUserRoleCallback.execute(
+//                        this, update.getCallbackQuery().getFrom(), update.getCallbackQuery().getMessage().getChat(), update);
+//            } catch (TelegramApiException e) {
+//                log.error(e);
+//            }
+//            return null;
         }
         if (update.hasMessage()) {
             CallbackAnswer callbackAnswer = callbackAnswerMap.get(update.getMessage().getChatId());
