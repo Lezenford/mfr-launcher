@@ -34,14 +34,14 @@ public class SetLauncherFileCommand extends SecureBotCommand {
     @Override
     public void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
         callbackAnswerMap.put(chat.getId(), message -> {
-            File file = new File(message);
+            File file = new File(message.getMessage().getText());
             if (file.exists() && !file.isDirectory()) {
                 Property property = propertyService.findByType(PropertyType.LAUNCHER);
                 if (property == null) {
                     property = new Property();
                     property.setType(PropertyType.LAUNCHER);
                 }
-                property.setValue(message);
+                property.setValue(message.getMessage().getText());
                 propertyService.save(property);
                 absSender.execute(new SendMessage(chat.getId(), "Установлен новый лаунчер: " + message));
             } else {

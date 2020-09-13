@@ -66,7 +66,7 @@ public class TelegramBot extends TelegramWebhookBot {
             CallbackAnswer callbackAnswer = callbackAnswerMap.get(update.getMessage().getChatId());
             if (callbackAnswer != null) {
                 try {
-                    callbackAnswer.execute(update.getMessage().getText());
+                    callbackAnswer.execute(update);
                 } catch (TelegramApiException e) {
                     log.error(e);
                 }

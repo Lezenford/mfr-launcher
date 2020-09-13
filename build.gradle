@@ -1,6 +1,7 @@
 configure([project(':desktop:application'),
            project(':desktop:updater'),
            project(':desktop:javafx'),
+           project(':desktop:patcher'),
            project(':server'),
            project(':api')]) {
 

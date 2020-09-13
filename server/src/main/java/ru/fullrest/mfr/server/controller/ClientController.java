@@ -2,6 +2,7 @@ package ru.fullrest.mfr.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import ru.fullrest.mfr.server.service.UpdateService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,10 +29,15 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 public class ClientController {
 
+    private final static String FIRST_VERSION = "4.0.00";
+
     private final PropertyService propertyService;
     private final UpdateService updateService;
     private final HistoryService historyService;
     private final ExecutorService threadPool = Executors.newFixedThreadPool(1);
+
+    @Value("${server.update-folder}")
+    private String updatesFolder;
 
     @GetMapping(value = Links.GAME_DOWNLOAD)
     @ResponseBody
@@ -45,8 +52,10 @@ public class ClientController {
     @GetMapping(value = Links.GAME_VERSION_HISTORY)
     @ResponseBody
     public ResponseEntity<List<String>> getGameVersionHistory() {
-        List<String> versions = updateService.findAllActive();
-        return ResponseEntity.ok(versions);
+        List<String> result = new ArrayList<>();
+        result.add(FIRST_VERSION);
+        result.addAll(updateService.findAllActive());
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping(value = Links.GAME_UPDATE_DOWNLOAD)
@@ -60,7 +69,7 @@ public class ClientController {
             return ResponseEntity.badRequest().build();
         }
         threadPool.execute(() -> historyService.updateDownload(cookie, version));
-        File file = new File(update.getPath());
+        File file = new File(updatesFolder + File.separator + update.getPath());
         return downloadFile(file, range);
     }
 

@@ -44,7 +44,7 @@ public class NewKeyCommand extends SecureBotCommand {
             key.setKey(UUID.randomUUID().toString());
             key.setCreateDate(LocalDateTime.now());
             key.setCreatedTelegramUser(telegramUser.getId());
-            key.setUser(message);
+            key.setUser(message.getMessage().getText());
             accessKeyRepository.save(key);
             absSender.execute(new SendMessage(chat.getId(), "Ключ для пользователя: " + message + "\n" + key.getKey()));
         });

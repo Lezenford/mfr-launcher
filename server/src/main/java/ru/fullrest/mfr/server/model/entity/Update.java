@@ -3,6 +3,7 @@ package ru.fullrest.mfr.server.model.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -19,7 +20,7 @@ public class Update {
     private String version;
 
     @Column(name = "UploadDate", nullable = false)
-    private Date uploadDate = new Date();
+    private LocalDateTime uploadDate = LocalDateTime.now();
 
     @Column(name = "Active")
     private boolean active = true;
