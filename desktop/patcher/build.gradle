@@ -1,0 +1,50 @@
+plugins {
+    id "application"
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+    id "io.spring.dependency-management" version "$springDependencyManagementVerson"
+    id "org.springframework.boot" version "$springBootVersion"
+    id "org.jetbrains.kotlin.plugin.spring" version "$kotlinVersion"
+    id "org.jetbrains.kotlin.plugin.jpa" version "$kotlinVersion"
+}
+
+version = '1.0'
+
+dependencies {
+    //	spring-boot
+    implementation('org.springframework.boot:spring-boot-starter')
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    //  jgit
+    implementation("org.eclipse.jgit:org.eclipse.jgit:5.9.0.202009080501-r")
+
+    //  apache-commons
+    implementation("org.apache.commons:commons-io:$apacheCommonVersion")
+
+    //  jackson
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
+    //  modules
+    implementation project(':api')
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
+
+bootRun {
+    workingDir = new File('C:/Games/M[FR]')
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Morrowind Fullrest Repack Patcher Compiler',
+                'Implementation-Version': archiveVersion
+    }
+}
