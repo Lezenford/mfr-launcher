@@ -17,9 +17,9 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 fun main() {
-    test()
-    return
-    val path = "C:\\Games\\morrowind-fullrest-repack(git)"
+    val reader = BufferedReader(InputStreamReader(System.`in`))
+    println("Введите путь до каталога с репозиторием")
+    val path = reader.use { it.readLine() }
     val repository = FileRepositoryBuilder().setGitDir(File("$path\\.git")).build()
     val git = Git(repository)
     val branch =
@@ -80,35 +80,4 @@ fun File.listAllFiles(): List<File> {
             }
         }
     return result
-}
-
-fun test() {
-    val file: File = File("C:\\Users\\Famaly\\Dropbox\\Java\\mfr-pcu\\4.0.01")
-    println(file.absolutePath)
-    if (file.exists() && !file.isDirectory) {
-        var version: String? = null
-        var hasSchema = false
-        try {
-            val zipFile = ZipFile(file)
-            val entries = zipFile.entries()
-            while (entries.hasMoreElements()) {
-                val zipEntry = entries.nextElement()
-                if (!zipEntry.isDirectory && (zipEntry.name.toLowerCase() == "patch/optional/version" || zipEntry.name.toLowerCase() == "patch\\optional\\version")) {
-                    zipFile.getInputStream(zipEntry).use { inputStream -> version = String(inputStream.readAllBytes()) }
-                }
-                if (!zipEntry.isDirectory && zipEntry.name == GameUpdate.FILE_NAME) {
-                    hasSchema = true
-                }
-            }
-        } catch (e: IOException) {
-            println(e)
-        }
-        if (version != null && hasSchema) {
-
-        } else {
-            println("error")
-        }
-    } else {
-        println("too")
-    }
 }

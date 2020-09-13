@@ -39,7 +39,7 @@ public class SetLauncherVersionCommand extends SecureBotCommand {
             }
             property.setValue(message.getMessage().getText());
             propertyService.save(property);
-            absSender.execute(new SendMessage(chat.getId(), "Установлен новая версия лаунчера: " + message));
+            absSender.execute(new SendMessage(chat.getId(), "Установлен новая версия лаунчера: " + message.getMessage().getText()));
         });
         absSender.execute(new SendMessage(chat.getId(), "Введите версию ланчера"));
     }
