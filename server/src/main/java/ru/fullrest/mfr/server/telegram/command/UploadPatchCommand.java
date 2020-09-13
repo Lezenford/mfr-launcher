@@ -3,7 +3,6 @@ package ru.fullrest.mfr.server.telegram.command;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -47,7 +46,6 @@ public class UploadPatchCommand extends SecureBotCommand {
     protected void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
         callbackAnswerMap.put(chat.getId(), message -> {
             File file = new File(updates + File.separator + message.getMessage().getText());
-            System.out.println(file.getAbsolutePath());
             if (file.exists() && !file.isDirectory()) {
                 String version = null;
                 boolean hasSchema = false;
@@ -56,7 +54,9 @@ public class UploadPatchCommand extends SecureBotCommand {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
                     while (entries.hasMoreElements()) {
                         ZipEntry zipEntry = entries.nextElement();
-                        if (!zipEntry.isDirectory() && zipEntry.getName().toLowerCase().equals("patch/optional/version")) {
+                        if (!zipEntry.isDirectory() && (zipEntry.getName().toLowerCase().equals("patch/optional/version") || zipEntry.getName()
+                                .toLowerCase()
+                                .equals("patch\\optional\\version"))) {
                             try (InputStream inputStream = zipFile.getInputStream(zipEntry)) {
                                 version = new String(inputStream.readAllBytes());
                             }
@@ -76,10 +76,15 @@ public class UploadPatchCommand extends SecureBotCommand {
                         updateService.save(update);
                         absSender.execute(new SendMessage(chat.getId(), "Добавлено новое обновление: " + version));
                     } else {
-                        absSender.execute(new SendMessage(chat.getId(), "Указанная версия уже существует. Пересоздайте патч и попробуйте еще раз /uploadpatch"));
+                        absSender.execute(new SendMessage(chat.getId(),
+                                                          "Указанная версия уже существует. Пересоздайте патч и попробуйте еще раз /uploadpatch"
+                        ));
                     }
-                } else  {
-                    absSender.execute(new SendMessage(chat.getId(), "В файле не хватает данных о версии игры и схемы развертывания. Пересоздайте патч и попробуйте еще раз /uploadpatch"));
+                } else {
+                    absSender.execute(new SendMessage(
+                            chat.getId(),
+                            "В файле не хватает данных о версии игры и схемы развертывания. Пересоздайте патч и попробуйте еще раз /uploadpatch"
+                    ));
                 }
             } else {
                 absSender.execute(new SendMessage(chat.getId(), "Файл не найден на сервере. Попробуйте еще раз /uploadpatch"));
