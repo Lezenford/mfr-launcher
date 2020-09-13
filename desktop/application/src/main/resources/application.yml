@@ -11,7 +11,6 @@ spring:
     url: jdbc:h2:file:./pcudb;TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=1;MV_STORE=TRUE;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password: ''
-    #    sql-script-encoding: UTF-8
     hikari:
       maximum-pool-size: 1
   jmx:
@@ -30,14 +29,16 @@ spring:
     web-application-type: none
 
 application:
-  version: 2.0.4
+  version: 2.0.5
   platform: win
   forum_link: http://www.fullrest.ru/forum/forum/300-morrowind-fullrest-repack-i-drugie-proekty-ot-ela/
-  discord_link: https://discord.gg/3JkpGj
+  discord_link: https://discord.gg/j2wrYTm
   youtube_link: https://youtu.be/sSTdCzhMwCw
   vk_link: https://vk.com/club198345102
   server_link: https://mfr.fullrest.ru/
   test_server_link: https://mfr-beta.lezenford.com/
+  download_folder: downloading
+  game_folder: game
   game:
     main:
       morrowind: Morrowind.exe
@@ -45,8 +46,8 @@ application:
       data_files: Data Files
       optional: Optional
       readme: Manual\readme\index.html
-      schema_file:  Optional\schema
-      update_link:  http://mfr.fullrest.ru
+      schema_file: Optional\schema
+      update_link: http://mfr.fullrest.ru
       version_file: Optional\version
       morrowind_esm: Data Files\Morrowind.esm
       tribual_esm: Data Files\Tribunal.esm
@@ -75,4 +76,4 @@ application:
           high_quality: OpenMW\OpenMW_Config\top_PC
           middle_quality: OpenMW\OpenMW_Config\mid_PC
           low_quality: OpenMW\OpenMW_Config\low_PC
-          basic_quality:  OpenMW\OpenMW_Config\necro_PC
+          basic_quality: OpenMW\OpenMW_Config\necro_PC

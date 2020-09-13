@@ -13,7 +13,7 @@ javafx {
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.web']
 }
 
-version = '2.0.4'
+version = '2.0.5'
 
 dependencies {
     //	spring-boot
@@ -67,14 +67,5 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'Morrowind Fullrest Repack Plugins Configuration Utility',
                 'Implementation-Version': archiveVersion
-    }
-}
-
-task moveJar(dependsOn: build) {
-    doLast {
-        copy {
-            from '/build/libs'
-            into 'C:/Games/morrowind-fullrest-repack/MFRPCU'
-        }
     }
 }

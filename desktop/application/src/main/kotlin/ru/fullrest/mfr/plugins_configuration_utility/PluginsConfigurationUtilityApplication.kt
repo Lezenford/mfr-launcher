@@ -53,7 +53,6 @@ class PluginsConfigurationUtilityApplication : Application(), Loggable {
             exitProcess(0)
         }
         FxConfiguration.init()
-        FxConfiguration.startController.show()
         initSpringBoot()
     }
 

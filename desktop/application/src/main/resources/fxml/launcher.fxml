@@ -250,19 +250,25 @@
                                         </VBox>
                                     </children>
                                 </VBox>
-                                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="updateButton">
+                                <VBox fx:id="updateButton" prefHeight="200.0" prefWidth="100.0"
+                                      styleClass="updateButton">
                                     <HBox.margin>
                                         <Insets left="-33.0" top="31.0"/>
                                     </HBox.margin>
                                     <children>
                                         <HBox prefHeight="200.0" prefWidth="100.0" styleClass="buttonHover">
                                             <children>
-                                                <Button mnemonicParsing="false" text="Обновление"/>
-                                                <Label styleClass="refreshIcon">
+                                                <Label fx:id="refreshSymbol" styleClass="refreshIcon">
                                                     <HBox.margin>
-                                                        <Insets left="-116.0" top="3.0"/>
+                                                        <Insets left="165.0" top="3.0"/>
                                                     </HBox.margin>
                                                 </Label>
+                                                <Button fx:id="updateText" mnemonicParsing="false"
+                                                        onAction="#updateButtonClick" text="Обновление">
+                                                    <HBox.margin>
+                                                        <Insets left="-220.0"/>
+                                                    </HBox.margin>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox disable="true" prefHeight="200.0" prefWidth="100.0"

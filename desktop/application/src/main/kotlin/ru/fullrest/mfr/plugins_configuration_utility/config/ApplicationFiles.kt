@@ -1,7 +1,7 @@
 package ru.fullrest.mfr.plugins_configuration_utility.config
 
 import org.springframework.context.annotation.Configuration
-import ru.fullrest.mfr.plugins_configuration_utility.exception.ApplicationStartException
+import ru.fullrest.mfr.plugins_configuration_utility.exception.StartApplicationException
 import ru.fullrest.mfr.plugins_configuration_utility.logging.Loggable
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository
@@ -78,7 +78,7 @@ class ApplicationFiles(
             middlePerformanceOpenMwFolder = createAndCheck(properties.middlePerformanceOpenMwConfigFolder, true)
             lowPerformanceOpenMwFolder = createAndCheck(properties.lowPerformanceMgeOpenMwConfigFolder, true)
             necroPerformanceOpenMwFolder = createAndCheck(properties.necroPerformanceOpenMwConfigFolder, true)
-        } ?: throw ApplicationStartException("Game must be installed before init game files")
+        } ?: throw StartApplicationException("Game must be installed before init game files")
     }
 
     private fun createAndCheck(path: String, isDirectory: Boolean): File {
@@ -86,7 +86,7 @@ class ApplicationFiles(
         return if (file.exists() && file.isDirectory == isDirectory) {
             file
         } else {
-            throw ApplicationStartException("File ${file.absolutePath} incorrect")
+            throw StartApplicationException("File ${file.absolutePath} incorrect")
         }
     }
 }

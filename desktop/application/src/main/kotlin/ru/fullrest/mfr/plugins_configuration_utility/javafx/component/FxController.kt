@@ -1,15 +1,50 @@
 package ru.fullrest.mfr.plugins_configuration_utility.javafx.component
 
-import javafx.fxml.FXML
+import javafx.fxml.FXMLLoader
+import javafx.scene.Parent
+import javafx.scene.image.Image
+import javafx.scene.paint.Color
 import javafx.stage.Modality
 import javafx.stage.Stage
+import javafx.stage.StageStyle
 import javafx.stage.Window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.launch
+import ru.fullrest.mfr.plugins_configuration_utility.exception.StartApplicationException
 import ru.fullrest.mfr.plugins_configuration_utility.logging.Loggable
 import javax.annotation.PostConstruct
 import kotlin.coroutines.CoroutineContext
+
+private const val TITLE = "M[FR] Launcher"
+private const val CSS = "javafx/css/style.css"
+
+fun initController(uri: String, owner: Window? = null, modality: Modality = Modality.APPLICATION_MODAL): FxController {
+    try {
+        return Stage().let { stage ->
+            stage.javaClass.classLoader.getResourceAsStream(uri).use { fxmlStream ->
+                val loader = FXMLLoader()
+                loader.load<Parent>(fxmlStream)
+                val scene = FxScene(loader.getRoot(), Color.TRANSPARENT, stage).also {
+                    it.stylesheets.add(CSS)
+                }
+                stage.scene = scene
+                stage.title = TITLE
+                stage.initStyle(StageStyle.TRANSPARENT)
+                stage.icons.add(Image("icon.png"))
+                stage.initModality(modality)
+                owner?.also { stage.initOwner(owner) }
+                loader.getController<FxController>().also { controller ->
+                    controller.scene = scene
+                    controller.stage = stage
+                }
+            }
+        }
+    } catch (e: Exception) {
+        throw StartApplicationException("Can't init controller for $uri")
+    }
+}
 
 abstract class FxController : CoroutineScope, Loggable {
     lateinit var stage: Stage
@@ -19,25 +54,8 @@ abstract class FxController : CoroutineScope, Loggable {
         get() = Dispatchers.JavaFx
 
     /**
-     * Инициализация контроллера от JavaFX.
-     * Метод вызывается после того как FXML загрузчик произвел инъекции полей.
-     * <p>
-     * Обратите внимание, что имя метода <b>обязательно</b> должно быть "initialize",
-     * в противном случае, метод не вызовется.
-     * <p>
-     * Также на этом этапе еще отсутствуют бины спринга
-     * и для инициализации лучше использовать метод,
-     * описанный аннотацией @PostConstruct.
-     * Который вызовется спрингом, после того,
-     * как им будут произведены все оставшиеся инъекции.
-     */
-    @FXML
-    fun initialize() {
-    }
-
-    /**
      * На этом этапе контроллер уже добавлен в контекст спринга
-     * и все его бины инициированы.
+     * и все его бины инициализированы.
      * Данный метод можно безопасно использовать для дополнительной
      * инициации контроллеров, например добавления listener'ов на FXML
      * объекты или их наполнением данными
@@ -50,7 +68,7 @@ abstract class FxController : CoroutineScope, Loggable {
         get() = stage.isShowing
 
     fun show() {
-        stage.show()
+        launch { stage.show() }
     }
 
     fun showAndWait() {
@@ -58,11 +76,6 @@ abstract class FxController : CoroutineScope, Loggable {
     }
 
     fun hide() {
-        stage.hide()
-    }
-
-    open fun setOwnerAndModality(stage: Window, modality: Modality) {
-        this.stage.initOwner(stage)
-        this.stage.initModality(modality)
+        launch { stage.hide() }
     }
 }
