@@ -271,7 +271,7 @@
                                                 </Button>
                                             </children>
                                         </HBox>
-                                        <VBox disable="true" prefHeight="200.0" prefWidth="100.0"
+                                        <VBox fx:id="lava" disable="true" prefHeight="200.0" prefWidth="100.0"
                                               styleClass="buttonLava">
                                             <VBox.margin>
                                                 <Insets top="-70.0"/>

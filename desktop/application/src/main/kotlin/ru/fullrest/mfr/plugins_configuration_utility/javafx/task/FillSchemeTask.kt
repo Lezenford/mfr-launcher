@@ -3,6 +3,9 @@ package ru.fullrest.mfr.plugins_configuration_utility.javafx.task
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import javafx.stage.Stage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
@@ -42,7 +45,7 @@ class FillSchemeTask(
     createProgressWindow(Stage.getWindows().find { it.isShowing })
 ) {
 
-    override suspend fun process() {
+    override suspend fun process() = withContext(Dispatchers.JavaFx) {
         progressController.show()
         progressController.setDescription("Проверка данных")
         progressController.updateProgress(0, 0)
@@ -51,7 +54,7 @@ class FillSchemeTask(
         saveSchemaMD5()
         findActiveConfiguration()
         progressController.setDescription("Настройка завершена")
-        progressController.setCloseButtonVisible(true)
+        progressController.hide()
     }
 
 

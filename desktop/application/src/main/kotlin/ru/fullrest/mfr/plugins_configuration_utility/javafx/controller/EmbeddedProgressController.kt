@@ -12,7 +12,7 @@ import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxControll
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.initController
 
 fun createProgressWindow(owner: Window? = null): EmbeddedProgressController =
-    initController("fxml/game-update.fxml", owner) as EmbeddedProgressController
+    (initController("fxml/game-update.fxml", owner) as EmbeddedProgressController).also { it.init() }
 
 class EmbeddedProgressController : ProgressBar, FxController() {
 
@@ -34,7 +34,7 @@ class EmbeddedProgressController : ProgressBar, FxController() {
     override val progressBarMinWidth: Double = PROGRESS_BAR_MIN_WIDTH
     override val progressBarMaxWidth: Double = PROGRESS_BAR_MAX_WIDTH
 
-    override fun init() {
+    public override fun init() {
         stage.addEventHandler(KeyEvent.KEY_PRESSED) { event ->
             if (closeButton.isVisible) {
                 if (event.code == KeyCode.ESCAPE || event.code == KeyCode.ENTER) {

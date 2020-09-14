@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Service
 import ru.fullrest.mfr.api.Links
@@ -40,59 +40,62 @@ class RunnerService(
     private val exceptionHandler: ExceptionHandler
 ) : CommandLineRunner, Loggable {
     override fun run(vararg args: String?) {
-
-        CoroutineScope(Dispatchers.JavaFx).launch {
-            Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
-        }
-
-        if (propertiesRepository.existsByKey(PropertyKey.INSTANCE_KEY).not()) {
-            propertiesRepository.save(Properties(PropertyKey.INSTANCE_KEY, UUID.randomUUID().toString()))
-        }
-        startController.hide()
-        checkApplicationVersion()
-        if (propertiesRepository.existsByKey(PropertyKey.INSTALLED).not()) {
-            if (files.checkInstall()) {
-                propertiesRepository.save(Properties(PropertyKey.INSTALLED))
-            } else {
-                globalProgressController.showAndWaitDownloadGame()
+        CoroutineScope(Dispatchers.Default).launch {
+            CoroutineScope(Dispatchers.JavaFx).launch {
+                Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
             }
-        }
-        if (propertiesRepository.existsByKey(PropertyKey.INSTALLED)) {
-            files.init()
-            fileService.prepareOpenMwConfigFiles()
-            validateSchema()
-            checkFirstStart()
-            updateEsmFileChangeDate()
-            launcherController.show()
-        } else {
-            log().error("Game isn't installed")
-            exitProcess(0)
+
+            if (propertiesRepository.existsByKey(PropertyKey.INSTANCE_KEY).not()) {
+                propertiesRepository.save(Properties(PropertyKey.INSTANCE_KEY, UUID.randomUUID().toString()))
+            }
+            startController.hide()
+            checkApplicationVersion()
+            if (propertiesRepository.existsByKey(PropertyKey.INSTALLED).not()) {
+                if (files.checkInstall()) {
+                    propertiesRepository.save(Properties(PropertyKey.INSTALLED))
+                } else {
+                    globalProgressController.showAndWaitDownloadGame()
+                }
+            }
+            if (propertiesRepository.existsByKey(PropertyKey.INSTALLED)) {
+                files.init()
+                fileService.prepareOpenMwConfigFiles()
+                validateSchema()
+                updateEsmFileChangeDate()
+                checkFirstStart()
+                launcherController.show()
+            } else {
+                log().error("Game isn't installed")
+                exitProcess(0)
+            }
         }
     }
 
-    private fun checkApplicationVersion() {
+    private suspend fun checkApplicationVersion() {
         try {
             val version: String = restTemplateService.exchange(
                 link = Links.LAUNCHER_VERSION,
                 clazz = String::class.java
             ) ?: return
+            println(version)
             if (properties.applicationVersion != version) {
-                globalProgressController.showAndWaitUpdateLauncher()
+                withContext(Dispatchers.JavaFx) { globalProgressController.showAndWaitUpdateLauncher() }
             }
         } catch (e: Exception) {
+            log().error(e)
         }
     }
 
-    private fun validateSchema() {
+    private suspend fun validateSchema() {
         val schemaProperty = propertiesRepository.findByKey(PropertyKey.SCHEMA) ?: Properties(PropertyKey.SCHEMA)
         if (schemaProperty.value != fileService.getFileMD5(files.schema)?.contentToString()) {
-            runBlocking {
+            withContext(Dispatchers.JavaFx) {
                 taskFactory.getFillSchemeTask().run()
             }
         }
     }
 
-    private fun updateEsmFileChangeDate() {
+    private suspend fun updateEsmFileChangeDate() {
         FileNameConstant.esmFileList.forEach {
             try {
                 File("${files.dataFiles.absolutePath}${File.separator}${it.first}").setLastModified(it.second)
@@ -102,11 +105,11 @@ class RunnerService(
         }
     }
 
-    private fun checkFirstStart() {
+    private suspend fun checkFirstStart() {
         propertiesRepository.findByKey(PropertyKey.FIRST_START) ?: run {
             propertiesRepository.save(Properties(key = PropertyKey.FIRST_START))
             fileService.setOpenMwConfig(files.middlePerformanceOpenMwFolder)
-            welcomeController.showAndWait()
+            withContext(Dispatchers.JavaFx) { welcomeController.showAndWait() }
         }
     }
 }

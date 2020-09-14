@@ -25,6 +25,7 @@ import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxControll
 import ru.fullrest.mfr.plugins_configuration_utility.service.RestTemplateService
 import ru.fullrest.mfr.plugins_configuration_utility.util.ifNotExists
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.exitProcess
 
 class LauncherController : FxController() {
@@ -101,7 +102,11 @@ class LauncherController : FxController() {
     @FXML
     private lateinit var openMwLauncher: Button
 
+    @FXML
+    private lateinit var lava: VBox
+
     private var listVersionsForUpdate: MutableList<String> = mutableListOf()
+    private val animation: AtomicBoolean = AtomicBoolean(false)
 
     override fun init() {
         stage.onShowing = EventHandler {
@@ -246,6 +251,7 @@ class LauncherController : FxController() {
                     refreshSymbol.isVisible = false
                     listVersionsForUpdate.clear()
                     listVersionsForUpdate.addAll(listOfVersion.drop(indexCurrentVersion + 1))
+                    updateAnimation()
                 }
             }
             rotation.cancel()
@@ -263,6 +269,25 @@ class LauncherController : FxController() {
             updateText.text = UPDATE_NOT_FOUND_TEXT
             refreshSymbol.isVisible = true
             listVersionsForUpdate.clear()
+        }
+    }
+
+    private fun updateAnimation(){
+        if (animation.getAndSet(true).not()) {
+            val brightness = listOf(
+                1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7,
+                0.65, 0.6, 0.55, 0.5, 0.45, 0.4, 0.35,
+                0.3, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55,
+                0.6, 0.65, 0.7, 0.85, 0.9, 0.95, 1.0
+            )
+            launch {
+                while (true) {
+                    brightness.forEach {
+                        lava.opacity = it
+                        delay(25)
+                    }
+                }
+            }
         }
     }
 
