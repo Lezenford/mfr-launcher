@@ -117,12 +117,10 @@ class GlobalProgressController : ProgressBar, FxController() {
         } else {
             taskFactory.getLauncherUpdateTask()
         }
-        val installed = task.runAsync().also { job ->
-            escapeButton.onAction = EventHandler {
-                job.cancel()
-                exitProcess(0)
-            }
-        }.await()
+        escapeButton.onAction = EventHandler {
+            exitProcess(0)
+        }
+        val installed = task.run()
         closeButton.isVisible = true
         if (installed) {
             propertiesRepository.findByKey(PropertyKey.INSTALLED)

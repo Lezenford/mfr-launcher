@@ -54,7 +54,9 @@ class RunnerService(
                 if (files.checkInstall()) {
                     propertiesRepository.save(Properties(PropertyKey.INSTALLED))
                 } else {
-                    globalProgressController.showAndWaitDownloadGame()
+                    withContext(Dispatchers.JavaFx) {
+                        globalProgressController.showAndWaitDownloadGame()
+                    }
                 }
             }
             if (propertiesRepository.existsByKey(PropertyKey.INSTALLED)) {
@@ -77,7 +79,6 @@ class RunnerService(
                 link = Links.LAUNCHER_VERSION,
                 clazz = String::class.java
             ) ?: return
-            println(version)
             if (properties.applicationVersion != version) {
                 withContext(Dispatchers.JavaFx) { globalProgressController.showAndWaitUpdateLauncher() }
             }

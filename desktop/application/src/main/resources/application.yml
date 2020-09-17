@@ -29,7 +29,7 @@ spring:
     web-application-type: none
 
 application:
-  version: 2.0.6
+  version: 2.0.7
   platform: win
   forum_link: http://www.fullrest.ru/forum/forum/300-morrowind-fullrest-repack-i-drugie-proekty-ot-ela/
   discord_link: https://discord.gg/j2wrYTm

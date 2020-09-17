@@ -252,6 +252,7 @@ class LauncherController : FxController() {
                     listVersionsForUpdate.clear()
                     listVersionsForUpdate.addAll(listOfVersion.drop(indexCurrentVersion + 1))
                     updateAnimation()
+                    createAlert(stage).info(description = "Доступно обновление!")
                 }
             }
             rotation.cancel()
