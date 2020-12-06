@@ -13,7 +13,6 @@ import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
-import javafx.stage.Modality
 import javafx.util.Duration
 import javafx.util.StringConverter
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +25,7 @@ import ru.fullrest.mfr.plugins_configuration_utility.model.repository.DetailsRep
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.ReleaseRepository
 import ru.fullrest.mfr.plugins_configuration_utility.service.FileService
 import ru.fullrest.mfr.plugins_configuration_utility.service.GroupService
+import ru.fullrest.mfr.plugins_configuration_utility.util.listAllFiles
 import java.io.File
 import java.net.MalformedURLException
 import java.util.*
@@ -133,8 +133,6 @@ class ConfigurationEditorController : FxController() {
 
             override fun fromString(string: String): Group? = null
         }
-
-        configurationEditorFieldController.setOwnerAndModality(stage, Modality.APPLICATION_MODAL)
 
         acceptButton.disabledProperty().addListener { _, _, enable: Boolean? ->
             enable?.also { getScriptButton.isDisable = !enable }
@@ -403,9 +401,8 @@ class ConfigurationEditorController : FxController() {
     fun getFilesFromFolder() {
         val file = fileService.openDirectoryChooser(files.optional, stage)
         if (file.exists() && file.isDirectory) {
-            val files: List<File> = fileService.getFilesFromDirectory(file, ArrayList())
-            files.stream()
-                .map { Details(releaseComboBox.selectionModel.selectedItem, it.absolutePath, it.absolutePath) }
+            val files: List<File> = file.listAllFiles()
+            files.map { Details(releaseComboBox.selectionModel.selectedItem, it.absolutePath, it.absolutePath) }
                 .forEach { details -> NewDetailsListViewLine(details) }
         }
     }

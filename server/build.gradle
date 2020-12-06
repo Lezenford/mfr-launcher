@@ -6,7 +6,7 @@ plugins {
     id 'io.freefair.lombok' version "$lombokVersion"
 }
 
-version = '2.0.2'
+version = '2.0.4'
 mainClassName = "ru.fullrest.mfr.server.ServerApplication"
 
 dependencies {
@@ -36,6 +36,12 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     runtime("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     runtime("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+
+    //  jgit
+    implementation("org.eclipse.jgit:org.eclipse.jgit:5.9.0.202009080501-r")
+
+    // jgit ssh
+    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit.ssh.jsch', version: '5.9.0.202009080501-r'
 
     //  common objects
     compile project(':api')

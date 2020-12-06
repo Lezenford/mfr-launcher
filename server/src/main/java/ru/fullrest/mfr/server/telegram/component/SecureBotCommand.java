@@ -23,12 +23,11 @@ public abstract class SecureBotCommand extends BotCommand {
      *
      * @param commandIdentifier   the unique identifier of this command (e.g. the command string to
      *                            enter into chat)
-     * @param description         the description of this command
      * @param telegramUserService repository with user for check rules
      * @param accessRole          role with access to start command
      */
-    public SecureBotCommand(String commandIdentifier, String description, TelegramUserService telegramUserService, UserRole accessRole) {
-        super(commandIdentifier, description);
+    public SecureBotCommand(String commandIdentifier, TelegramUserService telegramUserService, UserRole accessRole) {
+        super(commandIdentifier, "");
         this.telegramUserService = telegramUserService;
         this.accessRole = accessRole;
     }

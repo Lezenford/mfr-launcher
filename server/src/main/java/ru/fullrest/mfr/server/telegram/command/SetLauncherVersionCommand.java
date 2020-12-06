@@ -24,7 +24,7 @@ public class SetLauncherVersionCommand extends SecureBotCommand {
 
     public SetLauncherVersionCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             PropertyService propertyService) {
-        super("setlauncherversion", "set game launcher version", telegramUserService, UserRole.ADMIN);
+        super("setlauncherversion", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.propertyService = propertyService;
     }
@@ -37,9 +37,9 @@ public class SetLauncherVersionCommand extends SecureBotCommand {
                 property = new Property();
                 property.setType(PropertyType.LAUNCHER_VERSION);
             }
-            property.setValue(message);
+            property.setValue(message.getMessage().getText());
             propertyService.save(property);
-            absSender.execute(new SendMessage(chat.getId(), "Установлен новая версия лаунчера: " + message));
+            absSender.execute(new SendMessage(chat.getId(), "Установлен новая версия лаунчера: " + message.getMessage().getText()));
         });
         absSender.execute(new SendMessage(chat.getId(), "Введите версию ланчера"));
     }

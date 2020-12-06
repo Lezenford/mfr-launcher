@@ -13,6 +13,7 @@ import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import org.springframework.beans.factory.annotation.Autowired
 import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationFiles
+import ru.fullrest.mfr.plugins_configuration_utility.exception.ExternalApplicationException
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxController
 import ru.fullrest.mfr.plugins_configuration_utility.service.FileService
 import java.io.IOException
@@ -25,9 +26,6 @@ class MgeConfigurationController : FxController() {
 
     @Autowired
     private lateinit var files: ApplicationFiles
-
-    @Autowired
-    private lateinit var alertController: AlertController
 
     @FXML
     private lateinit var highPerformanceButton: ToggleButton
@@ -72,13 +70,7 @@ class MgeConfigurationController : FxController() {
                 checkPresetsButtons()
             }
         } catch (e: IOException) {
-            launch {
-                alertController.error(
-                    title = "Невозможно запустить Morrowind Graphics Extender!",
-                    exception = e,
-                    closeButtonEvent = EventHandler { alertController.hide() }
-                )
-            }
+            throw ExternalApplicationException("Невозможно запустить Morrowind Graphics Extender", e)
         }
     }
 

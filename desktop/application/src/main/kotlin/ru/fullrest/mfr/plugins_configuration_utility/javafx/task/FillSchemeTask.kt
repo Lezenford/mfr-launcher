@@ -2,11 +2,18 @@ package ru.fullrest.mfr.plugins_configuration_utility.javafx.task
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import javafx.stage.Stage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationFiles
+import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationProperties
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxTask
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.EmbeddedProgressController
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.createProgressWindow
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Group
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Properties
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
@@ -15,6 +22,7 @@ import ru.fullrest.mfr.plugins_configuration_utility.model.repository.DetailsRep
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository
 import ru.fullrest.mfr.plugins_configuration_utility.service.FileService
 import ru.fullrest.mfr.plugins_configuration_utility.service.GroupService
+import ru.fullrest.mfr.plugins_configuration_utility.service.RestTemplateService
 import ru.fullrest.mfr.plugins_configuration_utility.util.parallelCalculation
 import java.io.File
 import java.util.*
@@ -28,10 +36,17 @@ class FillSchemeTask(
     private val fileService: FileService,
     private val propertiesRepository: PropertiesRepository,
     private val detailsRepository: DetailsRepository,
-    private val mapper: ObjectMapper
-) : FxTask<Unit>() {
+    private val mapper: ObjectMapper,
+    restTemplateService: RestTemplateService,
+    applicationProperties: ApplicationProperties
+) : FxTask<Unit, EmbeddedProgressController>(
+    restTemplateService,
+    applicationProperties,
+    createProgressWindow(Stage.getWindows().find { it.isShowing })
+) {
 
-    override suspend fun process() {
+    override suspend fun process() = withContext(Dispatchers.JavaFx) {
+        progressController.show()
         progressController.setDescription("Проверка данных")
         progressController.updateProgress(0, 0)
         groupService.removeAll()
@@ -39,7 +54,7 @@ class FillSchemeTask(
         saveSchemaMD5()
         findActiveConfiguration()
         progressController.setDescription("Настройка завершена")
-        progressController.setCloseButtonVisible(true)
+        progressController.hide()
     }
 
 

@@ -1,16 +1,10 @@
 package ru.fullrest.mfr.plugins_configuration_utility.config
 
-import javafx.fxml.FXMLLoader
-import javafx.scene.Parent
-import javafx.scene.image.Image
-import javafx.scene.paint.Color
-import javafx.stage.Stage
-import javafx.stage.StageStyle
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import ru.fullrest.mfr.plugins_configuration_utility.exception.ApplicationStartException
+import ru.fullrest.mfr.plugins_configuration_utility.exception.StartApplicationException
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxController
-import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxScene
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.initController
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.*
 import ru.fullrest.mfr.plugins_configuration_utility.logging.Loggable
 
@@ -26,23 +20,13 @@ class FxConfiguration {
     }
 
     @Bean
-    fun gameInstallFXController(): GameInstallController {
-        return gameInstallController as GameInstallController
+    fun gameInstallFXController(): GlobalProgressController {
+        return gameInstallController as GlobalProgressController
     }
 
     @Bean
     fun launcherScreenFXController(): LauncherController {
         return launcherController as LauncherController
-    }
-
-    @Bean
-    fun gameUpdateFXController(): GameUpdateController {
-        return gameUpdateController as GameUpdateController
-    }
-
-    @Bean
-    fun alertScreenFXController(): AlertController {
-        return alertController as AlertController
     }
 
     @Bean
@@ -91,14 +75,11 @@ class FxConfiguration {
     }
 
     companion object : Loggable {
-        private const val TITLE = "M[FR] Launcher"
-        private const val CSS = "javafx/css/style.css"
+        private var initialized: Boolean = false
 
-        lateinit var startController: FxController
+        private lateinit var startController: FxController
         private lateinit var gameInstallController: FxController
         private lateinit var launcherController: FxController
-        private lateinit var gameUpdateController: FxController
-        private lateinit var alertController: FxController
         private lateinit var helpProjectController: FxController
         private lateinit var welcomeController: FxController
         private lateinit var pluginConfigurationController: FxController
@@ -112,47 +93,30 @@ class FxConfiguration {
         /**
          * Must be invoke in JavaFX thread only
          * Can't create stages and controllers from other threads
+         * Show first screen before closed
          */
         fun init() {
+            if (initialized) {
+                throw StartApplicationException("JavaFx already initialized")
+            }
             log().info("Init JavaFX controllers")
+
             startController = initController("fxml/start.fxml")
             gameInstallController = initController("fxml/game-install.fxml")
             launcherController = initController("fxml/launcher.fxml")
-            gameUpdateController = initController("fxml/game-update.fxml")
-            alertController = initController("fxml/alert.fxml")
-            helpProjectController = initController("fxml/help-for-project.fxml")
-            welcomeController = initController("fxml/welcome_message.fxml")
+            helpProjectController = initController("fxml/help-for-project.fxml", launcherController.stage)
+            welcomeController = initController("fxml/welcome_message.fxml", launcherController.stage)
             pluginConfigurationController = initController("fxml/plugin-configuration.fxml")
-            readmeController = initController("fxml/readme.fxml")
-            mgeController = initController("fxml/mge-configuration.fxml")
-            openMwController = initController("fxml/openmw-configuration.fxml")
+            readmeController = initController("fxml/readme.fxml", launcherController.stage)
+            mgeController = initController("fxml/mge-configuration.fxml", launcherController.stage)
+            openMwController = initController("fxml/openmw-configuration.fxml", launcherController.stage)
             configurationEditorController = initController("fxml/configuration-editor.fxml")
-            configurationEditorFieldController = initController("fxml/configuration-editor-field.fxml")
+            configurationEditorFieldController =
+                initController("fxml/configuration-editor-field.fxml", configurationEditorController.stage)
             insertKeyController = initController("fxml/insert-key.fxml")
-        }
 
-        private fun initController(uri: String): FxController {
-            try {
-                return Stage().let { stage ->
-                    stage.javaClass.classLoader.getResourceAsStream(uri).use { fxmlStream ->
-                        val loader = FXMLLoader()
-                        loader.load<Parent>(fxmlStream)
-                        val scene = FxScene(loader.getRoot(), Color.TRANSPARENT, stage).also {
-                            it.stylesheets.add(CSS)
-                        }
-                        stage.scene = scene
-                        stage.title = TITLE
-                        stage.initStyle(StageStyle.TRANSPARENT)
-                        stage.icons.add(Image("icon.png"))
-                        loader.getController<FxController>().also {
-                            it.scene = scene
-                            it.stage = stage
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                throw ApplicationStartException("Can't init controller for $uri")
-            }
+            startController.show()
+            initialized = true
         }
     }
 }

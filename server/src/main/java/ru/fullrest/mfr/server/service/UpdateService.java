@@ -1,6 +1,7 @@
 package ru.fullrest.mfr.server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.fullrest.mfr.server.configuration.CacheConfiguration;
@@ -27,5 +28,10 @@ public class UpdateService {
             unless = "#result == null")
     public Update findByVersion(String version) {
         return updateRepository.findByVersion(version);
+    }
+
+    @CacheEvict(value = CacheConfiguration.UPDATE_CACHE, allEntries = true)
+    public void save(Update update) {
+        updateRepository.save(update);
     }
 }

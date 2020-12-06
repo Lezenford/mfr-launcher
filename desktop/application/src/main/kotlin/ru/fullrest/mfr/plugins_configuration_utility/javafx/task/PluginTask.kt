@@ -1,13 +1,18 @@
 package ru.fullrest.mfr.plugins_configuration_utility.javafx.task
 
+import javafx.stage.Stage
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
+import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationProperties
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxTask
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.EmbeddedProgressController
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.createProgressWindow
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Release
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.DetailsRepository
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.ReleaseRepository
 import ru.fullrest.mfr.plugins_configuration_utility.service.FileService
+import ru.fullrest.mfr.plugins_configuration_utility.service.RestTemplateService
 import ru.fullrest.mfr.plugins_configuration_utility.util.parallelCalculation
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -16,16 +21,25 @@ import java.util.concurrent.atomic.AtomicInteger
 class PluginTask(
     private val releaseRepository: ReleaseRepository,
     private val detailsRepository: DetailsRepository,
-    private val fileService: FileService
-) : FxTask<Unit>() {
+    private val fileService: FileService,
+    restTemplateService: RestTemplateService,
+    applicationProperties: ApplicationProperties
+) : FxTask<Unit, EmbeddedProgressController>(
+    restTemplateService,
+    applicationProperties,
+    createProgressWindow(Stage.getWindows().find { it.isShowing })
+) {
     lateinit var releases: List<Release>
+
     override suspend fun process() {
+        progressController.show()
         releases.forEach { release ->
             releaseRepository.findAllByGroup(release.group!!)
                 .filter { it.applied }
                 .onEach { disablePlugin(it) }
             enablePlugin(release)
         }
+        progressController.updateProgress(1, 1)
         progressController.setDescription("Изменения установлены")
         progressController.setCloseButtonVisible(true)
     }

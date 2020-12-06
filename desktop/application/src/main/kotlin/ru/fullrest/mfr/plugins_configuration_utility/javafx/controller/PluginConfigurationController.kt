@@ -7,9 +7,6 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.*
 import javafx.scene.layout.VBox
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import org.springframework.beans.factory.annotation.Autowired
 import ru.fullrest.mfr.plugins_configuration_utility.config.ApplicationFiles
@@ -29,9 +26,6 @@ class PluginConfigurationController : FxController() {
 
     @Autowired
     private lateinit var launcherController: LauncherController
-
-    @Autowired
-    private lateinit var gameUpdateController: GameUpdateController
 
     @Autowired
     private lateinit var configurationEditorController: ConfigurationEditorController
@@ -127,7 +121,7 @@ class PluginConfigurationController : FxController() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun accept() = CoroutineScope(Dispatchers.JavaFx).launch {
+    fun accept() = launch {
         val releasesForApply: MutableList<Release> = ArrayList()
         groupButtons.toggles.forEach(Consumer { groupButton ->
             val releaseButtons =
@@ -139,10 +133,8 @@ class PluginConfigurationController : FxController() {
                 }
             })
         })
-        hide()
-        gameUpdateController.runJob(taskFactory.getPluginTask().also { it.releases = releasesForApply })
-        gameUpdateController.showAndWait()
-        show()
+        taskFactory.getPluginTask().also { it.releases = releasesForApply }.run()
+        acceptButton.isDisable = true
     }
 
     fun openScriptEditor() {

@@ -54,7 +54,7 @@ public class CacheConfiguration {
         caches.add( new CaffeineCache(
                 STATISTICS_CACHE,
                 Caffeine.newBuilder()
-                        .expireAfterWrite(10, TimeUnit.MINUTES)
+                        .expireAfterWrite(1, TimeUnit.MINUTES)
                         .ticker(ticker)
                         .build()
         ));

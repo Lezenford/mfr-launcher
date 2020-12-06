@@ -2,7 +2,7 @@ package ru.fullrest.mfr.plugins_configuration_utility.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
-import ru.fullrest.mfr.plugins_configuration_utility.exception.ApplicationStartException
+import ru.fullrest.mfr.plugins_configuration_utility.exception.StartApplicationException
 import ru.fullrest.mfr.plugins_configuration_utility.logging.Loggable
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository
@@ -124,6 +124,12 @@ class ApplicationProperties(
     @Value("\${application.game.openmw.config.change_value}")
     val openMwPathChangeValue: String,
 
+    @Value("\${application.download_folder}")
+    val downloadFolder: String,
+
+    @Value("\${application.game_folder}")
+    val gameFolder: String,
+
     private val propertiesRepository: PropertiesRepository
 ) : Loggable {
     val openMwConfigFiles: List<String> = listOf("input_v3.xml", "openmw.cfg", "settings.cfg", "launcher.cfg")
@@ -140,7 +146,7 @@ class ApplicationProperties(
             if (versionFile.exists() && versionFile.isFile) {
                 BufferedReader(FileReader(versionFile)).use { gameVersion = it.readLine() }
             } else {
-                throw ApplicationStartException("Version file doesn't exist or isn't a file: ${versionFile.absolutePath}")
+                throw StartApplicationException("Version file doesn't exist or isn't a file: ${versionFile.absolutePath}")
             }
         }
     }

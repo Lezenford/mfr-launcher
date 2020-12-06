@@ -21,19 +21,12 @@ public class StatisticsCommand extends SecureBotCommand {
     private final StatisticsCallbackModule module;
 
     public StatisticsCommand(TelegramUserService telegramUserService, StatisticsCallbackModule module) {
-        super("statistics", "Download statistics", telegramUserService, UserRole.ADMIN);
+        super("statistics", telegramUserService, UserRole.ADMIN);
         this.module = module;
     }
 
     @Override
     protected void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
-////        Integer gameDownloadCount = gameDownloadHistoryRepository.countAll();
-////        Integer applicationDownloadCount = applicationDownloadHistoryRepository.countAll();
-////        Integer updateDownloadCount = updateDownloadHistoryRepository.countAll();
-//        SendMessage sendMessage = new SendMessage(
-//                chat.getId(), String.format("Статистика скачивания:\nЛаунчер:%s\nИгра:%s\nОбновления:%s"//,
-////                                            applicationDownloadCount, gameDownloadCount, updateDownloadCount
-//                                           ));
         BotApiMethod<?> init = module.init(chat, telegramUser);
         if (init != null) {
             absSender.execute(init);

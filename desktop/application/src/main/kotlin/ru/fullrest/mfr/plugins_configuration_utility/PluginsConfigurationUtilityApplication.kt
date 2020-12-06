@@ -1,6 +1,7 @@
 package ru.fullrest.mfr.plugins_configuration_utility
 
 import javafx.application.Application
+import javafx.application.Platform
 import javafx.stage.Stage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,8 +53,8 @@ class PluginsConfigurationUtilityApplication : Application(), Loggable {
             log().error("Application take an error and will be closed", throwable)
             exitProcess(0)
         }
+        Platform.setImplicitExit(false)
         FxConfiguration.init()
-        FxConfiguration.startController.show()
         initSpringBoot()
     }
 

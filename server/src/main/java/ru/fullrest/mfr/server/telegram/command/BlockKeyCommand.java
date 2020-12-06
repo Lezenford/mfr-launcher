@@ -29,7 +29,7 @@ public class BlockKeyCommand extends SecureBotCommand {
 
     public BlockKeyCommand(ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap, AccessKeyRepository accessKeyRepository,
             TelegramUserService telegramUserService) {
-        super("blockkey", "block active key", telegramUserService, UserRole.ADMIN);
+        super("blockkey", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.accessKeyRepository = accessKeyRepository;
     }
@@ -38,7 +38,7 @@ public class BlockKeyCommand extends SecureBotCommand {
     public void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
         callbackAnswerMap.put(chat.getId(), message -> {
             String result;
-            Optional<AccessKey> optional = accessKeyRepository.findByKey(message);
+            Optional<AccessKey> optional = accessKeyRepository.findByKey(message.getMessage().getText());
             if (optional.isPresent()) {
                 AccessKey key = optional.get();
                 key.setActive(false);

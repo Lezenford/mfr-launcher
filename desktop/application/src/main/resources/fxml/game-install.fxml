@@ -7,7 +7,7 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0"
             stylesheets="@../../../../../javafx/src/main/resources/javafx/css/style.css"
             xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.GameInstallController">
+            fx:controller="ru.fullrest.mfr.plugins_configuration_utility.javafx.controller.GlobalProgressController">
     <styleClass>
         <String fx:value="launcherWindow"/>
         <String fx:value="update"/>

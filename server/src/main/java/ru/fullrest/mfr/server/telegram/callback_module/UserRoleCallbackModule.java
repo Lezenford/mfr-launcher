@@ -58,14 +58,14 @@ public class UserRoleCallbackModule extends SecureCallbackModule {
 
     @Override
     protected BotApiMethod<?> process(@NotNull CallbackQuery callbackQuery, @NotNull CallbackData callbackData) {
-        if (CANCEL.equals(callbackData.getData())) {
+        if (CANCEL.equals(callbackData.getEvent())) {
             return new EditMessageText()
                     .setChatId(callbackQuery.getMessage().getChatId())
                     .setMessageId(callbackQuery.getMessage().getMessageId())
                     .setReplyMarkup(null)
                     .setText("Запрос на изменение прав отменен");
         }
-        TelegramUser user = telegramUserService.findById(Integer.valueOf(callbackData.getData()));
+        TelegramUser user = telegramUserService.findById(Integer.valueOf(callbackData.getEvent()));
         String text = "Пользователь не найден";
         if (user != null) {
             if (user.getRole() == UserRole.ADMIN) {

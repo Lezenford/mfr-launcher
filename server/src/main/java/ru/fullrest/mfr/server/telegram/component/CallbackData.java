@@ -1,6 +1,7 @@
 package ru.fullrest.mfr.server.telegram.component;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -19,11 +20,19 @@ public class CallbackData {
     @JsonAlias(value = "m")
     private String module;
 
+    @JsonAlias(value = "e")
+    private String event;
+
     @JsonAlias(value = "d")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String data;
 
-    public static String convertToJson(String module, String data) throws JsonProcessingException, TelegramApiException {
-        String result = MAPPER.writeValueAsString(new CallbackData(module, data));
+    public static String convertToJson(String module, String event) throws JsonProcessingException, TelegramApiException {
+        return convertToJson(module, event, null);
+    }
+
+    public static String convertToJson(String module, String event, String data) throws JsonProcessingException, TelegramApiException {
+        String result = MAPPER.writeValueAsString(new CallbackData(module, event, data));
         if (result.getBytes().length < 1 || result.getBytes().length > 64) {
             throw new TelegramApiException("Callback data must be 1-64 bytes. Current size: " + result.getBytes().length);
         }

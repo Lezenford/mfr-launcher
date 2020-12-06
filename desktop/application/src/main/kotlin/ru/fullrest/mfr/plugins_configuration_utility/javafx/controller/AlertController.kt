@@ -1,16 +1,17 @@
 package ru.fullrest.mfr.plugins_configuration_utility.javafx.controller
 
-import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextArea
-import kotlinx.coroutines.launch
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.client.RestClientException
+import javafx.stage.Modality
+import javafx.stage.Window
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxController
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.initController
 import kotlin.system.exitProcess
+
+fun createAlert(owner: Window? = null): AlertController = initController("fxml/alert.fxml", owner) as AlertController
 
 class AlertController : FxController() {
 
@@ -23,30 +24,27 @@ class AlertController : FxController() {
     @FXML
     private lateinit var closeButton: Button
 
-    @Autowired
-    private lateinit var gameInstallController: GameInstallController
+    override fun init() {
+        stage.initModality(Modality.WINDOW_MODAL)
+    }
 
-    suspend fun error(
+    fun error(
         title: String = "",
-        exception: Throwable? = null,
-        description: String? = null,
-        closeButtonEvent: EventHandler<ActionEvent> = EventHandler { exitProcess(0) }
-    ) = launch {
-        exception?.also { log().error(it) }
-        this@AlertController.title.text = title
-        this@AlertController.description.text = description ?: let {
-            exception?.let {
-                when (exception) {
-                    is RestClientException -> "Ошибка подключения к серверу"
-                    else -> DEFAULT_DESCRIPTION
-                }
-            } ?: ""
-        }
-        this@AlertController.closeButton.onAction = closeButtonEvent
-        this@AlertController.showAndWait()
-    }.join()
+        description: String
+    ) {
+        this.title.text = title
+        this.description.text = description
+        this.closeButton.onAction = EventHandler { exitProcess(0) }
+        this.showAndWait()
+    }
 
-    companion object {
-        private const val DEFAULT_DESCRIPTION = "Произошла непредвиденная ошибка"
+    fun info(
+        title: String = "",
+        description: String
+    ) {
+        this.title.text = title
+        this.description.text = description
+        this.closeButton.onAction = EventHandler { hide() }
+        this.showAndWait()
     }
 }

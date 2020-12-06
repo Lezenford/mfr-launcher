@@ -1,2 +1,2 @@
 rootProject.name = 'plugins-configuration-utility'
-include 'desktop:application', 'desktop:javafx', 'desktop:updater', 'server', 'api'
+include 'desktop:application', 'desktop:javafx', 'desktop:updater', 'desktop:patcher', 'server', 'api'

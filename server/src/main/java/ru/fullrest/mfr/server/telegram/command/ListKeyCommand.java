@@ -23,7 +23,7 @@ public class ListKeyCommand extends SecureBotCommand {
     private final AccessKeyRepository accessKeyRepository;
 
     public ListKeyCommand(AccessKeyRepository accessKeyRepository, TelegramUserService telegramUserService) {
-        super("listkeys", "list of keys", telegramUserService, UserRole.ADMIN);
+        super("listkeys", telegramUserService, UserRole.ADMIN);
         this.accessKeyRepository = accessKeyRepository;
     }
 

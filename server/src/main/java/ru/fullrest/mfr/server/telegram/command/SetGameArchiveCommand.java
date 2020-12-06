@@ -26,7 +26,7 @@ public class SetGameArchiveCommand extends SecureBotCommand {
 
     public SetGameArchiveCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             PropertyService propertyService) {
-        super("setdistr", "set game distributive", telegramUserService, UserRole.ADMIN);
+        super("setdistr", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.propertyService = propertyService;
     }
@@ -34,14 +34,14 @@ public class SetGameArchiveCommand extends SecureBotCommand {
     @Override
     public void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
         callbackAnswerMap.put(chat.getId(), message -> {
-            File file = new File(message);
+            File file = new File(message.getMessage().getText());
             if (file.exists() && !file.isDirectory()) {
                 Property property = propertyService.findByType(PropertyType.GAME_ARCHIVE);
                 if (property == null) {
                     property = new Property();
                     property.setType(PropertyType.GAME_ARCHIVE);
                 }
-                property.setValue(message);
+                property.setValue(message.getMessage().getText());
                 propertyService.save(property);
                 absSender.execute(new SendMessage(chat.getId(), "Установлен новый дистрибутив: " + message));
             } else {

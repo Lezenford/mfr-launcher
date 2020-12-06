@@ -12,14 +12,29 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import kotlinx.coroutines.launch
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.client.RestTemplate
 import ru.fullrest.mfr.plugins_configuration_utility.javafx.TaskFactory
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.component.FxController
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Properties
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
 import ru.fullrest.mfr.plugins_configuration_utility.model.repository.PropertiesRepository
 import kotlin.system.exitProcess
 
-class GameInstallController : AbstractProgressController() {
+class GlobalProgressController : ProgressBar, FxController() {
+
+    @FXML
+    override lateinit var progressBar: HBox
+
+    @FXML
+    override lateinit var progressBarDecoration: VBox
+
+    @FXML
+    override lateinit var description: Label
+
+    @FXML
+    override lateinit var progress: Label
+
+    @FXML
+    override lateinit var closeButton: VBox
 
     @FXML
     private lateinit var prepareBox: VBox
@@ -35,9 +50,6 @@ class GameInstallController : AbstractProgressController() {
 
     @FXML
     private lateinit var text: Label
-
-    @Autowired
-    private lateinit var restTemplate: RestTemplate
 
     @Autowired
     private lateinit var taskFactory: TaskFactory
@@ -105,12 +117,10 @@ class GameInstallController : AbstractProgressController() {
         } else {
             taskFactory.getLauncherUpdateTask()
         }
-        val installed = runAsync(task).also { job ->
-            escapeButton.onAction = EventHandler {
-                job.cancel()
-                exitProcess(0)
-            }
-        }.await()
+        escapeButton.onAction = EventHandler {
+            exitProcess(0)
+        }
+        val installed = task.run()
         closeButton.isVisible = true
         if (installed) {
             propertiesRepository.findByKey(PropertyKey.INSTALLED)

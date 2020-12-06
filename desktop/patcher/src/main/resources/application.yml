@@ -1,0 +1,12 @@
+logging:
+  file:
+    name: logs/application.log
+  level:
+    root: INFO
+  pattern:
+    file: '"%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"'
+
+spring:
+  main:
+    banner-mode: off
+    web-application-type: none

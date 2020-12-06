@@ -22,7 +22,7 @@ public class StartCommand extends BotCommand {
     private String defaultBotAdmin;
 
     public StartCommand(TelegramUserService telegramUserService) {
-        super("start", "register new user");
+        super("start", "");
         this.telegramUserService = telegramUserService;
     }
 
