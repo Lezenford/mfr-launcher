@@ -30,7 +30,7 @@ public class NewKeyCommand extends SecureBotCommand {
 
     public NewKeyCommand(TelegramUserService telegramUserService,
             AccessKeyRepository accessKeyRepository, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap) {
-        super("newkey", "create a new key", telegramUserService, UserRole.ADMIN);
+        super("newkey", telegramUserService, UserRole.ADMIN);
         this.accessKeyRepository = accessKeyRepository;
         this.callbackAnswerMap = callbackAnswerMap;
     }

@@ -26,7 +26,7 @@ public class SetUpdaterFileCommand extends SecureBotCommand {
 
     public SetUpdaterFileCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             PropertyService propertyService) {
-        super("setupdater", "set launch updater", telegramUserService, UserRole.ADMIN);
+        super("setupdater", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.propertyService = propertyService;
     }

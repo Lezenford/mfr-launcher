@@ -29,7 +29,7 @@ public class BlockKeyCommand extends SecureBotCommand {
 
     public BlockKeyCommand(ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap, AccessKeyRepository accessKeyRepository,
             TelegramUserService telegramUserService) {
-        super("blockkey", "block active key", telegramUserService, UserRole.ADMIN);
+        super("blockkey", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.accessKeyRepository = accessKeyRepository;
     }

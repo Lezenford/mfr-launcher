@@ -19,7 +19,7 @@ public class SetUserRoleCommand extends SecureBotCommand {
     private final UserRoleCallbackModule userRoleCallbackModule;
 
     public SetUserRoleCommand(TelegramUserService telegramUserService, UserRoleCallbackModule userRoleCallbackModule) {
-        super("setRole", "Set role to user", telegramUserService, UserRole.ADMIN);
+        super("setRole", telegramUserService, UserRole.ADMIN);
         this.userRoleCallbackModule = userRoleCallbackModule;
     }
 

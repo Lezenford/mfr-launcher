@@ -32,12 +32,12 @@ public class UploadPatchCommand extends SecureBotCommand {
     private final ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap;
     private final UpdateService updateService;
 
-    @Value("${server.update-folder}")
+    @Value("${local.update-folder}")
     private String updates;
 
     public UploadPatchCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             UpdateService updateService) {
-        super("uploadpatch", "upload game patch", telegramUserService, UserRole.ADMIN);
+        super("uploadpatch", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.updateService = updateService;
     }

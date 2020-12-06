@@ -7,7 +7,9 @@ data class GameUpdate(
 
     val moveFiles: List<MoveFile>,
 
-    val removeFiles: List<String>
+    val removeFiles: List<String>,
+
+    val changeLog: String = ""
 ) {
     companion object {
         const val FILE_NAME = "update.json"

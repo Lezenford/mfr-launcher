@@ -20,6 +20,9 @@ dependencies {
     //  jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.9.0.202009080501-r")
 
+    // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.ssh.jsch
+    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit.ssh.jsch', version: '5.9.0.202009080501-r'
+
     //  apache-commons
     implementation("org.apache.commons:commons-io:$apacheCommonVersion")
 

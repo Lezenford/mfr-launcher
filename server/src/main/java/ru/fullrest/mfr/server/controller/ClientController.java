@@ -36,7 +36,7 @@ public class ClientController {
     private final HistoryService historyService;
     private final ExecutorService threadPool = Executors.newFixedThreadPool(1);
 
-    @Value("${server.update-folder}")
+    @Value("${local.update-folder}")
     private String updatesFolder;
 
     @GetMapping(value = Links.GAME_DOWNLOAD)

@@ -26,7 +26,7 @@ public class SetLauncherFileCommand extends SecureBotCommand {
 
     public SetLauncherFileCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             PropertyService propertyService) {
-        super("setlauncher", "set game launcher", telegramUserService, UserRole.ADMIN);
+        super("setlauncher", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.propertyService = propertyService;
     }

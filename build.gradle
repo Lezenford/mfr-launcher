@@ -28,7 +28,7 @@ configure([project(':desktop:application'),
         springBootVersion = '2.3.0.RELEASE'
         springDependencyManagementVerson = '1.0.9.RELEASE'
         liquidbaseVersion = '3.10.1'
-        lombokVersion = '5.1.0'
+        lombokVersion = '5.3.0'
         jjwtVersion = '0.11.2'
         telegramBotVersion = '4.9'
         caffeinVersion = '2.8.5'

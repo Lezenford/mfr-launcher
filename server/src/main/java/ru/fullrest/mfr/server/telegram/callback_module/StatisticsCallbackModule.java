@@ -23,6 +23,7 @@ import ru.fullrest.mfr.server.telegram.component.SecureCallbackModule;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Log4j2
@@ -48,17 +49,13 @@ public class StatisticsCallbackModule extends SecureCallbackModule {
 
     @Override
     protected BotApiMethod<?> process(@NotNull CallbackQuery callbackQuery, @NotNull CallbackData callbackData) {
-        switch (callbackData.getData()) {
+        switch (callbackData.getEvent()) {
             case REFRESH: {
                 String statistics = getStatistics().strip();
-                if (!statistics.equals(callbackQuery.getMessage().getText())) {
-                    return new EditMessageText().setChatId(callbackQuery.getMessage().getChatId())
-                            .setMessageId(callbackQuery.getMessage().getMessageId())
-                            .setReplyMarkup(new InlineKeyboardMarkup(getButtons()))
-                            .setText(statistics);
-                } else {
-                   return new AnswerCallbackQuery().setCallbackQueryId(callbackQuery.getId());
-                }
+                return new EditMessageText().setChatId(callbackQuery.getMessage().getChatId())
+                        .setMessageId(callbackQuery.getMessage().getMessageId())
+                        .setReplyMarkup(new InlineKeyboardMarkup(getButtons()))
+                        .setText(statistics);
             }
             case CLOSE: {
                 return new EditMessageText()
@@ -78,7 +75,8 @@ public class StatisticsCallbackModule extends SecureCallbackModule {
             List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
 
             buttons.add(Collections.singletonList(new InlineKeyboardButton("Обновить")
-                                                          .setCallbackData(CallbackData.convertToJson(name, REFRESH))));
+                                                          .setCallbackData(
+                                                                  CallbackData.convertToJson(name, REFRESH, String.valueOf(new Date().getTime())))));
             buttons.add(Collections.singletonList(new InlineKeyboardButton("Закрыть")
                                                           .setCallbackData(CallbackData.convertToJson(name, CLOSE))));
             return buttons;

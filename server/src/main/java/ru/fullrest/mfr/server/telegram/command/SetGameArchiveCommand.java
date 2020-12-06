@@ -26,7 +26,7 @@ public class SetGameArchiveCommand extends SecureBotCommand {
 
     public SetGameArchiveCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             PropertyService propertyService) {
-        super("setdistr", "set game distributive", telegramUserService, UserRole.ADMIN);
+        super("setdistr", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.propertyService = propertyService;
     }

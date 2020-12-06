@@ -19,7 +19,7 @@ public class ExitBotCommand extends SecureBotCommand {
      * @param telegramUserService repository with user for check rules
      */
     public ExitBotCommand(TelegramUserService telegramUserService) {
-        super("exit", "remove user from bot", telegramUserService, UserRole.USER);
+        super("exit", telegramUserService, UserRole.USER);
     }
 
     @Override

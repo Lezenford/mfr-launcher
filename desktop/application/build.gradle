@@ -13,7 +13,7 @@ javafx {
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.web']
 }
 
-version = '2.0.7'
+version = '2.0.8'
 
 dependencies {
     //	spring-boot

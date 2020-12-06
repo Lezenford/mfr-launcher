@@ -26,7 +26,7 @@ public class DisablePatchCommand extends SecureBotCommand {
 
     public DisablePatchCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             UpdateService updateService) {
-        super("disablepatch", "disable existing patch", telegramUserService, UserRole.ADMIN);
+        super("disablepatch", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.updateService = updateService;
     }

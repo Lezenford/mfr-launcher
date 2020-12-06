@@ -1,6 +1,7 @@
 package ru.fullrest.mfr.plugins_configuration_utility.config
 
 import org.springframework.context.annotation.Configuration
+import ru.fullrest.mfr.plugins_configuration_utility.common.FileNameConstant
 import ru.fullrest.mfr.plugins_configuration_utility.exception.StartApplicationException
 import ru.fullrest.mfr.plugins_configuration_utility.logging.Loggable
 import ru.fullrest.mfr.plugins_configuration_utility.model.entity.PropertyKey
@@ -79,6 +80,16 @@ class ApplicationFiles(
             lowPerformanceOpenMwFolder = createAndCheck(properties.lowPerformanceMgeOpenMwConfigFolder, true)
             necroPerformanceOpenMwFolder = createAndCheck(properties.necroPerformanceOpenMwConfigFolder, true)
         } ?: throw StartApplicationException("Game must be installed before init game files")
+    }
+
+    fun updateEsmFileChangeDate() {
+        FileNameConstant.esmFileList.forEach {
+            try {
+                File("${dataFiles.absolutePath}${File.separator}${it.first}").setLastModified(it.second)
+            } catch (e: Exception) {
+                log().error("Error to change last modified date in file ${it.first}", e)
+            }
+        }
     }
 
     private fun createAndCheck(path: String, isDirectory: Boolean): File {

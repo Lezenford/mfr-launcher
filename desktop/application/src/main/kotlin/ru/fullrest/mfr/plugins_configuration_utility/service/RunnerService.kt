@@ -63,7 +63,7 @@ class RunnerService(
                 files.init()
                 fileService.prepareOpenMwConfigFiles()
                 validateSchema()
-                updateEsmFileChangeDate()
+                files.updateEsmFileChangeDate()
                 checkFirstStart()
                 launcherController.show()
             } else {
@@ -92,16 +92,6 @@ class RunnerService(
         if (schemaProperty.value != fileService.getFileMD5(files.schema)?.contentToString()) {
             withContext(Dispatchers.JavaFx) {
                 taskFactory.getFillSchemeTask().run()
-            }
-        }
-    }
-
-    private suspend fun updateEsmFileChangeDate() {
-        FileNameConstant.esmFileList.forEach {
-            try {
-                File("${files.dataFiles.absolutePath}${File.separator}${it.first}").setLastModified(it.second)
-            } catch (e: Exception) {
-                log().error("Error to change last modified date in file ${it.first}", e)
             }
         }
     }

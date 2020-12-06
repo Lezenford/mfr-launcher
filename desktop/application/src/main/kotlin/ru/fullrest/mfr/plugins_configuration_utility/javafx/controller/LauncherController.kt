@@ -270,6 +270,7 @@ class LauncherController : FxController() {
             updateText.text = UPDATE_NOT_FOUND_TEXT
             refreshSymbol.isVisible = true
             listVersionsForUpdate.clear()
+            files.updateEsmFileChangeDate()
         }
     }
 

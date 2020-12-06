@@ -24,7 +24,7 @@ public class SetLauncherVersionCommand extends SecureBotCommand {
 
     public SetLauncherVersionCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
             PropertyService propertyService) {
-        super("setlauncherversion", "set game launcher version", telegramUserService, UserRole.ADMIN);
+        super("setlauncherversion", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.propertyService = propertyService;
     }
