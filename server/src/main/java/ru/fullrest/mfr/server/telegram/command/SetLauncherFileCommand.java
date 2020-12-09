@@ -9,43 +9,40 @@ import ru.fullrest.mfr.server.model.entity.Property;
 import ru.fullrest.mfr.server.model.entity.PropertyType;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
-import ru.fullrest.mfr.server.model.repository.PropertyRepository;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
-import ru.fullrest.mfr.server.telegram.CallbackAnswer;
+import ru.fullrest.mfr.server.service.PropertyService;
+import ru.fullrest.mfr.server.service.TelegramUserService;
+import ru.fullrest.mfr.server.telegram.component.CallbackAnswer;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
+import ru.fullrest.mfr.server.telegram.component.SecureBotCommand;
 
 import java.io.File;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class SetLauncherFileCommand extends SecureBotCommand {
 
     private final ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap;
-    private final PropertyRepository propertyRepository;
+    private final PropertyService propertyService;
 
-    public SetLauncherFileCommand(TelegramUserRepository telegramUserRepository, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
-            PropertyRepository propertyRepository) {
-        super("setlauncher", "set game launcher", telegramUserRepository, UserRole.ADMIN);
+    public SetLauncherFileCommand(TelegramUserService telegramUserService, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap,
+            PropertyService propertyService) {
+        super("setlauncher", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
-        this.propertyRepository = propertyRepository;
+        this.propertyService = propertyService;
     }
 
     @Override
     public void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
         callbackAnswerMap.put(chat.getId(), message -> {
-            File file = new File(message);
+            File file = new File(message.getMessage().getText());
             if (file.exists() && !file.isDirectory()) {
-                Optional<Property> optional = propertyRepository.findByType(PropertyType.LAUNCHER);
-                Property property;
-                if (optional.isPresent()) {
-                    property = optional.get();
-                } else {
+                Property property = propertyService.findByType(PropertyType.LAUNCHER);
+                if (property == null) {
                     property = new Property();
                     property.setType(PropertyType.LAUNCHER);
                 }
-                property.setValue(message);
-                propertyRepository.save(property);
+                property.setValue(message.getMessage().getText());
+                propertyService.save(property);
                 absSender.execute(new SendMessage(chat.getId(), "Установлен новый лаунчер: " + message));
             } else {
                 absSender.execute(new SendMessage(chat.getId(), "Файл не найден на сервере. Попробуйте еще раз /setlauncher"));

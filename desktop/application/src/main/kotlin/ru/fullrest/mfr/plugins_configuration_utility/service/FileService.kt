@@ -13,12 +13,10 @@ import ru.fullrest.mfr.plugins_configuration_utility.model.entity.Group
 import java.io.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.*
 
 @Component
 class FileService(
@@ -50,17 +48,6 @@ class FileService(
             it.initialFileName = fileName
             it.showSaveDialog(stage)
         }
-
-    fun getFilesFromDirectory(file: File, result: MutableList<File>): MutableList<File> {
-        if (file.exists()) {
-            if (file.isFile) {
-                result.add(file)
-            } else {
-                file.listFiles()?.forEach { getFilesFromDirectory(it, result) }
-            }
-        }
-        return result
-    }
 
     fun readFile(file: File): String {
         val builder = StringBuilder()
@@ -252,21 +239,6 @@ class FileService(
             }
         } catch (e: IOException) {
             log().error("Error creating new schema file", e)
-        }
-    }
-
-    fun deleteDirectory(file: File) {
-        try {
-            Files.walk(file.toPath()).sorted(Comparator.reverseOrder())
-                .forEach { path: Path? ->
-                    try {
-                        Files.deleteIfExists(path)
-                    } catch (e: IOException) {
-                        log().error("Can't delete temp file", e)
-                    }
-                }
-        } catch (e: IOException) {
-            log().error("Can't walk throw directory!", e)
         }
     }
 

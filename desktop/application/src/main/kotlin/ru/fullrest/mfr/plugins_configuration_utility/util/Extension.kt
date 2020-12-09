@@ -1,28 +1,38 @@
 package ru.fullrest.mfr.plugins_configuration_utility.util
 
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.web.client.RestTemplate
-import java.net.URI
+import org.apache.logging.log4j.LogManager
+import java.io.File
+import java.nio.file.Files
+import java.util.*
 
 suspend fun <T, V> parallelCalculation(
     items: List<T>,
     action: (T) -> V
 ): List<V> {
-    return items.map { CoroutineScope(Dispatchers.Default).async { action(it) } }
-        .map { it.await() }
+    val exceptionHandler = CoroutineExceptionHandler { _, e -> LogManager.getLogger(Extension::javaClass).error(e) }
+    return items.map { CoroutineScope(Dispatchers.Default).async(exceptionHandler) { action(it) } }.map { it.await() }
 }
 
-fun RestTemplate.getHeaders(
-    url: String,
-    headers: Map<String, String> = emptyMap()
-): HttpHeaders {
-    val httpEntity = HttpHeaders().also {
-        it.setAll(headers)
-    }.let { HttpEntity<Unit>(it) }
-    return exchange(URI.create(url), HttpMethod.HEAD, httpEntity, Unit.javaClass).headers
+fun File.ifNotExists(block: () -> (Unit)) {
+    if (this.exists().not()) {
+        block()
+    }
 }
+
+fun File.listAllFiles(): List<File> {
+    val result = mutableListOf<File>()
+    Files.walk(toPath()).sorted(Comparator.naturalOrder())
+        .forEach { path ->
+            val file = path.toFile()
+            if (file.isFile) {
+                result.add(file)
+            }
+        }
+    return result
+}
+
+class Extension

@@ -2,32 +2,42 @@ package ru.fullrest.mfr.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.fullrest.mfr.api.Links;
-import ru.fullrest.mfr.server.model.entity.*;
-import ru.fullrest.mfr.server.model.repository.*;
+import ru.fullrest.mfr.server.model.entity.Property;
+import ru.fullrest.mfr.server.model.entity.PropertyType;
+import ru.fullrest.mfr.server.model.entity.Update;
+import ru.fullrest.mfr.server.service.HistoryService;
+import ru.fullrest.mfr.server.service.PropertyService;
+import ru.fullrest.mfr.server.service.UpdateService;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Log4j2
 @RestController
 @RequiredArgsConstructor
 public class ClientController {
 
-    private final PropertyRepository propertyRepository;
-    private final UpdateRepository updateRepository;
-    private final GameDownloadHistoryRepository gameDownloadHistoryRepository;
-    private final ApplicationDownloadHistoryRepository applicationDownloadHistoryRepository;
-    private final UpdateDownloadHistoryRepository updateDownloadHistoryRepository;
+    private final static String FIRST_VERSION = "4.0.00";
+
+    private final PropertyService propertyService;
+    private final UpdateService updateService;
+    private final HistoryService historyService;
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(1);
+
+    @Value("${local.update-folder}")
+    private String updatesFolder;
 
     @GetMapping(value = Links.GAME_DOWNLOAD)
     @ResponseBody
@@ -35,24 +45,17 @@ public class ClientController {
             @RequestHeader(required = false, name = "Range-From") Long range,
             @RequestHeader(required = false, name = HttpHeaders.COOKIE) String cookie
                                                            ) throws IOException {
-        if (cookie != null) {
-            String key = getKeyFromCookie(cookie);
-            if (key != null) {
-                if (!gameDownloadHistoryRepository.existsByClientKey(key)) {
-                    GameDownloadHistory gameDownloadHistory = new GameDownloadHistory();
-                    gameDownloadHistory.setClientKey(key);
-                    gameDownloadHistoryRepository.save(gameDownloadHistory);
-                }
-            }
-        }
+        threadPool.execute(() -> historyService.gameDownload(cookie));
         return downloadFile(PropertyType.GAME_ARCHIVE, range);
     }
 
     @GetMapping(value = Links.GAME_VERSION_HISTORY)
     @ResponseBody
     public ResponseEntity<List<String>> getGameVersionHistory() {
-        List<String> versions = updateRepository.findAllActive();
-        return ResponseEntity.ok(versions);
+        List<String> result = new ArrayList<>();
+        result.add(FIRST_VERSION);
+        result.addAll(updateService.findAllActive());
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping(value = Links.GAME_UPDATE_DOWNLOAD)
@@ -61,21 +64,12 @@ public class ClientController {
             @RequestHeader(required = false, name = "Range-From") Long range,
             @RequestHeader(required = false, name = HttpHeaders.COOKIE) String cookie,
             @RequestParam String version) throws IOException {
-        Update update = updateRepository.findByVersion(version);
+        Update update = updateService.findByVersion(version);
         if (update == null) {
             return ResponseEntity.badRequest().build();
         }
-        File file = new File(update.getPath());
-        if (cookie != null) {
-            String key = getKeyFromCookie(cookie);
-            if (key != null) {
-                if (!updateDownloadHistoryRepository.existsByClientKey(key)) {
-                    UpdateDownloadHistory updateDownloadHistory = new UpdateDownloadHistory();
-                    updateDownloadHistory.setClientKey(key);
-                    updateDownloadHistoryRepository.save(updateDownloadHistory);
-                }
-            }
-        }
+        threadPool.execute(() -> historyService.updateDownload(cookie, version));
+        File file = new File(updatesFolder + File.separator + update.getPath());
         return downloadFile(file, range);
     }
 
@@ -85,16 +79,7 @@ public class ClientController {
             @RequestHeader(required = false, name = "Range-From") Long range,
             @RequestHeader(required = false, name = HttpHeaders.COOKIE) String cookie
                                                                ) throws IOException {
-        if (cookie != null) {
-            String key = getKeyFromCookie(cookie);
-            if (key != null) {
-                if (!applicationDownloadHistoryRepository.existsByClientKey(key)) {
-                    ApplicationDownloadHistory applicationDownloadHistory = new ApplicationDownloadHistory();
-                    applicationDownloadHistory.setClientKey(key);
-                    applicationDownloadHistoryRepository.save(applicationDownloadHistory);
-                }
-            }
-        }
+        threadPool.execute(() -> historyService.applicationDownload(cookie));
         return downloadFile(PropertyType.LAUNCHER, range);
     }
 
@@ -109,17 +94,18 @@ public class ClientController {
     @GetMapping(value = Links.LAUNCHER_VERSION)
     @ResponseBody
     public ResponseEntity<String> checkLauncherVersion() {
-        Property version = propertyRepository.findByType(PropertyType.LAUNCHER_VERSION).orElseThrow(NullPointerException::new);
+        Property version = propertyService.findByType(PropertyType.LAUNCHER_VERSION);
+        if (version == null) {
+            throw new NullPointerException("Value is not set");
+        }
         return ResponseEntity.ok().body(version.getValue());
     }
 
-    private String getKeyFromCookie(String cookie) {
-        Optional<String> first = Arrays.stream(cookie.split(";")).filter(it -> it.contains("Key=")).findFirst();
-        return first.map(s -> s.trim().replace("Key=", "")).orElse(null);
-    }
-
     private ResponseEntity<InputStreamResource> downloadFile(PropertyType type, Long range) throws IOException {
-        Property download = propertyRepository.findByType(type).orElseThrow(NullPointerException::new);
+        Property download = propertyService.findByType(type);
+        if (download == null) {
+            throw new NullPointerException("Value is not set");
+        }
         File file = new File(download.getValue());
         return downloadFile(file, range);
     }

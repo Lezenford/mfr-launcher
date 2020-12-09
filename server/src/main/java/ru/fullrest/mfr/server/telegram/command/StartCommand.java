@@ -11,25 +11,25 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
+import ru.fullrest.mfr.server.service.TelegramUserService;
 
 @Log4j2
 @Component
 public class StartCommand extends BotCommand {
-    private final TelegramUserRepository telegramUserRepository;
+    private final TelegramUserService telegramUserService;
 
     @Value("${telegram.bot.default-admin}")
     private String defaultBotAdmin;
 
-    public StartCommand(TelegramUserRepository telegramUserRepository) {
-        super("start", "register new user");
-        this.telegramUserRepository = telegramUserRepository;
+    public StartCommand(TelegramUserService telegramUserService) {
+        super("start", "");
+        this.telegramUserService = telegramUserService;
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
         Integer userId = user.getId();
-        if (telegramUserRepository.findById(userId).isEmpty()) {
+        if (telegramUserService.findById(userId) == null) {
             TelegramUser telegramUser = new TelegramUser();
             telegramUser.setId(userId);
             telegramUser.setUsername(user.getUserName());
@@ -37,7 +37,7 @@ public class StartCommand extends BotCommand {
             if (userId.toString().equals(defaultBotAdmin)) {
                 telegramUser.setRole(UserRole.ADMIN);
             }
-            telegramUserRepository.save(telegramUser);
+            telegramUserService.save(telegramUser);
             try {
                 absSender.execute(new SendMessage(
                         chat.getId(),

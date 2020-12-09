@@ -11,8 +11,9 @@ import ru.fullrest.mfr.server.model.entity.AccessKey;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
 import ru.fullrest.mfr.server.model.repository.AccessKeyRepository;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
+import ru.fullrest.mfr.server.service.TelegramUserService;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
+import ru.fullrest.mfr.server.telegram.component.SecureBotCommand;
 
 @Profile("private")
 @Log4j2
@@ -21,8 +22,8 @@ public class ListKeyCommand extends SecureBotCommand {
 
     private final AccessKeyRepository accessKeyRepository;
 
-    public ListKeyCommand(AccessKeyRepository accessKeyRepository, TelegramUserRepository telegramUserRepository) {
-        super("listkeys", "list of keys", telegramUserRepository, UserRole.ADMIN);
+    public ListKeyCommand(AccessKeyRepository accessKeyRepository, TelegramUserService telegramUserService) {
+        super("listkeys", telegramUserService, UserRole.ADMIN);
         this.accessKeyRepository = accessKeyRepository;
     }
 

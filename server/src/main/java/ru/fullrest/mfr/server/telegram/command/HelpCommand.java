@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Component
 public class HelpCommand extends BotCommand {
     public HelpCommand() {
-        super("help", "list of commands");
+        super("help", "");
     }
 
     @Override

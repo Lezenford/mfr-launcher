@@ -7,23 +7,24 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
+import ru.fullrest.mfr.server.service.TelegramUserService;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
+import ru.fullrest.mfr.server.telegram.component.SecureBotCommand;
 
 @Component
 public class ExitBotCommand extends SecureBotCommand {
     /**
      * Construct a command
      *
-     * @param telegramUserRepository repository with user for check rules
+     * @param telegramUserService repository with user for check rules
      */
-    public ExitBotCommand(TelegramUserRepository telegramUserRepository) {
-        super("exit", "remove user from bot", telegramUserRepository, UserRole.USER);
+    public ExitBotCommand(TelegramUserService telegramUserService) {
+        super("exit", telegramUserService, UserRole.USER);
     }
 
     @Override
     public void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
-        telegramUserRepository.delete(telegramUser);
+        telegramUserService.delete(telegramUser);
         absSender.execute(new SendMessage(chat.getId(), "Your account successfully deleted from bot"));
     }
 }

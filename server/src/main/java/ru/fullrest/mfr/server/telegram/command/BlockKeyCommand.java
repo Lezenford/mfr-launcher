@@ -11,9 +11,10 @@ import ru.fullrest.mfr.server.model.entity.AccessKey;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
 import ru.fullrest.mfr.server.model.repository.AccessKeyRepository;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
-import ru.fullrest.mfr.server.telegram.CallbackAnswer;
+import ru.fullrest.mfr.server.service.TelegramUserService;
+import ru.fullrest.mfr.server.telegram.component.CallbackAnswer;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
+import ru.fullrest.mfr.server.telegram.component.SecureBotCommand;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
@@ -27,8 +28,8 @@ public class BlockKeyCommand extends SecureBotCommand {
     private final AccessKeyRepository accessKeyRepository;
 
     public BlockKeyCommand(ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap, AccessKeyRepository accessKeyRepository,
-            TelegramUserRepository telegramUserRepository) {
-        super("blockkey", "block active key", telegramUserRepository, UserRole.ADMIN);
+            TelegramUserService telegramUserService) {
+        super("blockkey", telegramUserService, UserRole.ADMIN);
         this.callbackAnswerMap = callbackAnswerMap;
         this.accessKeyRepository = accessKeyRepository;
     }
@@ -37,7 +38,7 @@ public class BlockKeyCommand extends SecureBotCommand {
     public void execute(TelegramBot absSender, User user, TelegramUser telegramUser, Chat chat, String[] arguments) throws TelegramApiException {
         callbackAnswerMap.put(chat.getId(), message -> {
             String result;
-            Optional<AccessKey> optional = accessKeyRepository.findByKey(message);
+            Optional<AccessKey> optional = accessKeyRepository.findByKey(message.getMessage().getText());
             if (optional.isPresent()) {
                 AccessKey key = optional.get();
                 key.setActive(false);

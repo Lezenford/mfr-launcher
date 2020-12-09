@@ -11,9 +11,10 @@ import ru.fullrest.mfr.server.model.entity.AccessKey;
 import ru.fullrest.mfr.server.model.entity.TelegramUser;
 import ru.fullrest.mfr.server.model.entity.UserRole;
 import ru.fullrest.mfr.server.model.repository.AccessKeyRepository;
-import ru.fullrest.mfr.server.model.repository.TelegramUserRepository;
-import ru.fullrest.mfr.server.telegram.CallbackAnswer;
+import ru.fullrest.mfr.server.service.TelegramUserService;
+import ru.fullrest.mfr.server.telegram.component.CallbackAnswer;
 import ru.fullrest.mfr.server.telegram.TelegramBot;
+import ru.fullrest.mfr.server.telegram.component.SecureBotCommand;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,9 +28,9 @@ public class NewKeyCommand extends SecureBotCommand {
     private final AccessKeyRepository accessKeyRepository;
     private final ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap;
 
-    public NewKeyCommand(TelegramUserRepository telegramUserRepository,
+    public NewKeyCommand(TelegramUserService telegramUserService,
             AccessKeyRepository accessKeyRepository, ConcurrentMap<Long, CallbackAnswer> callbackAnswerMap) {
-        super("newkey", "create a new key", telegramUserRepository, UserRole.ADMIN);
+        super("newkey", telegramUserService, UserRole.ADMIN);
         this.accessKeyRepository = accessKeyRepository;
         this.callbackAnswerMap = callbackAnswerMap;
     }
@@ -43,7 +44,7 @@ public class NewKeyCommand extends SecureBotCommand {
             key.setKey(UUID.randomUUID().toString());
             key.setCreateDate(LocalDateTime.now());
             key.setCreatedTelegramUser(telegramUser.getId());
-            key.setUser(message);
+            key.setUser(message.getMessage().getText());
             accessKeyRepository.save(key);
             absSender.execute(new SendMessage(chat.getId(), "Ключ для пользователя: " + message + "\n" + key.getKey()));
         });

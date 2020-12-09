@@ -2,10 +2,7 @@ package ru.fullrest.mfr.plugins_configuration_utility.javafx
 
 import org.springframework.beans.factory.annotation.Lookup
 import org.springframework.stereotype.Component
-import ru.fullrest.mfr.plugins_configuration_utility.javafx.task.FillSchemeTask
-import ru.fullrest.mfr.plugins_configuration_utility.javafx.task.GameInstallTask
-import ru.fullrest.mfr.plugins_configuration_utility.javafx.task.LauncherUpdateTask
-import ru.fullrest.mfr.plugins_configuration_utility.javafx.task.PluginTask
+import ru.fullrest.mfr.plugins_configuration_utility.javafx.task.*
 
 @Component
 class TaskFactory {
@@ -21,4 +18,7 @@ class TaskFactory {
 
     @Lookup
     fun getLauncherUpdateTask(): LauncherUpdateTask = Any() as LauncherUpdateTask
+
+    @Lookup
+    fun getGameUpdateTask(): GameUpdateTask = Any() as GameUpdateTask
 }
