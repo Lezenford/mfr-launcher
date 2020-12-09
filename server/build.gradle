@@ -6,7 +6,7 @@ plugins {
     id 'io.freefair.lombok' version "$lombokVersion"
 }
 
-version = '2.0.4'
+version = '2.0.5'
 mainClassName = "ru.fullrest.mfr.server.ServerApplication"
 
 dependencies {
