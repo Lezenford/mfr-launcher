@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.fullrest.mfr.api.GameUpdate;
 import ru.fullrest.mfr.server.common.Function;
 import ru.fullrest.mfr.server.model.entity.Update;
-import ru.fullrest.mfr.server.model.repository.UpdateRepository;
+import ru.fullrest.mfr.server.service.UpdateService;
 import ru.fullrest.mfr.server.service.updater.event.OperationUpdateEvent;
 
 import java.io.File;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UpdaterProcessorExecutor {
     private final GitService gitService;
     private final FileService fileService;
-    private final UpdateRepository updateRepository;
+    private final UpdateService updateService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     private static final GameUpdate EMPTY_GAME_UPDATE =
@@ -82,7 +82,7 @@ public class UpdaterProcessorExecutor {
                 update.setActive(true);
                 update.setPath(patch.getName());
                 update.setVersion(this.update.get().getVersion());
-                updateRepository.save(update);
+                updateService.save(update);
             } catch (Exception e) {
                 Files.deleteIfExists(patch.toPath());
                 throw e;
