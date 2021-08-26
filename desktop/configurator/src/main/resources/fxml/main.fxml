@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.configurator.controller.MainController">
+    <children>
+        <VBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <MenuBar>
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#selectGame" text="Выбрать папку с игрой"/>
+                                <MenuItem mnemonicParsing="false" onAction="#save" text="Сохранить"/>
+                                <MenuItem mnemonicParsing="false" onAction="#close" text="Close"/>
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <ToolBar prefHeight="40.0" prefWidth="200.0">
+                    <items>
+                        <Label fx:id="gamePathLabel"/>
+                    </items>
+                </ToolBar>
+                <AnchorPane VBox.vgrow="ALWAYS">
+                    <children>
+                        <SplitPane dividerPositions="0.2, 0.8" layoutX="234.0" layoutY="94.0" prefHeight="200.0"
+                                   prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <items>
+                                <VBox>
+                                    <children>
+                                        <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
+                                            <items>
+                                                <Button mnemonicParsing="false" onAction="#addSelectedFiles"
+                                                        text="Добавить"/>
+                                                <Button mnemonicParsing="false" onAction="#removeSelectedFiles"
+                                                        text="Убрать"/>
+                                                <Button mnemonicParsing="false" onAction="#addFilesToExclude"
+                                                        text="Исключить"/>
+                                            </items>
+                                        </ToolBar>
+                                        <TabPane fx:id="fileTabPane" side="LEFT" VBox.vgrow="ALWAYS">
+                                            <tabs>
+                                                <Tab fx:id="filesTreeTab" closable="false" text="Файлы игры">
+                                                    <content>
+                                                        <ScrollPane fitToHeight="true" fitToWidth="true"
+                                                                    prefHeight="200.0" prefWidth="200.0"
+                                                                    HBox.hgrow="ALWAYS">
+                                                            <content>
+                                                                <TreeView fx:id="filesTree" showRoot="false"
+                                                                          VBox.vgrow="ALWAYS"/>
+                                                            </content>
+                                                        </ScrollPane>
+                                                    </content>
+                                                </Tab>
+                                                <Tab fx:id="usedFilesTreeTab" closable="false"
+                                                     text="Использованные файлы">
+                                                    <content>
+                                                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                                                            <content>
+                                                                <TreeView fx:id="usedFilesTree" showRoot="false"
+                                                                          VBox.vgrow="ALWAYS"/>
+                                                            </content>
+                                                        </ScrollPane>
+                                                    </content>
+                                                </Tab>
+                                                <Tab fx:id="freeFilesTreeTab" closable="false"
+                                                     text="Неиспользованные файлы">
+                                                    <content>
+                                                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                                                            <content>
+                                                                <TreeView fx:id="freeFilesTree" showRoot="false"
+                                                                          VBox.vgrow="ALWAYS"/>
+                                                            </content>
+                                                        </ScrollPane>
+                                                    </content>
+                                                </Tab>
+                                                <Tab fx:id="excludeFilesTreeTab" closable="false" text="Исключения">
+                                                    <content>
+                                                        <ScrollPane fitToHeight="true" fitToWidth="true"
+                                                                    prefHeight="200.0" prefWidth="200.0">
+                                                            <content>
+                                                                <ListView fx:id="excludeFilesList"/>
+                                                            </content>
+                                                        </ScrollPane>
+                                                    </content>
+                                                </Tab>
+                                            </tabs>
+                                        </TabPane>
+                                    </children>
+                                </VBox>
+                                <HBox prefHeight="100.0" prefWidth="200.0">
+                                    <children>
+                                        <TabPane fx:id="workTabPane" tabClosingPolicy="ALL_TABS" HBox.hgrow="ALWAYS"/>
+                                    </children>
+                                </HBox>
+                                <VBox>
+                                    <children>
+                                        <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                            <items>
+                                                <MenuButton mnemonicParsing="false" text="Создать">
+                                                    <items>
+                                                        <MenuItem mnemonicParsing="false"
+                                                                  onAction="#createExtraCategory"
+                                                                  text="Дополнительный контент"/>
+                                                        <MenuItem mnemonicParsing="false"
+                                                                  onAction="#createOptionPackage" text="Пакет опций"/>
+                                                    </items>
+                                                </MenuButton>
+                                            </items>
+                                        </ToolBar>
+                                        <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="200.0"
+                                                    prefViewportWidth="252.0" VBox.vgrow="ALWAYS">
+                                            <content>
+                                                <VBox>
+                                                    <children>
+                                                        <TitledPane animated="false" text="Основной контент"
+                                                                    VBox.vgrow="ALWAYS">
+                                                            <content>
+                                                                <ListView fx:id="mainContentView"
+                                                                          maxHeight="1.7976931348623157E308"/>
+                                                            </content>
+                                                        </TitledPane>
+                                                        <TitledPane animated="false" text="Дополнительный контент"
+                                                                    VBox.vgrow="ALWAYS">
+                                                            <content>
+                                                                <ListView fx:id="extraContentView"
+                                                                          maxHeight="1.7976931348623157E308"/>
+                                                            </content>
+                                                        </TitledPane>
+                                                        <TitledPane animated="false" maxHeight="1.7976931348623157E308"
+                                                                    text="Опции" VBox.vgrow="ALWAYS">
+                                                            <content>
+                                                                <TreeView fx:id="optionContentTree"
+                                                                          maxHeight="1.7976931348623157E308"
+                                                                          showRoot="false"/>
+                                                            </content>
+                                                        </TitledPane>
+                                                    </children>
+                                                </VBox>
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
+                                </VBox>
+                            </items>
+                        </SplitPane>
+                    </children>
+                </AnchorPane>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

@@ -25,69 +25,138 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="create plugin group table" author="Lezenford">
+    <changeSet id="create packages table" author="Lezenford">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="PLUGIN_GROUP"/>
+                <tableExists tableName="packages"/>
             </not>
         </preConditions>
-        <createTable tableName="PLUGIN_GROUP">
-            <column name="ID" type="int" autoIncrement="true">
+        <createTable tableName="sections">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="VALUE" type="varchar(255)">
+            <column name="name" type="varchar(255)">
                 <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="downloaded" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create option table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="options"/>
+            </not>
+        </preConditions>
+        <createTable tableName="options">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="applied" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="image_path" type="varchar(255)"/>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="section_id" type="int"/>
+        </createTable>
+        <addUniqueConstraint tableName="options" columnNames="section_id, name"/>
+    </changeSet>
+
+    <changeSet id="create item table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="items"/>
+            </not>
+        </preConditions>
+        <createTable tableName="items">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="game_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storage_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="md5" type="blob">
+                <constraints nullable="false"/>
+            </column>
+            <column name="option_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="items" columnNames="option_id, storage_path"/>
+    </changeSet>
+    <changeSet id="create FK for tables" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_option_section"/>
+                <foreignKeyConstraintExists foreignKeyName="FK_item_option"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="options" baseColumnNames="section_id"
+                                 constraintName="FK_option_section"
+                                 referencedTableName="sections"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="items" baseColumnNames="option_id"
+                                 constraintName="FK_item_option"
+                                 referencedTableName="options"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+    <changeSet id="create extra content table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="extra"/>
+            </not>
+        </preConditions>
+        <createTable tableName="extra">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="downloaded" type="boolean">
+                <constraints nullable="false"/>
             </column>
         </createTable>
         <rollback>
-            <dropTable tableName="PLUGIN_GROUP"/>
+            <dropTable tableName="extra"/>
         </rollback>
     </changeSet>
-
-    <changeSet id="create release table" author="Lezenford">
+    <changeSet id="create extra content file table" author="Lezenford">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="RELEASE"/>
+                <tableExists tableName="extra_files"/>
             </not>
         </preConditions>
-        <createTable tableName="RELEASE">
-            <column name="ID" type="int" autoIncrement="true">
+        <createTable tableName="extra_files">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="APPLIED" type="boolean"/>
-            <column name="DESCRIPTION" type="varchar(255)"/>
-            <column name="IMAGE_PATH" type="varchar(255)"/>
-            <column name="VALUE" type="varchar(255)"/>
-            <column name="PLUGIN_GROUP_ID" type="int"/>
-        </createTable>
-        <addDefaultValue tableName="RELEASE" columnName="APPLIED" defaultValueBoolean="true"/>
-        <addForeignKeyConstraint baseTableName="RELEASE" baseColumnNames="PLUGIN_GROUP_ID"
-                                 constraintName="FR_RELEASE_GROUP"
-                                 referencedTableName="PLUGIN_GROUP"
-                                 referencedColumnNames="ID"
-                                 onUpdate="CASCADE" onDelete="CASCADE"/>
-        <addUniqueConstraint tableName="RELEASE" columnNames="PLUGIN_GROUP_ID, VALUE"/>
-    </changeSet>
-
-    <changeSet id="create details table" author="Lezenford">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="DETAILS"/>
-            </not>
-        </preConditions>
-        <createTable tableName="DETAILS">
-            <column name="ID" type="int" autoIncrement="true">
-                <constraints primaryKey="true"/>
+            <column name="extra_id" type="int">
+                <constraints nullable="false"/>
             </column>
-            <column name="GAME_PATH" type="varchar(255)"/>
-            <column name="STORAGE_PATH" type="varchar(255)"/>
-            <column name="RELEASE_ID" type="int"/>
+            <column name="path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="md5" type="blob">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="DETAILS" baseColumnNames="RELEASE_ID"
-                                 constraintName="FK_DETAILS_RELEASE"
-                                 referencedTableName="RELEASE"
-                                 referencedColumnNames="ID"
-                                 onDelete="CASCADE" onUpdate="CASCADE"/>
-        <addUniqueConstraint tableName="DETAILS" columnNames="RELEASE_ID, STORAGE_PATH"/>
+        <addForeignKeyConstraint baseTableName="extra_files" baseColumnNames="extra_id"
+                                 constraintName="FK_ExtraFiles_Extra"
+                                 referencedTableName="extra"
+                                 referencedColumnNames="id"/>
+        <rollback>
+            <dropTable tableName="extra_files"/>
+        </rollback>
     </changeSet>
 </databaseChangeLog>

@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<AnchorPane stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css" xmlns="http://javafx.com/javafx/11"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.launcher.javafx.controller.LauncherController">
+    <children>
+        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="shadow" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="100.0" styleClass="wrapper" VBox.vgrow="ALWAYS">
+                    <children>
+                        <HBox styleClass="header" VBox.vgrow="NEVER">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#switchTab" styleClass="launcher_setting"/>
+                                <Button mnemonicParsing="false" onAction="#minimize" styleClass="hide"/>
+                                <Button mnemonicParsing="false" onAction="#exit" styleClass="close"/>
+                            </children>
+                        </HBox>
+                        <TabPane fx:id="modeTabPane" prefHeight="200.0" prefWidth="200.0" side="BOTTOM"
+                                 tabClosingPolicy="UNAVAILABLE">
+                            <tabs>
+                                <Tab fx:id="launcherTab" closable="false" text="Launcher">
+                                    <content>
+                                        <VBox styleClass="launcher">
+                                            <children>
+                                                <HBox styleClass="body">
+                                                    <children>
+                                                        <VBox styleClass="left" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <Label styleClass="header"/>
+                                                                <VBox fx:id="classicButtons" prefHeight="200.0"
+                                                                      prefWidth="100.0" styleClass="list">
+                                                                    <children>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#classic" text="Играть"/>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#classicLauncher"
+                                                                                text="Launcher"/>
+                                                                        <Button mnemonicParsing="false" onAction="#mcp"
+                                                                                text="MCP"/>
+                                                                        <Button mnemonicParsing="false" onAction="#mge"
+                                                                                text="MGE"/>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox styleClass="center" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <VBox fx:id="updateLogo" styleClass="top">
+                                                                    <children>
+                                                                        <VBox fx:id="progressBar">
+                                                                            <children>
+                                                                                <HBox styleClass="track">
+                                                                                    <children>
+                                                                                        <HBox styleClass="left"/>
+                                                                                        <HBox fx:id="track"
+                                                                                              styleClass="middle"/>
+                                                                                        <HBox styleClass="right"/>
+                                                                                    </children>
+                                                                                </HBox>
+                                                                                <VBox>
+                                                                                    <VBox.margin>
+                                                                                        <Insets top="-82.0"/>
+                                                                                    </VBox.margin>
+                                                                                    <children>
+                                                                                        <Label fx:id="percents"
+                                                                                               styleClass="percents"
+                                                                                               text="0%"/>
+                                                                                        <Label fx:id="description"
+                                                                                               text="Прогрес обнолвения">
+                                                                                            <styleClass>
+                                                                                                <String fx:value="description"/>
+                                                                                                <String fx:value="red"/>
+                                                                                            </styleClass>
+                                                                                        </Label>
+                                                                                    </children>
+                                                                                    <styleClass>
+                                                                                        <String fx:value="track"/>
+                                                                                        <String fx:value="cover"/>
+                                                                                    </styleClass>
+                                                                                </VBox>
+                                                                            </children>
+                                                                            <styleClass>
+                                                                                <String fx:value="progress-bar"/>
+                                                                                <String fx:value="hide"/>
+                                                                            </styleClass>
+                                                                        </VBox>
+                                                                    </children>
+                                                                </VBox>
+                                                                <VBox prefHeight="200.0" prefWidth="100.0"
+                                                                      styleClass="list">
+                                                                    <children>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#readme" text="Readme"/>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#forum" text="Форум"/>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#donation"
+                                                                                text="Помочь проекту"/>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox styleClass="right" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <Label styleClass="header"/>
+                                                                <VBox fx:id="openMwButtons" prefHeight="200.0"
+                                                                      prefWidth="100.0" styleClass="list">
+                                                                    <children>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#openMw" text="Играть"/>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#openMwLauncher"
+                                                                                text="Launcher"/>
+                                                                        <Button mnemonicParsing="false"
+                                                                                onAction="#openMwConfig"
+                                                                                text="Настройка"/>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </HBox>
+                                                <HBox styleClass="footer" VBox.vgrow="NEVER">
+                                                    <children>
+                                                        <VBox styleClass="left" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <HBox styleClass="top">
+                                                                    <children>
+                                                                        <Label text="Версия: "/>
+                                                                        <Label fx:id="version"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox styleClass="bottom">
+                                                                    <children>
+                                                                        <Button fx:id="gameSettingButton"
+                                                                                mnemonicParsing="false"
+                                                                                onAction="#configureGame"
+                                                                                styleClass="gameSetting"
+                                                                                text="Настроить M[FR]"/>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox styleClass="center" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <VBox styleClass="list">
+                                                                    <children>
+                                                                        <HBox styleClass="social" VBox.vgrow="NEVER">
+                                                                            <children>
+                                                                                <Button mnemonicParsing="false"
+                                                                                        onAction="#patreon"
+                                                                                        styleClass="patreon"/>
+                                                                                <Button mnemonicParsing="false"
+                                                                                        onAction="#vk" styleClass="vk"/>
+                                                                                <Button mnemonicParsing="false"
+                                                                                        onAction="#youtube"
+                                                                                        styleClass="youtube"/>
+                                                                                <Button mnemonicParsing="false"
+                                                                                        onAction="#discord"
+                                                                                        styleClass="discord"/>
+                                                                            </children>
+                                                                        </HBox>
+                                                                        <Button fx:id="updateButton"
+                                                                                mnemonicParsing="false"
+                                                                                text="Обновление">
+                                                                            <styleClass>
+                                                                                <String fx:value="updateButton"/>
+                                                                                <String fx:value="red"/>
+                                                                                <String fx:value="locked"/>
+                                                                                <String fx:value="lava"/>
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox styleClass="right" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <HBox styleClass="top">
+                                                                    <children>
+                                                                        <Label text="Путь к папке игры"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox styleClass="bottom" VBox.vgrow="ALWAYS">
+                                                                    <children>
+                                                                        <Label fx:id="gamePath" styleClass="pathText"/>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+                                <Tab fx:id="settingTab" closable="false" text="Settings">
+                                    <content>
+                                        <VBox styleClass="setting">
+                                            <children>
+                                                <VBox styleClass="body" VBox.vgrow="ALWAYS">
+                                                    <children>
+                                                        <HBox prefHeight="100.0" styleClass="top"/>
+                                                        <HBox styleClass="middle">
+                                                            <children>
+                                                                <HBox prefHeight="100.0" prefWidth="200.0"
+                                                                      styleClass="cell" HBox.hgrow="ALWAYS">
+                                                                    <children>
+                                                                        <Label text="Версия сборки:"/>
+                                                                        <ComboBox disable="true" prefWidth="150.0"
+                                                                                  visibleRowCount="2">
+                                                                            <items>
+                                                                                <FXCollections
+                                                                                        fx:factory="observableArrayList">
+                                                                                    <String fx:value="General"/>
+                                                                                    <String fx:value="Test"/>
+                                                                                </FXCollections>
+                                                                            </items>
+                                                                            <styleClass>
+                                                                                <String fx:value="red"/>
+                                                                                <String fx:value="combo"/>
+                                                                            </styleClass>
+                                                                        </ComboBox>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox prefHeight="100.0" prefWidth="200.0"
+                                                                      styleClass="cell" HBox.hgrow="ALWAYS">
+                                                                    <children>
+                                                                        <Label text="Язык лаунчера:"/>
+                                                                        <ComboBox prefWidth="150.0"
+                                                                                  promptText="Русский">
+                                                                            <styleClass>
+                                                                                <String fx:value="red"/>
+                                                                                <String fx:value="combo"/>
+                                                                            </styleClass>
+                                                                        </ComboBox>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </HBox>
+                                                        <VBox styleClass="bottom">
+                                                            <children>
+                                                                <HBox styleClass="check">
+                                                                    <children>
+                                                                        <Button fx:id="consistencyCheckButton"
+                                                                                disable="true" mnemonicParsing="false"
+                                                                                onAction="#checkConsistency"
+                                                                                text="Исправить">
+                                                                            <styleClass>
+                                                                                <String fx:value="button154"/>
+                                                                                <String fx:value="red"/>
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                        <Label text="Проверка целостности сборки:"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox styleClass="auto-send">
+                                                                    <children>
+                                                                        <Label text="Автоматически отравлять логи:"/>
+                                                                        <CheckBox disable="true" mnemonicParsing="false"
+                                                                                  styleClass="apply-checkbox"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox styleClass="manual-send">
+                                                                    <children>
+                                                                        <Label text="Выгрузить отчет об ошибке:"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox styleClass="manual-send-buttons">
+                                                                    <children>
+                                                                        <Button disable="true" mnemonicParsing="false"
+                                                                                text="Launcher">
+                                                                            <styleClass>
+                                                                                <String fx:value="button154"/>
+                                                                                <String fx:value="red"/>
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                        <HBox prefHeight="100.0" prefWidth="200.0"/>
+                                                                        <Button disable="true" mnemonicParsing="false"
+                                                                                text="Open MW">
+                                                                            <styleClass>
+                                                                                <String fx:value="button154"/>
+                                                                                <String fx:value="red"/>
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                        <HBox prefHeight="100.0" prefWidth="200.0"/>
+                                                                        <Button disable="true" mnemonicParsing="false"
+                                                                                text="Beta">
+                                                                            <styleClass>
+                                                                                <String fx:value="button154"/>
+                                                                                <String fx:value="red"/>
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </VBox>
+                                                <HBox prefHeight="100.0" prefWidth="200.0" styleClass="footer">
+                                                    <children>
+                                                        <VBox styleClass="left">
+                                                            <children>
+                                                                <HBox styleClass="top">
+                                                                    <children>
+                                                                        <Label text="Версия лаунчера: "/>
+                                                                        <Label fx:id="launcherVersion"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox styleClass="bottom">
+                                                                    <children>
+                                                                        <ToggleButton fx:id="onlineModButton"
+                                                                                      mnemonicParsing="false"
+                                                                                      selected="true"
+                                                                                      styleClass="mode_change"
+                                                                                      text="Online-mod"/>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox styleClass="center" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <VBox styleClass="list"/>
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox styleClass="right">
+                                                            <children>
+                                                                <HBox styleClass="top">
+                                                                    <children>
+                                                                        <Label text="Путь к папке лаунчера"/>
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox styleClass="bottom" VBox.vgrow="ALWAYS">
+                                                                    <children>
+                                                                        <Label fx:id="launcherPath"
+                                                                               styleClass="pathText"/>
+                                                                    </children>
+                                                                </HBox>
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+    <styleClass>
+        <String fx:value="background"/>
+        <String fx:value="main"/>
+    </styleClass>
+</AnchorPane>
