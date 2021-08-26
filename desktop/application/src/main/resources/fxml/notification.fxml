@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
+<AnchorPane stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css"
+            xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.launcher.javafx.controller.NotificationController">
+    <styleClass>
+        <String fx:value="background"/>
+        <String fx:value="simple"/>
+    </styleClass>
+    <children>
+        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <styleClass>
+                <String fx:value="wrapper"/>
+                <String fx:value="notification"/>
+            </styleClass>
+            <children>
+                <VBox styleClass="header" VBox.vgrow="NEVER">
+                    <children>
+                        <Label fx:id="title" text="Внимание">
+                            <styleClass>
+                                <String fx:value="title"/>
+                                <String fx:value="red"/>
+                            </styleClass>
+                        </Label>
+                    </children>
+                </VBox>
+                <VBox styleClass="body" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label fx:id="description" text="Text"/>
+                    </children>
+                </VBox>
+                <VBox styleClass="footer" VBox.vgrow="NEVER">
+                    <children>
+                        <Button fx:id="closeButton" mnemonicParsing="false" text="Закрыть">
+                            <styleClass>
+                                <String fx:value="red"/>
+                                <String fx:value="button154"/>
+                            </styleClass>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
