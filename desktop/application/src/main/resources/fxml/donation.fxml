@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
+<AnchorPane stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css"
+            xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.launcher.javafx.controller.DonationController">
+    <styleClass>
+        <String fx:value="background"/>
+        <String fx:value="simple"/>
+    </styleClass>
+    <children>
+        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox styleClass="header" VBox.vgrow="NEVER">
+                    <children>
+                        <Label text="Благодарность">
+                            <styleClass>
+                                <String fx:value="red"/>
+                                <String fx:value="title"/>
+                            </styleClass>
+                        </Label>
+                    </children>
+                </VBox>
+                <VBox styleClass="body" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="red" text="Дорогой друг!"/>
+                        <TextArea editable="false" prefHeight="200.0" prefWidth="200.0" styleClass="top"
+                                  text="Данный проект никогда не задумывался как коммерческий продукт.&#10;Он развивался, развивается и, не смотря ни на что, будет развиваться благодаря стараниям целой команды энтузиастов.&#10;Но если тебе хочется поддержать проект и его создателей, просто выразить свою благодарность за потраченное время или дать понять, что наша работа важна для тебя - можно сделать пожертвование, которое поможет в разных аспектах развития, включая многие амбициозные цели на будущее.&#10;Спасибо тебе, дорогой друг!"/>
+                        <Label styleClass="red" text="Карта Сбербанка: 4274-3200-4920-6280"/>
+                        <TextArea prefHeight="200.0" prefWidth="200.0" styleClass="bottom"
+                                  text="Связь с автором:&#10;http://www.fullrest.ru/forum/user/14788-al/&#10;Telegram - @tes3_aL&#10;"/>
+                    </children>
+                </VBox>
+                <VBox styleClass="footer" VBox.vgrow="NEVER">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#close" text="Закрыть">
+                            <styleClass>
+                                <String fx:value="red"/>
+                                <String fx:value="button154"/>
+                            </styleClass>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+            <styleClass>
+                <String fx:value="wrapper"/>
+                <String fx:value="donation"/>
+            </styleClass>
+        </VBox>
+    </children>
+</AnchorPane>

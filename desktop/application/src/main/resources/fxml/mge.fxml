@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
+<AnchorPane stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css"
+            xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.fullrest.mfr.launcher.javafx.controller.MgeController">
+    <styleClass>
+        <String fx:value="background"/>
+        <String fx:value="simple"/>
+    </styleClass>
+    <children>
+        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox styleClass="header" VBox.vgrow="NEVER">
+                    <children>
+                        <Label text="Пресеты MGE">
+                            <styleClass>
+                                <String fx:value="red"/>
+                                <String fx:value="title"/>
+                            </styleClass>
+                        </Label>
+                    </children>
+                </VBox>
+                <VBox styleClass="body" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToggleButton fx:id="high" mnemonicParsing="false" text="Мощный компьютер">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="Settings"/>
+                            </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton fx:id="middle" mnemonicParsing="false" text="Средний компьютер"
+                                      toggleGroup="$Settings"/>
+                        <ToggleButton fx:id="low" mnemonicParsing="false" text="Слабый компьютер"
+                                      toggleGroup="$Settings"/>
+                        <ToggleButton fx:id="basic" mnemonicParsing="false" text="Древний компьютер"
+                                      toggleGroup="$Settings"/>
+                        <ToggleButton fx:id="custom" mnemonicParsing="false" text="Свои настройки"
+                                      toggleGroup="$Settings"/>
+                        <VBox styleClass="separator"/>
+                        <Button mnemonicParsing="false" onAction="#startMge" text="Старт MGE">
+                            <styleClass>
+                                <String fx:value="red"/>
+                                <String fx:value="special-button"/>
+                            </styleClass>
+                        </Button>
+                    </children>
+                </VBox>
+                <VBox styleClass="footer" VBox.vgrow="NEVER">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#close" text="Закрыть">
+                            <styleClass>
+                                <String fx:value="red"/>
+                                <String fx:value="button154"/>
+                            </styleClass>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+            <styleClass>
+                <String fx:value="wrapper"/>
+                <String fx:value="setting_window"/>
+                <String fx:value="mge"/>
+            </styleClass>
+        </VBox>
+    </children>
+</AnchorPane>
