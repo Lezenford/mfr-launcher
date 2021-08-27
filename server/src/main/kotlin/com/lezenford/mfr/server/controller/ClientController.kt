@@ -26,6 +26,7 @@ import ru.fullrest.mfr.common.api.rest.REPORT_PATH
 import ru.fullrest.mfr.common.api.rest.ReportDto
 import ru.fullrest.mfr.common.exception.ServerMaintenanceException
 import java.time.LocalDateTime
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReadWriteLock
 
 @RestController
@@ -35,25 +36,27 @@ class ClientController(
     private val categoryService: CategoryService,
     private val reportService: ReportService,
     private val launcherService: LauncherService,
-    private val serverGlobalFileLock: ReadWriteLock
+    private val serverGlobalFileLock: ReadWriteLock,
+    private val maintenanceStatus: AtomicBoolean
 ) {
 
     @GetMapping(GAME_PATH)
-    fun findAllBuild(): List<BuildDto> = if (serverGlobalFileLock.readLock().tryLock()) {
-        try {
-            buildService.findAll().map { it.toBuildDto() }
-        } finally {
-            serverGlobalFileLock.readLock().unlock()
+    fun findAllBuild(): List<BuildDto> =
+        if (maintenanceStatus.get().not() && serverGlobalFileLock.readLock().tryLock()) {
+            try {
+                buildService.findAll().map { it.toBuildDto() }
+            } finally {
+                serverGlobalFileLock.readLock().unlock()
+            }
+        } else {
+            throw ServerMaintenanceException()
         }
-    } else {
-        throw ServerMaintenanceException()
-    }
 
     @GetMapping("${GAME_PATH}/{id}")
     fun findBuild(
         @PathVariable id: Int,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) lastUpdate: LocalDateTime?
-    ): Content = if (serverGlobalFileLock.readLock().tryLock()) {
+    ): Content = if (maintenanceStatus.get().not() && serverGlobalFileLock.readLock().tryLock()) {
         try {
             categoryService.findAllByBuildId(id).toContent(lastUpdate)
         } finally {

@@ -12,14 +12,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import javax.annotation.PreDestroy
-import kotlin.concurrent.withLock
 
 @Service
 class UpdaterProcessorExecutor(
     private val gitService: GitService,
     private val storageService: StorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
-    private val serverGlobalFileLock: ReentrantReadWriteLock
+    private val serverGlobalFileLock: ReentrantReadWriteLock,
+    private val maintenanceStatus: AtomicBoolean
 ) {
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -27,7 +27,9 @@ class UpdaterProcessorExecutor(
     private val operation = AtomicReference("")
 
     fun updateBuild(build: Build) = run("Update build ${build.name}") {
-        serverGlobalFileLock.writeLock().withLock {
+        maintenanceStatus.set(true)
+        serverGlobalFileLock.writeLock().lock()
+        try {
             log.info("Server start maintenance mod for update task")
             if (gitService.repositoryExist(build).not()) {
                 gitService.cloneRepository(build)
@@ -40,6 +42,9 @@ class UpdaterProcessorExecutor(
                     throw it
                 }
             log.info("Server finished maintenance mod for update task")
+        } finally {
+            serverGlobalFileLock.writeLock().unlock()
+            maintenanceStatus.set(false)
         }
     }
 
@@ -52,6 +57,7 @@ class UpdaterProcessorExecutor(
             executor.execute {
                 var error: Exception? = null
                 try {
+                    log.info("Update executor started")
                     function()
                     log.info("Operation successfully finish")
                 } catch (e: Exception) {

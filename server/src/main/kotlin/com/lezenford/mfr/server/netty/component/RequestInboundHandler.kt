@@ -25,6 +25,7 @@ import java.nio.file.Paths
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 @Component
@@ -37,6 +38,7 @@ class RequestInboundHandler(
     private val serverSettingProperties: ServerSettingProperties,
     private val channels: ChannelGroup,
     private val serverGlobalFileLock: ReentrantReadWriteLock,
+    private val maintenanceStatus: AtomicBoolean,
     private val historyUpdateExecutor: ExecutorService
 ) : SimpleChannelInboundHandler<Message>() {
     private val executor = Executors.newSingleThreadExecutor()
@@ -109,7 +111,7 @@ class RequestInboundHandler(
     }
 
     private fun uploadFile(id: Int, file: File, channel: Channel) {
-        if (serverGlobalFileLock.readLock().tryLock()) {
+        if (maintenanceStatus.get().not() && serverGlobalFileLock.readLock().tryLock()) {
             try {
                 val length = file.length()
                 RandomAccessFile(file, "r").use { reader ->
