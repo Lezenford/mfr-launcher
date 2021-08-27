@@ -12,7 +12,7 @@ class MultithreadingConfiguration {
     private val historyUpdateExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
     @Bean
-    fun serverGlobalFileLock(): ReentrantReadWriteLock = ReentrantReadWriteLock()
+    fun serverGlobalFileLock(): ReentrantReadWriteLock = ReentrantReadWriteLock(true)
 
     @Bean
     fun historyUpdateExecutor(): ExecutorService = historyUpdateExecutor

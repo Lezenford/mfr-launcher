@@ -3,6 +3,7 @@ package ru.fullrest.mfr.launcher.javafx.controller
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.TextArea
 import javafx.stage.Modality
 import javafx.stage.Stage
 import org.springframework.beans.factory.config.BeanDefinition
@@ -20,7 +21,7 @@ import kotlin.system.exitProcess
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class NotificationController : FxController("fxml/notification.fxml") {
     private val title: Label by fxml()
-    private val description: Label by fxml()
+    private val description: TextArea by fxml()
     private val closeButton: Button by fxml()
 
     init {

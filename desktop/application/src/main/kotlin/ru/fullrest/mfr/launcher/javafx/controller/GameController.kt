@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.springframework.beans.factory.ObjectFactory
 import org.springframework.stereotype.Component
 import ru.fullrest.mfr.common.api.ContentType
 import ru.fullrest.mfr.common.extensions.Logger
@@ -44,7 +45,8 @@ class GameController(
     private val extraService: ExtraService,
     private val publisher: EventPublisher,
     private val restTemplateService: RestTemplateService,
-    private val taskFactory: TaskFactory
+    private val taskFactory: TaskFactory,
+    private val notificationControllerFactory: ObjectFactory<NotificationController>
 ) : FxController(source = "fxml/game-options.fxml") {
     private val sectionsContainer: VBox by fxml()
     private val extraContent: VBox by fxml()
@@ -78,14 +80,22 @@ class GameController(
     fun applyChanges() {
         val actualSections = sectionsContainer.children.filterIsInstance(SectionRow::class.java)
             .map { it.section }
-            .filter { it.downloaded }
         val savedSections = sectionService.findAllWithDetails()
+        val notDownloadedOptions = mutableListOf<String>()
         val listOptionsForApply = actualSections.mapNotNull { section ->
             section.options.find { it.applied }?.let {
                 savedSections.first { it.name == section.name }
                     .let { savedSection -> savedSection.options.find { it.applied } to it }
             }
-        }.filter { (currentOption, newOption) -> currentOption?.id != newOption.id }
+        }.filter { (currentOption, newOption) -> (currentOption?.id != newOption.id) }
+            .filter { pair -> pair.second.section.downloaded.also { if (it.not()) notDownloadedOptions.add(pair.second.section.name) } }
+
+        if (notDownloadedOptions.isNotEmpty()) {
+            notificationControllerFactory.`object`.info(
+                description = """Часть опций не будет применена, т.к. пакет опций не был загружен.
+                    |Пропущены следующие опции: ${notDownloadedOptions.joinToString(", ")}""".trimMargin()
+            )
+        }
 
         launch(Dispatchers.Default) {
             withContext(Dispatchers.JavaFx) { applyButton.isDisable = true }
