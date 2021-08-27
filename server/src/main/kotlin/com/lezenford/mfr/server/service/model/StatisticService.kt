@@ -55,13 +55,15 @@ class StatisticService(
         |Скачивали дополнительный контент: $extraGameClientCount 
         |Скачивали дополнительный контент за последний месяц: $extraGameLastMonthClientCount 
         
-        |Скачивали опциональный контент: ${
+        |Скачивали опциональный контент: 
+        |${
             optionalHistoryMap.map { (key, value) ->
                 "$key: ${value.count()}"
             }.joinToString("\n")
         } 
         
-        |Скачивали опциональный контент за последний месяц: ${
+        |Скачивали опциональный контент за последний месяц: 
+        |${
             optionalHistoryMap.map { (key, value) ->
                 "$key: ${value.count { it.lastChangeDate.isAfter(LocalDateTime.now().minusMonths(1)) }}"
             }.joinToString("\n")

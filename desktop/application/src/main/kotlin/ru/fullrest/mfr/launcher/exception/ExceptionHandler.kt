@@ -52,7 +52,7 @@ class ExceptionHandler(
                 description = "Сервер в процессе обновления. Пожалуйста, попробуйте позже"
             )
             is OnlineModException -> alertController?.info(
-                description = "Сервер недоступен. Лаунчер переведет в offline режим"
+                description = "Сервер недоступен. Лаунчер переведен в offline режим"
             ).also {
                 applicationStatus.onlineMode.value = false
             }

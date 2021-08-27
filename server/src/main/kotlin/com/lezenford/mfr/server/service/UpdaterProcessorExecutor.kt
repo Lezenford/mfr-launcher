@@ -28,6 +28,7 @@ class UpdaterProcessorExecutor(
 
     fun updateBuild(build: Build) = run("Update build ${build.name}") {
         serverGlobalFileLock.writeLock().withLock {
+            log.info("Server start maintenance mod for update task")
             if (gitService.repositoryExist(build).not()) {
                 gitService.cloneRepository(build)
             }
@@ -38,6 +39,7 @@ class UpdaterProcessorExecutor(
                     gitService.resetRepositoryTo(build, backupBranch)
                     throw it
                 }
+            log.info("Server finished maintenance mod for update task")
         }
     }
 

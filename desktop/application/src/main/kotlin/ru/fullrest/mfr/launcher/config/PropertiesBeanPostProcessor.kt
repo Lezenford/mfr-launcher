@@ -7,6 +7,7 @@ import ru.fullrest.mfr.launcher.config.properties.ApplicationProperties
 import ru.fullrest.mfr.launcher.config.properties.GameProperties
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.absolute
 import kotlin.io.path.createDirectories
 
 @Configuration
@@ -17,10 +18,9 @@ class PropertiesBeanPostProcessor(
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         if (bean is ApplicationProperties) {
             val gameFolder = bean.gameFolder.toAbsolutePath()
-            fun Path.resolve() = gameFolder.resolve(this)
             return bean.copy(
                 gameFolder = gameFolder,
-                readme = gameFolder.resolve(),
+                readme = gameFolder.absolute().parent.resolve(bean.readme),
             )
         }
         if (bean is GameProperties) {
@@ -44,9 +44,9 @@ class PropertiesBeanPostProcessor(
                                     templates = templates.run {
                                         GameProperties.Templates(
                                             high = high.resolve(),
-                                            middle = high.resolve(),
-                                            low = high.resolve(),
-                                            basic = high.resolve()
+                                            middle = middle.resolve(),
+                                            low = low.resolve(),
+                                            basic = basic.resolve()
                                         )
                                     },
                                 )
@@ -64,9 +64,9 @@ class PropertiesBeanPostProcessor(
                             templates = templates.run {
                                 GameProperties.Templates(
                                     high = high.resolve(),
-                                    middle = high.resolve(),
-                                    low = high.resolve(),
-                                    basic = high.resolve()
+                                    middle = middle.resolve(),
+                                    low = low.resolve(),
+                                    basic = basic.resolve()
                                 )
                             }
                         )
