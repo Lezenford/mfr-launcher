@@ -69,6 +69,9 @@ class CheckGameConsistencyTask(
             }.associateBy { it.id }.toMutableMap()
 
             if (filesForDownload.isNotEmpty()) {
+                filesForDownload.forEach {
+                    applicationProperties.gameFolder.resolve(it.value.path.toPath()).deleteIfExists()
+                }
                 progressBar.updateProgress(0)
                 progressBar.updateDescription("Подготовка к скачиванию")
                 taskFactory.fileDownloadTask().execute(filesForDownload, progressBar)

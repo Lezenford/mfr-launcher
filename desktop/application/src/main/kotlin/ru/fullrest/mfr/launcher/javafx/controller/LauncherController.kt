@@ -26,7 +26,6 @@ import ru.fullrest.mfr.launcher.javafx.component.UpdateComponent
 import ru.fullrest.mfr.launcher.service.RestTemplateService
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.pathString
-import kotlin.io.path.readLines
 import kotlin.system.exitProcess
 
 @Component
@@ -72,6 +71,7 @@ class LauncherController(
         gamePath.text = applicationProperties.gameFolder.absolutePathString()
         launcherPath.text = applicationProperties.gameFolder.parent.absolutePathString()
         launcherVersion.text = applicationProperties.version
+        launch { checkApplicationUpdate() }
         applicationStatus.gameVersion.addListener { launch { version.text = it } }
         applicationStatus.gameInstalled.addListener {
             launch {
@@ -82,8 +82,7 @@ class LauncherController(
             }
             if (it) {
                 updateComponent.setStatus(UpdateComponent.Status.DISABLE)
-                applicationStatus.gameVersion.value =
-                    gameProperties.versionFile.readLines().find { line -> line.isNotEmpty() } ?: ""
+                applicationStatus.gameVersion.update()
                 checkUpdate()
             } else {
                 updateComponent.setStatus(UpdateComponent.Status.INSTALL_READY)
@@ -119,12 +118,14 @@ class LauncherController(
         ProcessBuilder("\"${gameProperties.openMw.application.absolutePathString()}\"").also {
             it.directory(applicationProperties.gameFolder.toFile())
         }.start()
+        exit()
     }
 
     fun openMwLauncher() {
         ProcessBuilder("\"${gameProperties.openMw.launcher.absolutePathString()}\"").also {
             it.directory(applicationProperties.gameFolder.toFile())
         }.start()
+        exit()
     }
 
     fun mcp() {
@@ -210,13 +211,26 @@ class LauncherController(
     fun checkUpdate() {
         if (applicationStatus.onlineMode.value) {
             launch(Dispatchers.Default) {
-                val result = taskFactory.checkGameUpdateTask().execute()
-                if (result.isNotEmpty()) {
-                    updateComponent.setStatus(UpdateComponent.Status.UPDATE_READY)
-                }
-                if (restTemplateService.client().version != applicationProperties.version) {
-                    updateComponent.setStatus(UpdateComponent.Status.LAUNCHER_UPDATE_READY)
-                }
+                checkGameUpdate()
+                checkApplicationUpdate()
+            }
+        }
+    }
+
+    private suspend fun checkGameUpdate() {
+        withContext(Dispatchers.Default) {
+            val result = taskFactory.checkGameUpdateTask().execute()
+            if (result.isNotEmpty()) {
+                updateComponent.setStatus(UpdateComponent.Status.UPDATE_READY)
+            }
+        }
+    }
+
+
+    private suspend fun checkApplicationUpdate() {
+        withContext(Dispatchers.Default) {
+            if (restTemplateService.client().version != applicationProperties.version) {
+                updateComponent.setStatus(UpdateComponent.Status.LAUNCHER_UPDATE_READY)
             }
         }
     }

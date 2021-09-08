@@ -26,25 +26,36 @@ class UpdaterProcessorExecutor(
     private val running = AtomicBoolean(false)
     private val operation = AtomicReference("")
 
-    fun updateBuild(build: Build) = run("Update build ${build.name}") {
-        maintenanceStatus.set(true)
-        serverGlobalFileLock.writeLock().lock()
-        try {
-            log.info("Server start maintenance mod for update task")
-            if (gitService.repositoryExist(build).not()) {
-                gitService.cloneRepository(build)
-            }
-            val backupBranch = gitService.updateRepository(build)
-            kotlin.runCatching { storageService.updateBuild(build) }
-                .onFailure {
-                    log.error("Update operation failed")
-                    gitService.resetRepositoryTo(build, backupBranch)
-                    throw it
+    fun updateBuild(build: Build): Boolean {
+        val user = SecurityContextHolder.getContext().authentication
+        return run("Update build ${build.name}") {
+            maintenanceStatus.set(true)
+            serverGlobalFileLock.writeLock().lock()
+            applicationEventPublisher.publishEvent(
+                SendMessageEvent(
+                    source = this,
+                    message = SendMessage().apply {
+                        chatId = user.principal.toString()
+                        text = "Сервер переведен в режим обновлений. Процесс обновления сборки запущен."
+                    }
+                ))
+            try {
+                log.info("Server start maintenance mod for update task")
+                if (gitService.repositoryExist(build).not()) {
+                    gitService.cloneRepository(build)
                 }
-            log.info("Server finished maintenance mod for update task")
-        } finally {
-            serverGlobalFileLock.writeLock().unlock()
-            maintenanceStatus.set(false)
+                val backupBranch = gitService.updateRepository(build)
+                kotlin.runCatching { storageService.updateBuild(build) }
+                    .onFailure {
+                        log.error("Update operation failed")
+                        gitService.resetRepositoryTo(build, backupBranch)
+                        throw it
+                    }
+                log.info("Server finished maintenance mod for update task")
+            } finally {
+                serverGlobalFileLock.writeLock().unlock()
+                maintenanceStatus.set(false)
+            }
         }
     }
 

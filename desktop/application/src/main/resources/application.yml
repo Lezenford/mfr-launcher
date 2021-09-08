@@ -29,7 +29,7 @@ spring:
     web-application-type: none
 
 application:
-  version: 3.0.2
+  version: 3.0.3
   platform: WINDOWS
   server:
     address: mfr.fullrest.ru

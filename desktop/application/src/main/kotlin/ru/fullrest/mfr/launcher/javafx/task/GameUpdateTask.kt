@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 import ru.fullrest.mfr.common.extensions.toPath
 import ru.fullrest.mfr.javafx.component.ProgressBar
+import ru.fullrest.mfr.launcher.component.ApplicationStatus
 import ru.fullrest.mfr.launcher.config.properties.ApplicationProperties
+import ru.fullrest.mfr.launcher.config.properties.GameProperties
 import ru.fullrest.mfr.launcher.exception.NotEnoughSpaceException
 import ru.fullrest.mfr.launcher.javafx.TaskFactory
 import ru.fullrest.mfr.launcher.model.entity.Properties
@@ -19,8 +21,10 @@ import kotlin.io.path.deleteIfExists
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class GameUpdateTask(
     private val applicationProperties: ApplicationProperties,
+    private val gameProperties: GameProperties,
     private val taskFactory: TaskFactory,
     private val propertiesService: PropertiesService,
+    private val applicationStatus: ApplicationStatus,
     private val objectMapper: ObjectMapper
 ) {
 
@@ -43,6 +47,7 @@ class GameUpdateTask(
             }
             taskFactory.fileDownloadTask().execute(files, progressBar)
         }
+        applicationStatus.gameVersion.update()
         progressBar.updateProgress(0)
         progressBar.updateDescription("Проверка состояния")
         propertiesService.updateValue(Properties.Key.LAST_UPDATE_DATE, startTime)
