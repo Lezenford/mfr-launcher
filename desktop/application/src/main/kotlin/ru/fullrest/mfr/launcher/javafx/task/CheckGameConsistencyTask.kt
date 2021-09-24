@@ -1,6 +1,7 @@
 package ru.fullrest.mfr.launcher.javafx.task
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.ObjectFactory
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
@@ -12,6 +13,7 @@ import ru.fullrest.mfr.javafx.component.ProgressBar
 import ru.fullrest.mfr.launcher.component.ApplicationStatus
 import ru.fullrest.mfr.launcher.config.properties.ApplicationProperties
 import ru.fullrest.mfr.launcher.javafx.TaskFactory
+import ru.fullrest.mfr.launcher.javafx.controller.QuestionController
 import ru.fullrest.mfr.launcher.model.entity.Properties
 import ru.fullrest.mfr.launcher.service.ExtraService
 import ru.fullrest.mfr.launcher.service.PropertiesService
@@ -32,7 +34,8 @@ class CheckGameConsistencyTask(
     private val extraService: ExtraService,
     private val propertiesService: PropertiesService,
     private val taskFactory: TaskFactory,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val questionControllerFactory: ObjectFactory<QuestionController>
 ) {
 
     suspend fun execute(progressBar: ProgressBar) {
@@ -66,15 +69,31 @@ class CheckGameConsistencyTask(
                 progressBar.updateProgress(++currentCount, totalCount)
                 val file = applicationProperties.gameFolder.resolve(it.path.toPath())
                 file.exists() && file.md5().contentEquals(it.md5)
-            }.associateBy { it.id }.toMutableMap()
+            }.toMutableList()
+
+            val settingsFiles = filesForDownload.filter { file -> SETTINGS_FILE.any { file.path.contains(it) } }
+            if (settingsFiles.isNotEmpty()) {
+                val response = questionControllerFactory.`object`
+                    .show(
+                        description = """Некоторые файлы могут содержать настройки игры. 
+                        |Их восстановление приведет к восстановлению настроек по умолчанию. 
+                        |Хотите сбросить настройки?""".trimMargin()
+                    )
+                if (response.not()) {
+                    filesForDownload.removeAll(settingsFiles)
+                }
+            }
 
             if (filesForDownload.isNotEmpty()) {
                 filesForDownload.forEach {
-                    applicationProperties.gameFolder.resolve(it.value.path.toPath()).deleteIfExists()
+                    applicationProperties.gameFolder.resolve(it.path.toPath()).deleteIfExists()
                 }
                 progressBar.updateProgress(0)
                 progressBar.updateDescription("Подготовка к скачиванию")
-                taskFactory.fileDownloadTask().execute(filesForDownload, progressBar)
+                taskFactory.fileDownloadTask().execute(
+                    filesForDownload.filter { it.active }.associateBy { it.id }.toMutableMap(),
+                    progressBar
+                )
             }
             propertiesService.updateValue(Properties.Key.LAST_UPDATE_DATE, startDate)
 
@@ -83,8 +102,16 @@ class CheckGameConsistencyTask(
             progressBar.updateProgress(100)
             progressBar.updateDescription("Проверка состояния")
             taskFactory.fillSchemaTask().execute(progressBar)
-
+            taskFactory.applyOptionsTask().execute(
+                progressBar = progressBar,
+                sectionService = sectionService
+            )
             progressBar.hide()
         }
+    }
+
+    companion object {
+        private val SETTINGS_FILE =
+            listOf("Morrowind.exe", "Morrowind.ini", "mge3\\MGE.ini", "Data Files\\MWSE\\config", "mcpatch\\installed")
     }
 }

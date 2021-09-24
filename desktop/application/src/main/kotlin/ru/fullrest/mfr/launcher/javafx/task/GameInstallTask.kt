@@ -72,7 +72,7 @@ class GameInstallTask(
 
         mgeController.useTemplate(gameProperties.classic.mge.templates.middle, false)
         openMwController.prepareTemplates()
-        openMwController.useTemplate(gameProperties.openMw.templates.middle, true)
+        openMwController.useTemplate(gameProperties.openMw.templates.middle, false)
 
         ProcessBuilder("\"${gameProperties.classic.mge.application.absolutePathString()}\"").also {
             it.directory(applicationProperties.gameFolder.toFile())

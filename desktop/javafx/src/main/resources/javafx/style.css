@@ -329,6 +329,10 @@
     -fx-max-height: 30px;
 }
 
+.scroll-bar {
+    -fx-background-color: Transparent;
+}
+
 .scroll-bar:vertical .track {
     -fx-background-color: linear-gradient(from 40% 0% to 60% 0%, rgba(0, 0, 0, 0), rgba(178, 160, 104, 0.25), rgba(178, 160, 104, 1), rgba(0, 0, 0, 0)),
     linear-gradient(from 40% 0% to 60% 0%, rgba(0, 0, 0, 0), rgba(153, 68, 49, 0.15), rgba(153, 68, 49, 1), rgba(0, 0, 0, 0));
@@ -979,7 +983,8 @@
     -fx-max-height: 288px;
 }
 
-.setting_window.game_options .toggle-button {
+.setting_window.game_options .toggle-button,
+.setting_window.game_options .option_label {
     -fx-background-color: transparent;
     -fx-text-alignment: center;
     -fx-text-fill: #d6c6ac;

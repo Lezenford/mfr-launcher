@@ -38,7 +38,6 @@ class PropertiesBeanPostProcessor(
                             mge = mge.run {
                                 GameProperties.Classic.Mge(
                                     application = application.resolve(),
-                                    folder = folder.resolve(),
                                     config = config.resolve(),
                                     configBackup = configBackup.resolve(),
                                     templates = templates.run {

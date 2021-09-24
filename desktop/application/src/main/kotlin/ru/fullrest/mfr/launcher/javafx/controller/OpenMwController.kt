@@ -62,8 +62,10 @@ class OpenMwController(
                     gameProperties.openMw.templates.low to low,
                     gameProperties.openMw.templates.basic to basic
                 ).find { current.equalsConfig(it.first) }?.second ?: custom
-            }.also {
-                settings.selectToggle(it)
+            }.also { button ->
+                settings.selectToggle(button)
+                custom.isDisable = gameProperties.openMw.configBackupFolder.configFiles()
+                    .all { it.exists() } && (button === custom).not()
             }
     }
 

@@ -71,7 +71,7 @@ tasks.withType<KotlinCompile> {
 tasks.bootRun {
     doFirst {
         jvmArgs = listOf(
-//            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000",
+            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000",
             "-Djava.awt.headless=false",
             "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2"
         )

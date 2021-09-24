@@ -62,8 +62,9 @@ class MgeController(
                 properties.classic.mge.templates.low.md5() to low,
                 properties.classic.mge.templates.basic.md5() to basic
             ).find { current.contentEquals(it.first) }?.second ?: custom
-        }.also {
-            settings.selectToggle(it)
+        }.also { button ->
+            settings.selectToggle(button)
+            custom.isDisable = properties.classic.mge.configBackup.exists().not() && (button === custom).not()
         }
     }
 

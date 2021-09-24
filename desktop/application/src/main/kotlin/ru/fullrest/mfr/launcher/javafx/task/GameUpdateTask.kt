@@ -8,11 +8,11 @@ import ru.fullrest.mfr.common.extensions.toPath
 import ru.fullrest.mfr.javafx.component.ProgressBar
 import ru.fullrest.mfr.launcher.component.ApplicationStatus
 import ru.fullrest.mfr.launcher.config.properties.ApplicationProperties
-import ru.fullrest.mfr.launcher.config.properties.GameProperties
 import ru.fullrest.mfr.launcher.exception.NotEnoughSpaceException
 import ru.fullrest.mfr.launcher.javafx.TaskFactory
 import ru.fullrest.mfr.launcher.model.entity.Properties
 import ru.fullrest.mfr.launcher.service.PropertiesService
+import ru.fullrest.mfr.launcher.service.SectionService
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import kotlin.io.path.deleteIfExists
@@ -21,7 +21,7 @@ import kotlin.io.path.deleteIfExists
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class GameUpdateTask(
     private val applicationProperties: ApplicationProperties,
-    private val gameProperties: GameProperties,
+    private val sectionService: SectionService,
     private val taskFactory: TaskFactory,
     private val propertiesService: PropertiesService,
     private val applicationStatus: ApplicationStatus,
@@ -52,6 +52,10 @@ class GameUpdateTask(
         progressBar.updateDescription("Проверка состояния")
         propertiesService.updateValue(Properties.Key.LAST_UPDATE_DATE, startTime)
         taskFactory.fillSchemaTask().execute(progressBar)
+        taskFactory.applyOptionsTask().execute(
+            progressBar = progressBar,
+            sectionService = sectionService
+        )
         progressBar.hide()
     }
 }

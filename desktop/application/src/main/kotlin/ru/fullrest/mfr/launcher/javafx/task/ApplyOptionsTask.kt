@@ -10,6 +10,7 @@ import ru.fullrest.mfr.launcher.config.properties.ApplicationProperties
 import ru.fullrest.mfr.launcher.model.entity.Item
 import ru.fullrest.mfr.launcher.model.entity.Option
 import ru.fullrest.mfr.launcher.service.OptionService
+import ru.fullrest.mfr.launcher.service.SectionService
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -22,6 +23,13 @@ class ApplyOptionsTask(
     private val applicationProperties: ApplicationProperties,
     private val optionService: OptionService
 ) {
+
+    suspend fun execute(progressBar: ProgressBar, sectionService: SectionService) =
+        execute(
+            progressBar = progressBar,
+            options = sectionService.findAllWithDetails().filter { it.downloaded }.map { section ->
+                null to section.options.first { it.applied }
+            })
 
     suspend fun execute(progressBar: ProgressBar, options: List<Pair<Option?, Option>>) {
         val errorOptions: MutableMap<Option, List<Item>> = mutableMapOf()
@@ -81,11 +89,13 @@ class ApplyOptionsTask(
             }
         }
         if (errorOptions.isNotEmpty()) {
-            errorOptions.map { (key, value) -> key to value.map { it.storagePath } }.toMap().also {
-                throw IllegalArgumentException("That options doesn't apply: $it")
+            progressBar.disable()
+            errorOptions.map { (key, value) -> key to value.map { it.storagePath } }.toMap().also { map ->
+                throw IllegalArgumentException("That options doesn't apply: ${map.keys.joinToString(", ") { it.name }}")
             }
+        } else {
+            progressBar.updateProgress(100)
         }
-        progressBar.updateProgress(100)
     }
 
     companion object {

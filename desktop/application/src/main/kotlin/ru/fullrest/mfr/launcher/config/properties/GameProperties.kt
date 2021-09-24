@@ -25,7 +25,6 @@ data class GameProperties(
 
         data class Mge(
             val application: Path,
-            val folder: Path,
             val config: Path,
             val configBackup: Path,
             val templates: Templates

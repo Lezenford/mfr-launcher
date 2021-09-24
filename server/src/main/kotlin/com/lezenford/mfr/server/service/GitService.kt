@@ -52,7 +52,7 @@ class GitService(
                 .call()
         }
         log.info("Update repository successfully finished")
-        return backupBranch;
+        return backupBranch
     }
 
     fun resetRepositoryTo(build: Build, branch: String) {

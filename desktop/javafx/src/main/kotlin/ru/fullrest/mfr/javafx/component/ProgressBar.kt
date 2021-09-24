@@ -44,11 +44,7 @@ abstract class ProgressBar(override val fxmlLoader: FXMLLoader) : FXMLComponent(
             updateProgress(0)
         } else {
             val result = current * 100L / max
-//            if (result > 0.0 && result <= 1.0) {
-//                updateProgress(1)
-//            } else {
             updateProgress(result.toInt())
-//            }
         }
     }
 
