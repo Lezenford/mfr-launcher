@@ -46,27 +46,18 @@ class StatisticService(
             result
         }
 
-        return """Всего уникальных пользователей: $totalClients 
-        |Уникальных пользователей за последний месяц $lastMonthClients 
+        return """Уникальных пользователей всего\за месяц: $totalClients\$lastMonthClients
         
-        |Скачивали игру: $mainGameClientCount 
-        |Скачивали игру за последний месяц: $mainGameLastMonthClientCount 
+        |Скачивали игру всего\за месяц: $mainGameClientCount\$mainGameLastMonthClientCount 
         
-        |Скачивали дополнительный контент: $extraGameClientCount 
-        |Скачивали дополнительный контент за последний месяц: $extraGameLastMonthClientCount 
+        |Скачивали дополнительный контент всего\за месяц: $extraGameClientCount\$extraGameLastMonthClientCount 
         
-        |Скачивали опциональный контент: 
+        |Скачивали опциональный контент всего\за месяц: 
         |${
             optionalHistoryMap.map { (key, value) ->
-                "$key: ${value.count()}"
+                "$key: ${value.count()}\\" +
+                        "${value.count { it.lastChangeDate.isAfter(LocalDateTime.now().minusMonths(1)) }}"
             }.joinToString("\n")
-        } 
-        
-        |Скачивали опциональный контент за последний месяц: 
-        |${
-            optionalHistoryMap.map { (key, value) ->
-                "$key: ${value.count { it.lastChangeDate.isAfter(LocalDateTime.now().minusMonths(1)) }}"
-            }.joinToString("\n")
-        }""".trimMargin()
+        } """.trimMargin()
     }
 }

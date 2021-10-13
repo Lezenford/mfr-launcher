@@ -94,7 +94,7 @@ class StorageService(
                 val savedItemFiles: Map<String, File> = savedItem.files.associateBy { it.path }
                 val incomeItemFiles: Map<String, Content.Category.Item.File> = item.files.associateBy { it.path }
                 item.files.forEach { file ->
-                    savedItemFiles[file.path]
+                    savedItemFiles[file.path]?.markAsActive(item.name, updateDate)
                         ?: File(
                             path = file.path,
                             lastChangeDate = updateDate,
@@ -124,6 +124,14 @@ class StorageService(
         lastChangeDate = updateDate
         md5 = ByteArray(0)
         log.info("Mark file with path: $path from item $itemName as deleted")
+    }
+
+    private fun File.markAsActive(itemName: String, updateDate: LocalDateTime) {
+        if (active.not()) {
+            active = true
+            lastChangeDate = updateDate
+            log.info("Mark file with path: $path from item $itemName as active")
+        }
     }
 
     companion object {

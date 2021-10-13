@@ -102,10 +102,7 @@ class CheckGameConsistencyTask(
             progressBar.updateProgress(100)
             progressBar.updateDescription("Проверка состояния")
             taskFactory.fillSchemaTask().execute(progressBar)
-            taskFactory.applyOptionsTask().execute(
-                progressBar = progressBar,
-                sectionService = sectionService
-            )
+            taskFactory.applyOptionsTask().execute(progressBar = progressBar)
             progressBar.hide()
         }
     }

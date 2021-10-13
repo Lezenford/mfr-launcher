@@ -21,10 +21,11 @@ import kotlin.io.path.exists
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class ApplyOptionsTask(
     private val applicationProperties: ApplicationProperties,
-    private val optionService: OptionService
+    private val optionService: OptionService,
+    private val sectionService: SectionService
 ) {
 
-    suspend fun execute(progressBar: ProgressBar, sectionService: SectionService) =
+    suspend fun execute(progressBar: ProgressBar) =
         execute(
             progressBar = progressBar,
             options = sectionService.findAllWithDetails().filter { it.downloaded }.map { section ->
@@ -91,7 +92,7 @@ class ApplyOptionsTask(
         if (errorOptions.isNotEmpty()) {
             progressBar.disable()
             errorOptions.map { (key, value) -> key to value.map { it.storagePath } }.toMap().also { map ->
-                throw IllegalArgumentException("That options doesn't apply: ${map.keys.joinToString(", ") { it.name }}")
+                throw IllegalArgumentException("That options doesn't apply: ${map.keys.joinToString(", ") { "${it.section.name} (${it.name})" }}")
             }
         } else {
             progressBar.updateProgress(100)
