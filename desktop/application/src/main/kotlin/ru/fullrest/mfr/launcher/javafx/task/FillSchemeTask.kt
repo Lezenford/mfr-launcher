@@ -12,7 +12,6 @@ import ru.fullrest.mfr.common.extensions.md5
 import ru.fullrest.mfr.common.extensions.toPath
 import ru.fullrest.mfr.javafx.component.ProgressBar
 import ru.fullrest.mfr.launcher.config.properties.ApplicationProperties
-import ru.fullrest.mfr.launcher.javafx.TaskFactory
 import ru.fullrest.mfr.launcher.model.entity.Extra
 import ru.fullrest.mfr.launcher.model.entity.ExtraFile
 import ru.fullrest.mfr.launcher.model.entity.Item
@@ -32,11 +31,9 @@ class FillSchemeTask(
     private val sectionService: SectionService,
     private val extraService: ExtraService,
     private val propertiesService: PropertiesService,
-    private val taskFactory: TaskFactory,
     private val objectMapper: ObjectMapper
 ) {
     suspend fun execute(progressBar: ProgressBar) {
-
         progressBar.updateProgress(0)
         progressBar.updateDescription("Обновление настраиваемых компонентов")
         val schemaFile = applicationProperties.gameFolder.resolve(SCHEMA_FILE_NAME.toPath()).also {
@@ -131,12 +128,6 @@ class FillSchemeTask(
                 extraService.saveAll(extras)
 
                 propertiesService.updateValue(Properties.Key.SCHEMA, currentSchemaMd5)
-
-                taskFactory.applyOptionsTask().execute(
-                    progressBar = progressBar,
-                    options = alreadyAppliedSections.map { section ->
-                        null to section.options.first { it.applied }
-                    })
             }
         }
     }

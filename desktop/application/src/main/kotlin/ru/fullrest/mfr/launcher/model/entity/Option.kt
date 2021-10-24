@@ -29,11 +29,7 @@ class Option(
     @Column(name = "description")
     var description: String = "",
 
-    @OneToMany(
-        fetch = FetchType.LAZY,
-        mappedBy = "option",
-        cascade = [CascadeType.ALL]
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "option", cascade = [CascadeType.ALL], orphanRemoval = true)
     val items: MutableList<Item> = mutableListOf()
 ) : BaseEntity() {
     override fun toString(): String = name

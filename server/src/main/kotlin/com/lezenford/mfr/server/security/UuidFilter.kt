@@ -1,6 +1,7 @@
 package com.lezenford.mfr.server.security
 
 import com.lezenford.mfr.server.service.model.ClientService
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import ru.fullrest.mfr.common.IDENTITY_HEADER
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class UuidFilter(
     private val clientService: ClientService,
+    @Qualifier("historyUpdateExecutor")
     private val historyUpdateExecutor: ExecutorService
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(

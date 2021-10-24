@@ -7,10 +7,10 @@ import java.nio.file.Path
 @ConstructorBinding
 @ConfigurationProperties(prefix = "setting")
 data class ServerSettingProperties(
-    val buildFolder: String,
     val launcherFolder: String,
     val netty: Netty,
-    val git: Git
+    val build: Git,
+    val manual: Git
 ) {
     data class Netty(
         val port: Int,
@@ -23,7 +23,8 @@ data class ServerSettingProperties(
     }
 
     data class Git(
-        val url: String,
+        val local: String,
+        val remote: String,
         val key: String
     )
 }

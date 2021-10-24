@@ -61,6 +61,8 @@ class RunnerService(
             openMwController.prepareTemplates()
         }
 
+        applicationStatus.gameVersion.update()
+
         startController.close()
         eventPublisher.publishEvent(ShowStageRequestEvent(this, LauncherController::class))
         propertyService.findByKey(Properties.Key.FIRST_START) ?: kotlin.run {

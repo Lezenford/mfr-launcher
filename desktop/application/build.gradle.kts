@@ -76,7 +76,7 @@ tasks.bootRun {
             "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2"
         )
     }
-    workingDir = File("C:/Games/M[FR]2")
+    workingDir = File("C:/Games/M[FR]")
 }
 
 tasks.jar {

@@ -46,7 +46,7 @@ tasks.bootRun {
             "-Djava.awt.headless=false"
         )
     }
-    workingDir = File("C:/Games/M[FR]2")
+    workingDir = File("C:/Games/M[FR]")
 }
 
 tasks.withType<KotlinCompile> {

@@ -26,7 +26,7 @@ class GitConfiguration(
         override fun createDefaultJSch(fs: FS): JSch =
             super.createDefaultJSch(fs).also {
                 it.removeAllIdentity()
-                it.addIdentity(settingProperties.git.key)
+                it.addIdentity(settingProperties.build.key)
             }
 
     }

@@ -12,7 +12,7 @@ import java.util.*
 
 @Component
 @PreAuthorize("hasAuthority('ADMIN')")
-class StatisticsCallbackModule(
+class OverviewCallbackModule(
     private val statisticService: StatisticService
 ) : CallbackModule() {
     override val type: Type = Type.INFO
@@ -48,7 +48,7 @@ class StatisticsCallbackModule(
                     }
                 }
             )
-            Event.CLOSE -> editMessage(text = "Для доступа к статистике воспользуйтесь командой /statistics")
+            Event.CLOSE -> editMessage(text = "Для доступа к статистике воспользуйтесь командой /overview")
         }
     }
 

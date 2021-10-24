@@ -4,6 +4,7 @@ import javafx.application.Platform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 /**
  * Выполнение действий с интерфейсом и интерфейсными элементами
@@ -19,4 +20,8 @@ fun <T> runFx(block: () -> T): T {
             block()
         }
     }
+}
+
+suspend fun withFx(block: () -> Unit) {
+    withContext(Dispatchers.JavaFx) { block() }
 }

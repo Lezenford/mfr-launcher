@@ -5,6 +5,7 @@ import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ru.fullrest.mfr.launcher.config.EXTRA_CACHE
 import ru.fullrest.mfr.launcher.config.SECTION_CACHE
 import ru.fullrest.mfr.launcher.model.entity.Section
 import ru.fullrest.mfr.launcher.model.repository.SectionRepository
@@ -36,25 +37,25 @@ class SectionService(
         }
 
     @Transactional
-    @CacheEvict(SECTION_CACHE, allEntries = true)
+    @CacheEvict(value = [EXTRA_CACHE, SECTION_CACHE], allEntries = true)
     fun save(section: Section) {
         sectionRepository.save(section)
     }
 
     @Transactional
-    @CacheEvict(SECTION_CACHE, allEntries = true)
+    @CacheEvict(value = [EXTRA_CACHE, SECTION_CACHE], allEntries = true)
     fun saveAll(sections: List<Section>) {
         sectionRepository.saveAll(sections)
     }
 
     @Transactional
-    @CacheEvict(SECTION_CACHE, allEntries = true)
+    @CacheEvict(value = [EXTRA_CACHE, SECTION_CACHE], allEntries = true)
     fun removeAll() {
         sectionRepository.deleteAll()
     }
 
     @Transactional
-    @CacheEvict(SECTION_CACHE, allEntries = true)
+    @CacheEvict(value = [EXTRA_CACHE, SECTION_CACHE], allEntries = true)
     fun removeAll(sections: List<Section>) {
         sectionRepository.deleteAll(sections)
     }

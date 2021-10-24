@@ -11,9 +11,13 @@ data class DownloadResponse(
     val position: Long,
 
     @JsonProperty("d")
-    val data: ByteArray,
+    val data: ByteArray = emptyArray,
 
     @JsonProperty("l")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     val lastFrame: Boolean = false
-) : Message()
+) : Message() {
+    companion object {
+        private val emptyArray = ByteArray(0)
+    }
+}

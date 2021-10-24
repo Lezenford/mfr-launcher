@@ -51,11 +51,12 @@ class ExceptionHandler(
             is ServerMaintenanceException -> alertController?.info(
                 description = "Сервер в процессе обновления. Пожалуйста, попробуйте позже"
             )
-            is OnlineModException -> alertController?.info(
-                description = "Сервер недоступен. Лаунчер переведет в offline режим"
-            ).also {
+            //FIXME подумать, как в последствии исправить работу так, чтобы она не сворачивала игру
+            is OnlineModException -> /*alertController?.info(
+                description = "Сервер недоступен. Лаунчер переведен в offline режим"
+            ).also {*/
                 applicationStatus.onlineMode.value = false
-            }
+            //}
             else -> alertController?.info(description = DEFAULT_DESCRIPTION)
         }
     }

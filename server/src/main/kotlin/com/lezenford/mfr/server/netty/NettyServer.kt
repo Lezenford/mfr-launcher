@@ -7,6 +7,7 @@ import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.ChannelOption
+import io.netty.channel.WriteBufferWaterMark
 import io.netty.channel.group.ChannelGroup
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
@@ -64,7 +65,9 @@ class NettyServer(
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1200000)
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 120000)
+                .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, WriteBufferWaterMark(1024 * 1024, 1024 * 1024 * 3))
                 .bind(properties.netty.port).sync().channel()
             properties.netty.security?.also {
                 log.info("Netty ssl settings successfully installed")

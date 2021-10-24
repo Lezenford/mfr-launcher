@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 import ru.fullrest.mfr.javafx.component.FxController
 import ru.fullrest.mfr.javafx.extensions.runFx
-import kotlin.system.exitProcess
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Данный контроллер может вызываться из разных мест UI и каждый раз требует
@@ -19,37 +19,33 @@ import kotlin.system.exitProcess
  */
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-class NotificationController : FxController("fxml/notification.fxml") {
+class QuestionController : FxController("fxml/question.fxml") {
     private val title: Label by fxml()
     private val description: TextArea by fxml()
-    private val closeButton: Button by fxml()
+    private val okButton: Button by fxml()
+    private val cancelButton: Button by fxml()
 
     init {
         stage.initModality(Modality.WINDOW_MODAL)
         stage.initOwner(Stage.getWindows().find { it.isShowing })
     }
 
-    fun error(
-        title: String = "Ошибка",
-        description: String
-    ) {
-        runFx {
-            this.title.text = title
-            this.description.text = description
-            this.closeButton.onAction = EventHandler { exitProcess(0) }
-            this.stage.showAndWait()
-        }
-    }
-
-    fun info(
+    fun show(
         title: String = "Внимание",
         description: String
-    ) {
-        runFx {
-            this.title.text = title
-            this.description.text = description
-            this.closeButton.onAction = EventHandler { hide() }
-            this.stage.showAndWait()
+    ): Boolean = runFx {
+        this.title.text = title
+        this.description.text = description
+        val result = AtomicBoolean()
+        okButton.onMouseClicked = EventHandler {
+            result.set(true)
+            hide()
         }
+        cancelButton.onMouseClicked = EventHandler {
+            result.set(false)
+            hide()
+        }
+        showAndWait()
+        return@runFx result.get()
     }
 }

@@ -62,8 +62,10 @@ class OpenMwController(
                     gameProperties.openMw.templates.low to low,
                     gameProperties.openMw.templates.basic to basic
                 ).find { current.equalsConfig(it.first) }?.second ?: custom
-            }.also {
-                settings.selectToggle(it)
+            }.also { button ->
+                settings.selectToggle(button)
+                custom.isDisable = gameProperties.openMw.configBackupFolder.configFiles()
+                    .all { it.exists() } && (button === custom).not()
             }
     }
 
@@ -131,8 +133,9 @@ class OpenMwController(
 
     private fun Path.equalsConfig(target: Path?): Boolean {
         return this.configFiles().let { source ->
-            source.all {
-                it.md5().contentEquals(target?.resolve(it.fileName)?.md5())
+            source.all { path ->
+                path.takeIf { it.exists() }?.md5()
+                    ?.contentEquals(target?.resolve(path.fileName)?.takeIf { it.exists() }?.md5()) ?: false
             }
         }
     }

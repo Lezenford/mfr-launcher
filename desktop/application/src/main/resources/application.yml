@@ -29,7 +29,7 @@ spring:
     web-application-type: none
 
 application:
-  version: 3.0.0
+  version: 3.0.6
   platform: WINDOWS
   server:
     address: mfr.fullrest.ru
@@ -52,7 +52,6 @@ game:
     mcp: Morrowind Code Patch.exe
     mge:
       application: MGEXEgui.exe
-      folder: mge3
       config-backup: mge3\backup\MGE.ini
       config: mge3\MGE.ini
       templates:
@@ -65,7 +64,7 @@ game:
     launcher: OpenMW\openmw-launcher.exe
     config-folder: documents\My Games\OpenMW
     config-backup-folder: OpenMW\OpenMW_Config\backup
-    config-change-value: D:\Games\MFR\game\
+    config-change-value: D:\Games\MFR\game
     templates:
       high: OpenMW\OpenMW_Config\top_PC
       middle: OpenMW\OpenMW_Config\mid_PC
