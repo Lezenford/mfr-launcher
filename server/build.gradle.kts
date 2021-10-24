@@ -11,7 +11,7 @@ plugins {
     id("org.springframework.boot") version springBootVersion
 }
 
-version = "3.0.0"
+version = "3.0.2"
 
 application {
     mainClass.set("com.lezenford.mfr.server.ServerApplicationKt")
@@ -20,6 +20,7 @@ application {
 dependencies {
     // spring-boot
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-cache")

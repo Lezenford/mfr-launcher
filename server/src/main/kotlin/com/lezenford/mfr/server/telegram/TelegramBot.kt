@@ -7,7 +7,6 @@ import com.lezenford.mfr.server.telegram.component.CallbackQueryHandler
 import com.lezenford.mfr.server.telegram.component.CommandHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.http.HttpEntity
@@ -41,7 +40,7 @@ class TelegramBot(
     private val url = "https://api.telegram.org/bot${telegramProperties.token}/"
 
     @EventListener(ApplicationStartedEvent::class)
-    fun initWebHook() = launch {
+    fun initWebHook() {
         sendMessage(SetWebhook(telegramProperties.path + telegramProperties.token))
             ?: kotlin.run {
                 log.error("Webhook is not installed!")

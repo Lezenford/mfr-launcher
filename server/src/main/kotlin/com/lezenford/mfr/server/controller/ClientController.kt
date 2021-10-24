@@ -1,5 +1,6 @@
 package com.lezenford.mfr.server.controller
 
+import com.lezenford.mfr.server.component.ServerStatus
 import com.lezenford.mfr.server.extensions.toBuildDto
 import com.lezenford.mfr.server.extensions.toClient
 import com.lezenford.mfr.server.extensions.toContent
@@ -24,10 +25,7 @@ import ru.fullrest.mfr.common.api.rest.Content
 import ru.fullrest.mfr.common.api.rest.GAME_PATH
 import ru.fullrest.mfr.common.api.rest.REPORT_PATH
 import ru.fullrest.mfr.common.api.rest.ReportDto
-import ru.fullrest.mfr.common.exception.ServerMaintenanceException
 import java.time.LocalDateTime
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.locks.ReadWriteLock
 
 @RestController
 @RequestMapping("api/v1")
@@ -35,35 +33,20 @@ class ClientController(
     private val buildService: BuildService,
     private val categoryService: CategoryService,
     private val reportService: ReportService,
-    private val launcherService: LauncherService,
-    private val serverGlobalFileLock: ReadWriteLock,
-    private val maintenanceStatus: AtomicBoolean
+    private val launcherService: LauncherService
 ) {
 
     @GetMapping(GAME_PATH)
-    fun findAllBuild(): List<BuildDto> =
-        if (maintenanceStatus.get().not() && serverGlobalFileLock.readLock().tryLock()) {
-            try {
-                buildService.findAll().map { it.toBuildDto() }
-            } finally {
-                serverGlobalFileLock.readLock().unlock()
-            }
-        } else {
-            throw ServerMaintenanceException()
-        }
+    fun findAllBuild(): List<BuildDto> = ServerStatus.operation {
+        buildService.findAll().map { it.toBuildDto() }
+    }
 
     @GetMapping("${GAME_PATH}/{id}")
     fun findBuild(
         @PathVariable id: Int,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) lastUpdate: LocalDateTime?
-    ): Content = if (maintenanceStatus.get().not() && serverGlobalFileLock.readLock().tryLock()) {
-        try {
-            categoryService.findAllByBuildId(id).toContent(lastUpdate)
-        } finally {
-            serverGlobalFileLock.readLock().unlock()
-        }
-    } else {
-        throw ServerMaintenanceException()
+    ): Content = ServerStatus.operation {
+        categoryService.findAllByBuildId(id).toContent(lastUpdate)
     }
 
     @PostMapping(REPORT_PATH)

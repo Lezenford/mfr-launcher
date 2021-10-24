@@ -1,5 +1,6 @@
 package com.lezenford.mfr.server.service
 
+import com.lezenford.mfr.server.component.ServerStatus
 import com.lezenford.mfr.server.event.SendMessageEvent
 import com.lezenford.mfr.server.model.entity.Build
 import org.springframework.context.ApplicationEventPublisher
@@ -10,16 +11,14 @@ import ru.fullrest.mfr.common.extensions.Logger
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.locks.ReentrantReadWriteLock
 import javax.annotation.PreDestroy
 
 @Service
 class UpdaterProcessorExecutor(
-    private val gitService: GitService,
+    private val buildGitService: BuildGitService,
+    private val manualGitService: ManualGitService,
     private val storageService: StorageService,
-    private val applicationEventPublisher: ApplicationEventPublisher,
-    private val serverGlobalFileLock: ReentrantReadWriteLock,
-    private val maintenanceStatus: AtomicBoolean
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -29,33 +28,39 @@ class UpdaterProcessorExecutor(
     fun updateBuild(build: Build): Boolean {
         val user = SecurityContextHolder.getContext().authentication
         return run("Update build ${build.name}") {
-            maintenanceStatus.set(true)
-            serverGlobalFileLock.writeLock().lock()
-            applicationEventPublisher.publishEvent(
-                SendMessageEvent(
-                    source = this,
-                    message = SendMessage().apply {
-                        chatId = user.principal.toString()
-                        text = "Сервер переведен в режим обновлений. Процесс обновления сборки запущен."
-                    }
-                ))
-            try {
+            ServerStatus.maintenance {
+                applicationEventPublisher.publishEvent(
+                    SendMessageEvent(
+                        source = this,
+                        message = SendMessage().apply {
+                            chatId = user.principal.toString()
+                            text = "Сервер переведен в режим обновлений. Процесс обновления сборки запущен."
+                        }
+                    ))
                 log.info("Server start maintenance mod for update task")
-                if (gitService.repositoryExist(build).not()) {
-                    gitService.cloneRepository(build)
+                if (buildGitService.repositoryExist(build).not()) {
+                    buildGitService.cloneRepository(build)
                 }
-                val backupBranch = gitService.updateRepository(build)
+                val backupBranch = buildGitService.updateRepository(build)
                 kotlin.runCatching { storageService.updateBuild(build) }
                     .onFailure {
                         log.error("Update operation failed")
-                        gitService.resetRepositoryTo(build, backupBranch)
+                        buildGitService.resetRepositoryTo(build, backupBranch)
                         throw it
                     }
                 log.info("Server finished maintenance mod for update task")
-            } finally {
-                serverGlobalFileLock.writeLock().unlock()
-                maintenanceStatus.set(false)
             }
+        }
+    }
+
+    fun updateManual(): Boolean {
+        return run("Update manual") {
+            log.info("Server start manual update task")
+            if (manualGitService.repositoryExist().not()) {
+                manualGitService.cloneRepository()
+            }
+            manualGitService.updateRepository()
+            log.info("Server successfully finished manual update task")
         }
     }
 
@@ -81,8 +86,8 @@ class UpdaterProcessorExecutor(
                             source = this,
                             message = SendMessage().apply {
                                 chatId = user.principal.toString()
-                                text = error?.let { "В процессе выполнения сборки произошла ошибка: ${it.message}" }
-                                    ?: "Обновление сборки завершено успешно"
+                                text = error?.let { "В процессе обновления произошла ошибка: ${it.message}" }
+                                    ?: "Обновление завершено успешно"
                             }
                         ))
                 }

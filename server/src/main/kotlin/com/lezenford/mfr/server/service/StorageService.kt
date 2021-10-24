@@ -35,7 +35,7 @@ class StorageService(
     @Transactional
     fun updateBuild(build: Build) {
         log.info("Create game info operation started for build ${build.name}")
-        val repository = Paths.get(serverSettingProperties.buildFolder).resolve(build.branch)
+        val repository = Paths.get(serverSettingProperties.build.local).resolve(build.branch)
         log.info("Repository path: $repository")
         val updateDate = LocalDateTime.now(ZoneOffset.UTC)
         log.info("Update date is $updateDate")

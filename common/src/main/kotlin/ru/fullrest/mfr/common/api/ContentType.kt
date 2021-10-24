@@ -1,5 +1,5 @@
 package ru.fullrest.mfr.common.api
 
 enum class ContentType {
-    MAIN, EXTRA, OPTIONAL
+    MAIN, EXTRA, OPTIONAL, README
 }
