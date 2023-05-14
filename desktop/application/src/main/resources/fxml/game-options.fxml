@@ -10,7 +10,7 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0"
             stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css" xmlns="http://javafx.com/javafx/11"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ru.fullrest.mfr.launcher.javafx.controller.GameController">
+            fx:controller="com.lezenford.mfr.launcher.javafx.controller.GameController">
     <styleClass>
         <String fx:value="background"/>
         <String fx:value="simple"/>

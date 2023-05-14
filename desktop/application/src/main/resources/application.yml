@@ -3,10 +3,24 @@ logging:
     name: logs/application.log
   level:
     root: INFO
+    liquibase: ERROR
+    org:
+      hibernate: ERROR
+      springframework:
+        data: ERROR
+        orm: ERROR
+        boot:
+          devtools:
+            env: ERROR
+    com:
+      zaxxer: ERROR
+
   pattern:
     file: '"%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"'
 
 spring:
+  profiles:
+    active: "GUI"
   datasource:
     url: jdbc:h2:file:./launcher;TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=1;MV_STORE=TRUE;DB_CLOSE_ON_EXIT=FALSE
     username: sa
@@ -18,9 +32,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.H2Dialect
   liquibase:
     change-log: classpath:/db/changelog/changelog-master.xml
     enabled: true
@@ -29,14 +41,17 @@ spring:
     web-application-type: none
 
 application:
-  version: 3.0.6
+  version: 3.1.3
   platform: WINDOWS
   server:
     address: mfr.fullrest.ru
     tcpPort: 9020
-  #    address: mfr-beta.lezenford.com
+    connectionCount: 20
+#    address: mfr-beta.lezenford.com
   game-folder: game
-  readme: Manual\readme\index.html
+  readme:
+    local: Manual\readme\index.html
+    remote: https://mfr.fullrest.ru/readme
   social:
     forum: https://www.fullrest.ru/forum/forum/300-morrowind-fullrest-repack-i-drugie-proekty-ot-ela/
     discord: https://discord.gg/j2wrYTm
@@ -62,7 +77,7 @@ game:
   openMw:
     application: OpenMW\openmw.exe
     launcher: OpenMW\openmw-launcher.exe
-    config-folder: documents\My Games\OpenMW
+    config-folder: My Games\OpenMW
     config-backup-folder: OpenMW\OpenMW_Config\backup
     config-change-value: D:\Games\MFR\game
     templates:

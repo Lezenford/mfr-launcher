@@ -34,5 +34,7 @@ gradle
 *.gz
 
 ### Properties ###
-/server/src/main/resources/application-public.properties
-/server/src/main/resources/application-private.properties
+/**/application-public.properties
+/**/application-private.properties
+
+*.pem

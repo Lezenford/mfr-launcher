@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("application")
-    kotlin("jvm") version kotlinVersion
+    `common-dependencies`
 }
 
 version = "0.1-SNAPSHOT"
@@ -13,17 +13,16 @@ application {
 
 dependencies {
     // log4j2
-    implementation("org.apache.logging.log4j:log4j-api:2.13.3")
-    implementation("org.apache.logging.log4j:log4j-core:2.13.3")
-
-    //  kotlin
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
-
-    //  apache-commons
-    implementation("commons-io:commons-io:$apacheCommonVersion")
+    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
 
     //  modules
     implementation(project(":common"))
+
+    // netty
+    implementation("io.netty:netty-all:$nettyVersion")
+
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    compileOnly("org.springframework.boot:spring-boot-starter:$springBootVersion")
 }
 
 tasks.withType<KotlinCompile> {
@@ -39,6 +38,8 @@ tasks.jar {
         attributes["Implementation-Version"] = archiveVersion
         attributes["Main-Class"] = "ru.fullrest.mfr.updater.PluginConfigurationUtilityUpdaterKt"
     }
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
     configurations["compileClasspath"].forEach { file: File ->
         from(zipTree(file.absoluteFile))

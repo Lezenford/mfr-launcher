@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ru.fullrest.mfr.configurator.controller.MainController">
+            fx:controller="com.lezenford.mfr.configurator.controller.MainController">
     <children>
         <VBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -27,7 +27,6 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#selectGame" text="Выбрать папку с игрой"/>
                                 <MenuItem mnemonicParsing="false" onAction="#save" text="Сохранить"/>
                                 <MenuItem mnemonicParsing="false" onAction="#close" text="Close"/>
                             </items>
@@ -119,10 +118,11 @@
                                                 <MenuButton mnemonicParsing="false" text="Создать">
                                                     <items>
                                                         <MenuItem mnemonicParsing="false"
-                                                                  onAction="#createExtraCategory"
+                                                                  onAction="#createAdditionalContent"
                                                                   text="Дополнительный контент"/>
                                                         <MenuItem mnemonicParsing="false"
-                                                                  onAction="#createOptionPackage" text="Пакет опций"/>
+                                                                  onAction="#createSwitchableContent"
+                                                                  text="Пакет опций"/>
                                                     </items>
                                                 </MenuButton>
                                             </items>
@@ -142,14 +142,14 @@
                                                         <TitledPane animated="false" text="Дополнительный контент"
                                                                     VBox.vgrow="ALWAYS">
                                                             <content>
-                                                                <ListView fx:id="extraContentView"
+                                                                <ListView fx:id="additionalContentView"
                                                                           maxHeight="1.7976931348623157E308"/>
                                                             </content>
                                                         </TitledPane>
                                                         <TitledPane animated="false" maxHeight="1.7976931348623157E308"
                                                                     text="Опции" VBox.vgrow="ALWAYS">
                                                             <content>
-                                                                <TreeView fx:id="optionContentTree"
+                                                                <TreeView fx:id="switchableContentTree"
                                                                           maxHeight="1.7976931348623157E308"
                                                                           showRoot="false"/>
                                                             </content>
