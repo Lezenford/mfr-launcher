@@ -9,7 +9,7 @@
 <?import java.lang.String?>
 <AnchorPane stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css"
             xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ru.fullrest.mfr.launcher.javafx.controller.MgeController">
+            fx:controller="com.lezenford.mfr.launcher.javafx.controller.MgeController">
     <styleClass>
         <String fx:value="background"/>
         <String fx:value="simple"/>

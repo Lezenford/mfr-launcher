@@ -1,9 +1,9 @@
 package ru.fullrest.mfr.updater
 
+import com.lezenford.mfr.common.extensions.toPath
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.LogManager
-import ru.fullrest.mfr.common.extensions.toPath
 import java.io.File
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.absolute

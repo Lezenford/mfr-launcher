@@ -189,7 +189,6 @@
     -fx-max-height: 57px;
     -fx-min-width: 247px;
     -fx-max-width: 247px;
-    /*-fx-alignment: left;*/
     -fx-padding: 0 70 0 0px;
     -fx-text-fill: #d6c6ac;
     -fx-effect: dropshadow(three-pass-box, rgba(40, 32, 24, 0.45), 2, 1, 0, 1);
@@ -572,12 +571,12 @@
 .main .setting .body .middle,
 .main .setting .body .middle .cell,
 .main .setting .body .bottom,
-.main .setting .body .bottom .manual-send-buttons,
 .main .setting .body .bottom .check {
     -fx-alignment: center;
 }
 
 
+.main .setting .body .bottom .text-field,
 .main .setting .body .middle .combo .list-cell,
 .main .setting .body .middle .combo .list-view .list-cell {
     -fx-max-height: 25px;
@@ -607,7 +606,7 @@
 }
 
 .main .setting .body .middle .combo .list-view .list-cell {
-    -fx-alignment: left;
+    -fx-alignment: center-left;
     -fx-background-color: transparent;
     -fx-text-fill: #ffd7a3;
     -fx-padding: 0 0 0 60;
@@ -627,32 +626,42 @@
 
 .main .setting .body .bottom .check,
 .main .setting .body .bottom .auto-send,
-.main .setting .body .bottom .manual-send {
+.main .setting .body .bottom .speed-limit {
     -fx-alignment: center_left;
 }
 
-.main .setting .body .bottom .auto-send .apply-checkbox {
+.main .setting .body .bottom .apply-checkbox {
     -fx-min-height: 18px;
     -fx-max-height: 18px;
     -fx-min-width: 18px;
     -fx-max-width: 18px;
 }
 
-.main .setting .body .bottom .auto-send .apply-checkbox .box {
+.main .setting .body .bottom .apply-checkbox .box {
     -fx-background-image: url(element/checkbox.png);
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
     -fx-background-position: center;
 }
 
-.main .setting .body .bottom .auto-send .apply-checkbox:selected .box {
+.main .setting .body .bottom .apply-checkbox:selected .box {
     -fx-background-image: url(element/checkbox-full.png), url(element/checkbox.png);
     -fx-background-repeat: no-repeat, no-repeat;
     -fx-background-position: center, center;
 }
 
-.main .setting .body .bottom .auto-send .apply-checkbox .box .mark {
+.main .setting .body .bottom .apply-checkbox .box .mark {
     -fx-background-color: transparent;
+}
+
+.main .setting .body .bottom .text-field {
+    -fx-background-color: linear-gradient(from 10% 0% to 40% 100%, rgba(0, 0, 0, 0), rgba(107, 18, 4, 0.3));
+    -fx-background-insets: 0 6 0 6;
+    -fx-font-size: 14px;
+}
+
+.main .setting .body .bottom .text-field {
+    -fx-alignment: center-right;
 }
 
 .main .footer {

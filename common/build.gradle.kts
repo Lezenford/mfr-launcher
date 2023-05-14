@@ -1,25 +1,31 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    kotlin("jvm") version kotlinVersion
+    `common-dependencies`
 }
 
-dependencies {
-    // spring boot
-    compileOnly("org.springframework.boot:spring-boot-starter:$springBootVersion")
+val jar: Jar by tasks
+val bootJar: BootJar by tasks
 
-    // jackson
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+bootJar.enabled = false
+jar.enabled = true
+
+dependencies {
+
+    // spring boot
+    compileOnly("org.springframework.boot:spring-boot-starter")
+    compileOnly("org.springframework.boot:spring-boot-starter-webflux")
+    compileOnly("org.springframework.boot:spring-boot-starter-rsocket")
+    compileOnly("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
 
     // netty
     compileOnly("io.netty:netty-all:$nettyVersion")
 
-    // apache common
-    api("commons-io:commons-io:$apacheCommonVersion")
-
-    // logging
-    api("org.apache.logging.log4j:log4j-api:2.14.1")
+    // test
+    testImplementation("org.assertj:assertj-core:$assertJVersion")
 }
 
 tasks.withType<KotlinCompile> {
@@ -27,4 +33,8 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = jvmVersion
     }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

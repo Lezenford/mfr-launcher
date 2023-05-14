@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="create telegram user table" author="Lezenford">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="TelegramUser"/>
+            </not>
+        </preConditions>
+        <createTable tableName="TelegramUser">
+            <column name="Id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="TelegramId" type="int">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="Username" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Role" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="TelegramUser"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

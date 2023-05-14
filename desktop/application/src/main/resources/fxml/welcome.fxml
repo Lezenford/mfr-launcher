@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import java.lang.String?>
-<AnchorPane stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css" xmlns="http://javafx.com/javafx/16"
+<AnchorPane stylesheets="@../../../../../javafx/src/main/resources/javafx/style.css" xmlns="http://javafx.com/javafx/11"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ru.fullrest.mfr.launcher.javafx.controller.WelcomeController">
+            fx:controller="com.lezenford.mfr.launcher.javafx.controller.WelcomeController">
     <children>
         <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

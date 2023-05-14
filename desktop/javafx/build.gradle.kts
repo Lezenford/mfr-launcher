@@ -1,9 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    kotlin("jvm") version kotlinVersion
-    id("org.openjfx.javafxplugin") version openfxPluginVersion
+    id("org.openjfx.javafxplugin")
+    `common-dependencies`
 }
+
+val jar: Jar by tasks
+val bootJar: BootJar by tasks
+
+bootJar.enabled = false
+jar.enabled = true
 
 javafx {
     version = javafxVersion
@@ -12,12 +19,8 @@ javafx {
 }
 
 dependencies {
-    //kotlin
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
-    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$kotlinCoroutinesVersion")
-
+    api("org.springframework.boot:spring-boot-starter")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$kotlinCoroutinesVersion")
     compileOnly(project(":common"))
 }
 

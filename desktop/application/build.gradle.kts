@@ -1,14 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("application")
-    kotlin("jvm") version kotlinVersion
-    kotlin("plugin.spring") version kotlinVersion
-    kotlin("plugin.jpa") version kotlinVersion
-    kotlin("kapt") version kotlinVersion
+    `common-dependencies`
     id("org.openjfx.javafxplugin") version openfxPluginVersion
-    id("io.spring.dependency-management") version springBootDependencyManagementVersion
-    id("org.springframework.boot") version springBootVersion
 }
 
 javafx {
@@ -16,39 +10,28 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
-version = "3.0.0"
+version = "3.1.3"
 
 dependencies {
     //	spring-boot
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-data-rest")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-cache")
-    runtimeOnly("org.springframework.boot:spring-boot-devtools")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter-rsocket")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.junit.vintage:junit-vintage-engine")
     }
 
-    //  kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
+    //Javafx
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$kotlinCoroutinesVersion")
 
     //	database
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("com.h2database:h2:1.4.200")
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
-
-    //  apache-commons
-    implementation("commons-io:commons-io:$apacheCommonVersion")
+    implementation("org.liquibase.ext:liquibase-nochangeloglock:1.1")
 
     // cache
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
-
-    //  jackson
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     // netty
     implementation("io.netty:netty-all:$nettyVersion")
@@ -58,7 +41,7 @@ dependencies {
 
     //  modules
     implementation(project(":common"))
-    api(project(":desktop:javafx"))
+    implementation(project(":desktop:javafx"))
 }
 
 tasks.withType<KotlinCompile> {
@@ -71,12 +54,13 @@ tasks.withType<KotlinCompile> {
 tasks.bootRun {
     doFirst {
         jvmArgs = listOf(
-            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000",
+//            "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000",
             "-Djava.awt.headless=false",
             "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2"
         )
     }
-    workingDir = File("C:/Games/M[FR]")
+//    workingDirir = File("/Users/av-plekhanov/Library/Application Support/CrossOver/Bottles/The Elder Scrolls III Morrowind/drive_c/Games/M[FR]")
+    workingDir = File("D:/Games/M[FR]")
 }
 
 tasks.jar {
