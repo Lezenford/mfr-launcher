@@ -25,6 +25,7 @@ data class ApplicationProperties(
 
     data class Server(
         val address: String,
+        val reserveIpAddress: String,
         val tcpPort: Int,
         val connectionCount: Int
     )

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.lezenford.mfr.common.IDENTITY_HEADER
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
+import com.lezenford.mfr.launcher.netty.CustomAddressResolverGroup
+import io.rsocket.transport.netty.client.WebsocketClientTransport
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -24,32 +26,44 @@ import java.time.Duration
 class SpringConfiguration {
 
     @Bean
-    fun webClient(properties: ApplicationProperties): WebClient {
+    fun httpClient(dnsResolver: CustomAddressResolverGroup): HttpClient {
+        return HttpClient.create().resolver(dnsResolver).responseTimeout(Duration.ofSeconds(10))
+    }
+
+    @Bean
+    fun webClient(properties: ApplicationProperties, httpClient: HttpClient): WebClient {
         val strategies = ExchangeStrategies.builder().codecs { codecs ->
             codecs.defaultCodecs().maxInMemorySize(SIZE)
         }.build()
         val serverUri =
             UriComponentsBuilder.newInstance().scheme("https").host(properties.server.address).build().toUriString()
-        val client: HttpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(10))
-        return WebClient.builder().clientConnector(ReactorClientHttpConnector(client)).baseUrl(serverUri)
+
+        return WebClient.builder().clientConnector(ReactorClientHttpConnector(httpClient)).baseUrl(serverUri)
             .defaultHeader(IDENTITY_HEADER, properties.clientId.toString())
             .exchangeStrategies(strategies).build()
     }
 
     @Bean
-    fun rSocketClient(properties: ApplicationProperties, objectMapper: ObjectMapper): RSocketRequester {
+    fun rSocketClient(
+        properties: ApplicationProperties,
+        objectMapper: ObjectMapper,
+        httpClient: HttpClient
+    ): RSocketRequester {
         val serverUri =
-            UriComponentsBuilder.newInstance().scheme("wss").host(properties.server.address).path("api/v2").build()
-                .toUri()
+            UriComponentsBuilder.newInstance().scheme("wss").port(443).host(properties.server.address).path("api/v2")
+                .build().toUri()
         return RSocketRequester.builder()
             .rsocketStrategies {
                 it.decoder(Jackson2JsonDecoder())
                 it.encoder(Jackson2JsonEncoder())
-            }
-            .dataMimeType(MimeTypeUtils.APPLICATION_JSON)
-            .websocket(serverUri)
+            }.dataMimeType(MimeTypeUtils.APPLICATION_JSON)
+            .transport(
+                WebsocketClientTransport.create(
+                    httpClient.secure().host(serverUri.host).port(serverUri.port),
+                    serverUri.path
+                )
+            )
     }
-
 
     @Bean
     fun objectMapper(): ObjectMapper = jacksonObjectMapper()

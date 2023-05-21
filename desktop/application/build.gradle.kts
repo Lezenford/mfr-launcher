@@ -10,7 +10,7 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
-version = "3.1.3"
+version = "3.1.4"
 
 dependencies {
     //	spring-boot
@@ -59,7 +59,7 @@ tasks.bootRun {
             "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2"
         )
     }
-//    workingDirir = File("/Users/av-plekhanov/Library/Application Support/CrossOver/Bottles/The Elder Scrolls III Morrowind/drive_c/Games/M[FR]")
+   // workingDir = File("/Users/av-plekhanov/Library/Application Support/CrossOver/Bottles/The Elder Scrolls III Morrowind/drive_c/Games/M[FR]")
     workingDir = File("D:/Games/M[FR]")
 }
 
