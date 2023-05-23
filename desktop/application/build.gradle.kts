@@ -10,7 +10,7 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
-version = "3.1.4"
+version = "3.1.5"
 
 dependencies {
     //	spring-boot
@@ -18,6 +18,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-rsocket")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.junit.vintage:junit-vintage-engine")
     }

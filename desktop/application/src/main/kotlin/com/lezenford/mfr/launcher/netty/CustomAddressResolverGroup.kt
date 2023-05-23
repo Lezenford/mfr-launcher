@@ -40,8 +40,11 @@ class CustomAddressResolverGroup(
             return try {
                 InetAddress.getByName(this)
             } catch (e: UnknownHostException) {
-                if (this == properties.server.address) {
-                    return InetAddress.getByName(properties.server.reserveIpAddress)
+                if (this == properties.server.http.dnsName) {
+                    return InetAddress.getByName(properties.server.http.ip)
+                }
+                if (this == properties.server.tcp.dnsName){
+                    return InetAddress.getByName(properties.server.tcp.ip)
                 }
                 throw e
             }

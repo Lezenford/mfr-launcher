@@ -36,7 +36,7 @@ class SpringConfiguration {
             codecs.defaultCodecs().maxInMemorySize(SIZE)
         }.build()
         val serverUri =
-            UriComponentsBuilder.newInstance().scheme("https").host(properties.server.address).build().toUriString()
+            UriComponentsBuilder.newInstance().scheme("https").host(properties.server.http.dnsName).build().toUriString()
 
         return WebClient.builder().clientConnector(ReactorClientHttpConnector(httpClient)).baseUrl(serverUri)
             .defaultHeader(IDENTITY_HEADER, properties.clientId.toString())
@@ -50,7 +50,7 @@ class SpringConfiguration {
         httpClient: HttpClient
     ): RSocketRequester {
         val serverUri =
-            UriComponentsBuilder.newInstance().scheme("wss").port(443).host(properties.server.address).path("api/v2")
+            UriComponentsBuilder.newInstance().scheme("wss").port(properties.server.http.port).host(properties.server.http.dnsName).path("api/v2")
                 .build().toUri()
         return RSocketRequester.builder()
             .rsocketStrategies {

@@ -24,10 +24,15 @@ data class ApplicationProperties(
     )
 
     data class Server(
-        val address: String,
-        val reserveIpAddress: String,
-        val tcpPort: Int,
+        val http: Address,
+        val tcp: Address,
         val connectionCount: Int
+    )
+
+    data class Address(
+        val dnsName: String,
+        val ip: String,
+        val port: Int
     )
 
     data class Social(

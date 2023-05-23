@@ -41,14 +41,18 @@ spring:
     web-application-type: none
 
 application:
-  version: 3.1.4
+  version: 3.1.5
   platform: WINDOWS
   server:
-    address: mfr.fullrest.ru
-    reserve-ip-address: 135.181.163.171
-    tcpPort: 9020
+    http:
+      dns-name: mfr.fullrest.ru
+      ip: 135.181.163.171
+      port: 443
+    tcp:
+      dns-name: storage.mfr.fullrest.ru
+      ip: 135.181.163.171
+      port: 8443
     connectionCount: 20
-#    address: mfr-beta.lezenford.com
   game-folder: game
   readme:
     local: Manual\readme\index.html

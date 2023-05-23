@@ -5,6 +5,7 @@ import com.lezenford.mfr.common.protocol.netty.RequestChangeState
 import com.lezenford.mfr.common.protocol.netty.RequestGameFilesMessage
 import com.lezenford.mfr.common.protocol.netty.RequestLauncherFilesMessage
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
+import com.lezenford.mfr.launcher.netty.CustomAddressResolverGroup
 import com.lezenford.mfr.launcher.netty.FileData
 import com.lezenford.mfr.launcher.netty.REQUESTED_FILES
 import com.lezenford.mfr.launcher.service.State
@@ -31,6 +32,7 @@ class NettyProvider(
     private val nettyClientWorkGroup: NioEventLoopGroup,
     private val properties: ApplicationProperties,
     private val factory: HandlerFactory,
+    private val dnsResolver: CustomAddressResolverGroup
 ) {
     private val channelsPool: ChannelGroup = DefaultChannelGroup(GlobalEventExecutor.INSTANCE)
 
@@ -101,7 +103,9 @@ class NettyProvider(
             }
         })
         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
-        .option(ChannelOption.TCP_NODELAY, true).connect(properties.server.address, properties.server.tcpPort).sync()
+        .option(ChannelOption.TCP_NODELAY, true)
+        .resolver(dnsResolver)
+        .connect(properties.server.tcp.dnsName, properties.server.tcp.port).sync()
         .channel().also { channelsPool.add(it) }
 
     private fun splitFiles(files: List<FileData>, connections: Int): List<List<FileData>> {
