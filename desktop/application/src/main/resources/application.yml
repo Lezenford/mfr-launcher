@@ -41,7 +41,7 @@ spring:
     web-application-type: none
 
 application:
-  version: 3.1.5
+  version: 3.1.6
   platform: WINDOWS
   server:
     http:

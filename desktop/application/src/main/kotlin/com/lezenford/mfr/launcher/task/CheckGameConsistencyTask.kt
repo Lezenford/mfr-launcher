@@ -62,7 +62,8 @@ class CheckGameConsistencyTask(
         val totalCount = filesForCheck.size.toLong()
         var currentCount = 0L
 
-        val filesForDownload = filesForCheck.filterNot {
+        // TODO не учитываются примененные опции, скачивает повторно оригинал, потом применяет опцию
+        val filesForDownload = filesForCheck.filter { it.active }.filterNot {
             updateProgress(++currentCount, totalCount)
             val file = properties.gameFolder.resolve(it.path.toPath())
             file.exists() && file.md5().contentEquals(it.md5)

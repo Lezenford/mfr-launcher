@@ -3,6 +3,7 @@ package com.lezenford.mfr.launcher.task
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lezenford.mfr.common.extensions.Logger
+import com.lezenford.mfr.common.extensions.md5
 import com.lezenford.mfr.common.extensions.toPath
 import com.lezenford.mfr.common.protocol.enums.ContentType
 import com.lezenford.mfr.common.protocol.http.dto.Content
@@ -44,7 +45,9 @@ class GameUpdateTask(
         updateDescription("Подготовка к обновлению")
         val startTime = objectMapper.writeValueAsString(LocalDateTime.now(ZoneOffset.UTC))
 
-        val files = findContent()
+        val files = findContent().filterNot {
+            applicationProperties.gameFolder.resolve(it.path.toPath()).run { exists() && md5().contentEquals(it.md5) }
+        }
 
         if (files.isNotEmpty()) {
             val freeSpace = (applicationProperties.gameFolder.root.toFile().usableSpace / 1024.0).toLong()
