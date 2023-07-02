@@ -14,9 +14,9 @@ object ModifyFiles {
         "Sky_Main.esm" to convertDateToLong(2014, 7, 21),
         "MFR.esm" to convertDateToLong(2005, 7, 24),
         "MFR_patch.esp" to convertDateToLong(2030, 12, 12),
-        "TR_patch.esp" to convertDateToLong(2030, 12, 12),
-        "MFR_TR_Patch.esp" to convertDateToLong(2022, 12, 12),
-        "MFR_Update.esp" to convertDateToLong(2030, 12, 12)
+        "MFR_TR_Patch.esp" to convertDateToLong(2030, 12, 12),
+        "MFR_Update.esp" to convertDateToLong(2030, 12, 12),
+        "TR_Hotfix.esp" to convertDateToLong(2028, 12, 12)
     )
 
     private fun convertDateToLong(year: Int, month: Int, day: Int): Long {
