@@ -126,13 +126,13 @@ class ContentService(
                 }
             }.map { it.await() }
         )
-        schemaFile.writeText(objectMapper.writeValueAsString(content))
+        schemaFile.writeText(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(content))
     }
 
     fun validate(): Boolean {
         val tree = fileTreeService.tree
 
-        val mainContentErrors = mainContent.files.filterNot { tree[it.id]?.hidden == false }.map { it.relativePath }
+        val mainContentErrors = mainContent.files.filterNot { tree[it.id]?.hidden == false }.filterNot { it.name == SCHEMA_FILE_NAME }.map { it.relativePath }
         if (mainContentErrors.isNotEmpty()) {
             runFx {
                 Alert(
@@ -206,7 +206,7 @@ class ContentService(
                 ),
             )
         )
-        contentFile.writeText(objectMapper.writeValueAsString(content))
+        contentFile.writeText(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(content))
     }
 
     private fun Content.Category.Item.File.convert(

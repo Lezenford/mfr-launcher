@@ -186,6 +186,7 @@ class OptionTab(
     private fun setImage(file: GameFile) {
         imageWrapper.children.clear()
         imageWrapper.children.add(ImageView(Image(file.absolutePath.toUri().toURL().toString())))
+        contentViewItem.content.image = file
     }
 
     override fun addFiles(files: Set<GameFile>) {

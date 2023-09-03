@@ -30,7 +30,6 @@ class Runner(
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
-//        fileTreeServiceleTreeService.initRoot("/Users/av-plekhanov/MFR/morrowind-fullrest-repack".toPath())
         runFx {
             DirectoryChooser().apply {
                 initialDirectory = File("").absoluteFile

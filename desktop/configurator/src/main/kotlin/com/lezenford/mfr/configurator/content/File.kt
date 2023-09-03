@@ -59,7 +59,7 @@ sealed class File : Findable {
     var ignore: Boolean = false
         set(value) {
             field = value
-            if (parent?.findParentIgnore() == false) {
+            if (parent?.findParentIgnore() != true) {
                 updateHidden(ignore)
                 var currentParent = parent
                 while (currentParent != null) {

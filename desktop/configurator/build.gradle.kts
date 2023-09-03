@@ -28,7 +28,7 @@ tasks.bootRun {
             "-Djava.awt.headless=false"
         )
     }
-    workingDir = File("/Users/av-plekhanov/MFR/morrowind-fullrest-repack")
+    workingDir = File("E:\\Repository")
 }
 
 tasks.withType<KotlinCompile> {
