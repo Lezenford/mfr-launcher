@@ -10,7 +10,7 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
-version = "3.1.7"
+version = "3.1.8"
 
 dependencies {
     //	spring-boot
