@@ -5,12 +5,14 @@ import com.lezenford.mfr.server.model.entity.Build
 import org.eclipse.jgit.api.TransportConfigCallback
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.transport.CredentialsProvider
 import org.springframework.stereotype.Service
 import java.io.File
 
 @Service
 class BuildGitService(
     override val transportConfigCallback: TransportConfigCallback,
+    override val credentialProvider: CredentialsProvider,
     private val serverSettingProperties: ServerSettingProperties
 ) : GitService() {
     override val repositoryPath: File = File(serverSettingProperties.build.local)

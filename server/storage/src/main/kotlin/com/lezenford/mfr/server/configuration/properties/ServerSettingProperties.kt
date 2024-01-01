@@ -32,7 +32,7 @@ data class ServerSettingProperties(
     data class Git(
         val local: String,
         val remote: String,
-        val key: String
+        val token: String
     )
 
     data class Web(

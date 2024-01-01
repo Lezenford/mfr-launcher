@@ -5,12 +5,14 @@ import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.TransportConfigCallback
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.transport.CredentialsProvider
 import java.io.File
 import java.util.*
 
 abstract class GitService {
     protected abstract val transportConfigCallback: TransportConfigCallback
     protected abstract val repositoryPath: File
+    protected abstract val credentialProvider: CredentialsProvider
 
     protected fun cloneRepository(url: String, path: File, branch: String) {
         log.info("Clone repository operation started for $path branch: $branch")
@@ -19,7 +21,7 @@ abstract class GitService {
             .setDirectory(path.also { it.mkdirs() })
             .setBranchesToClone(listOf("refs/heads/$branch"))
             .setBranch("refs/heads/$branch")
-            .setTransportConfigCallback(transportConfigCallback)
+            .setCredentialsProvider(credentialProvider)
             .call()
         log.info("Clone repository successfully finished")
     }
@@ -40,24 +42,24 @@ abstract class GitService {
                 .setForced(true)
                 .call()
             pull()
-                .setTransportConfigCallback(transportConfigCallback)
+                .setCredentialsProvider(credentialProvider)
                 .call()
         }
         log.info("Update repository successfully finished")
         return backupBranch
     }
 
-   fun resetRepositoryTo(repository: Repository, branch: String) {
-       log.info("Restore ${repository.directory.absolutePath} to branch $branch")
-       Git(repository).apply {
-           checkout()
-               .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.NOTRACK)
-               .setName(branch)
-               .setForced(true)
-               .call()
-       }
-       log.info("Build successfully restored")
-   }
+    fun resetRepositoryTo(repository: Repository, branch: String) {
+        log.info("Restore ${repository.directory.absolutePath} to branch $branch")
+        Git(repository).apply {
+            checkout()
+                .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.NOTRACK)
+                .setName(branch)
+                .setForced(true)
+                .call()
+        }
+        log.info("Build successfully restored")
+    }
 
     companion object {
         const val GIT_FOLDER = ".git"

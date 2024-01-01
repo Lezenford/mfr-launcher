@@ -4,8 +4,10 @@ import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 import com.lezenford.mfr.server.configuration.properties.ServerSettingProperties
 import org.eclipse.jgit.api.TransportConfigCallback
+import org.eclipse.jgit.transport.CredentialsProvider
 import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.transport.SshTransport
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.eclipse.jgit.transport.ssh.jsch.JschConfigSessionFactory
 import org.eclipse.jgit.transport.ssh.jsch.OpenSshConfig
 import org.eclipse.jgit.util.FS
@@ -14,7 +16,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class GitConfiguration(
-    private val settingProperties: ServerSettingProperties
+    private val properties: ServerSettingProperties
 ) {
 
     @Bean
@@ -26,7 +28,6 @@ class GitConfiguration(
         override fun createDefaultJSch(fs: FS): JSch =
             super.createDefaultJSch(fs).also {
                 it.removeAllIdentity()
-                it.addIdentity(settingProperties.build.key)
             }
 
     }
@@ -34,4 +35,7 @@ class GitConfiguration(
     @Bean
     fun transportConfigCallback(sshSessionFactory: SshSessionFactory): TransportConfigCallback =
         TransportConfigCallback { transport -> (transport as SshTransport).sshSessionFactory = sshSessionFactory }
+
+    @Bean
+    fun credentialProvider(): CredentialsProvider = UsernamePasswordCredentialsProvider(properties.build.token, "")
 }
