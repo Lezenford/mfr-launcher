@@ -83,9 +83,11 @@ abstract class InitApplicationInitiator : CoroutineScope {
                         ?.also { it.toFile().setLastModified(modifiedDate) }
                 }
 
-                val schema = Schema.parseFrom(applicationProperties.gameFolder.resolve(SCHEMA_FILE_NAME).readBytes())
-                State.schema.emit(schema)
-                State.gameVersion.emit(schema.version)
+                applicationProperties.gameFolder.resolve(SCHEMA_FILE_NAME).takeIf { it.exists() }?.also {
+                    val schema = Schema.parseFrom(it.readBytes())
+                    State.schema.emit(schema)
+                    State.gameVersion.emit(schema.version)
+                }
 
                 openMwService.prepareTemplates()
             }
