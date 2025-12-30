@@ -12,6 +12,9 @@ val bootJar: BootJar by tasks
 bootJar.enabled = false
 jar.enabled = true
 
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
+
 javafx {
     version = javafxVersion
     modules = listOf("javafx.controls", "javafx.fxml")

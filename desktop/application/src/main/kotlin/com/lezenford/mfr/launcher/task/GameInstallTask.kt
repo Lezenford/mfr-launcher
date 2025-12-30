@@ -1,74 +1,94 @@
 package com.lezenford.mfr.launcher.task
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.lezenford.mfr.common.protocol.enums.ContentType
+import com.lezenford.mfr.common.extensions.Logger
+import com.lezenford.mfr.common.protocol.file.SCHEMA_FILE_NAME
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
-import com.lezenford.mfr.launcher.config.properties.GameProperties
-import com.lezenford.mfr.launcher.exception.NotEnoughSpaceException
 import com.lezenford.mfr.launcher.model.entity.Properties
+import com.lezenford.mfr.launcher.model.repository.ExtraRepository
 import com.lezenford.mfr.launcher.service.MgeService
 import com.lezenford.mfr.launcher.service.OpenMwService
 import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.factory.TaskFactory
 import com.lezenford.mfr.launcher.service.model.PropertiesService
 import com.lezenford.mfr.launcher.service.model.SectionService
-import com.lezenford.mfr.launcher.service.provider.RestProvider
+import com.lezenford.mfr.launcher.service.provider.KtorProvider
 import com.lezenford.mfr.launcher.service.runner.RunnerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import kotlin.io.path.writeBytes
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class GameInstallTask(
     private val properties: ApplicationProperties,
-    private val restProvider: RestProvider,
-    private val gameProperties: GameProperties,
     private val factory: TaskFactory,
     private val mgeService: MgeService,
     private val openMwService: OpenMwService,
     private val propertiesService: PropertiesService,
     private val sectionService: SectionService,
-    private val objectMapper: ObjectMapper,
-    private val runnerService: RunnerService
+    private val ktorProvider: KtorProvider,
+    private val runnerService: RunnerService,
+    private val extraRepository: ExtraRepository
 ) : Task<Unit, Unit>() {
 
     override suspend fun action(params: Unit) {
         updateDescription("Подготовка к установке")
 
-        val currentDateTime = LocalDateTime.now(ZoneOffset.UTC)
-        val startDateTime = objectMapper.writeValueAsString(currentDateTime)
-
-        val content = restProvider.findBuild(State.currentGameBuild.first { it > 0 })
-
-        val freeSpace = (properties.gameFolder.root.toFile().usableSpace / 1024.0).toLong()
-        val totalNeedSpace =
-            (content.categories.first { it.type == ContentType.MAIN }.items.flatMap { it.files }
-                .sumOf { it.size } * 1.1 / 1024.0).toLong()
-
-        if (freeSpace < totalNeedSpace) {
-            throw NotEnoughSpaceException("Для успешной установки необходимо минимум $totalNeedSpace КБ свободного места. Доступно всего $freeSpace КБ. Установка будет прервана")
+        if (propertiesService.findByKey(Properties.Key.GAME_INSTALLED) != null && propertiesService.findByKey(Properties.Key.OLD_RELEASE_REMOVED) == null) {
+            extraRepository.deleteAll()
+            properties.gameFolder.toFile().listFiles()?.filter { it.name !in setOf("Saves", "screenshots") }?.forEach {
+                if (it.exists()) {
+                    it.deleteRecursively()
+                }
+            }
+            propertiesService.save(Properties(Properties.Key.OLD_RELEASE_REMOVED))
         }
+
+        val version = ktorProvider.findActiveGameVersion()
+        log.info("Found version $version")
+        val versionDetails = ktorProvider.findGameVersionSchema(version)
+        log.info("Version can by downloaded from ${versionDetails.host}")
+        val schema = ktorProvider.findGameSchema(versionDetails.host, versionDetails.schema)
+        val filesPlan = ktorProvider.findGameFilesPlan(versionDetails.host, versionDetails.files)
+
+        properties.gameFolder.also { it.toFile().mkdirs() }.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
+        State.schema.emit(schema)
+        log.info("Saved schema file")
+
+        val mandatoryFiles = (schema.partitionsList.filter { it.required }.flatMap { it.filesList } + schema.optionsList.asSequence()
+            .flatMap { it.contentsList }.map { it.partition }.filter { it.required }.flatMap { it.filesList })
+
+        val downloadPlan = filesPlan.filesList.associateBy({ it.path }, { it.storage })
+        mandatoryFiles.filter { it.mainPath !in downloadPlan }.takeIf { it.isNotEmpty() }?.also {
+            log.error("Some files don't have link for download. $it")
+            throw IllegalArgumentException("Inconsistent files")
+        }
+
+        joinSubtask(
+            factory.downloadFileTask(), DownloadFileTask.Properties(
+                host = versionDetails.host,
+                files = mandatoryFiles.map { file ->
+                    DownloadFileTask.Properties.File(
+                        mainPath = properties.gameFolder.resolve(file.mainPath),
+                        optionalPath = file.takeIf { it.hasOptionalPath() }?.let { properties.gameFolder.resolve(it.optionalPath) },
+                        storage = downloadPlan[file.mainPath]!!,
+                        sha256 = file.sha256.toByteArray()
+                    )
+                },
+                applyOptionalPath = true
+            )
+        )
+
+        State.gameVersion.emit(schema.version)
 
         val optionFiles = withContext(Dispatchers.IO) {
             sectionService.findAllWithDetails().flatMap { it.options }.filter { it.applied }.flatMap { it.files }
                 .map { it.gamePath }.toSet()
         }
-
-        val files = content.categories.first { it.type == ContentType.MAIN }.items
-            .flatMap { it.files }
-            .filter { it.active }
-            .filterNot { optionFiles.contains(it.path) }
-
-        joinSubtask(factory.downloadGameFileTask(), files)
-
-        State.gameVersion.emit(gameProperties.version)
 
         updateProgress(100)
         updateDescription("Анализ схемы")
@@ -78,9 +98,7 @@ class GameInstallTask(
             joinSubtask(factory.fillSchemaTask())
         }
 
-        propertiesService.updateValue(Properties.Key.LAST_UPDATE_DATE, startDateTime)
-        State.gameUpdateStatus.emit(State.gameUpdateStatus.value.copy(currentUpdateDate = currentDateTime))
-        propertiesService.updateValue(Properties.Key.GAME_INSTALLED)
+        propertiesService.updateValue(Properties.Key.NEW_RELEASE_INSTALLED)
         State.gameInstalled.emit(true)
 
         mgeService.applyConfig(MgeService.Configuration.MIDDLE, false)
@@ -90,5 +108,9 @@ class GameInstallTask(
         runnerService.startMge().also {
             delay(4000)
         }.destroy()
+    }
+
+    companion object {
+        private val log by Logger()
     }
 }

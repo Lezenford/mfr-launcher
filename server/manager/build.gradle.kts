@@ -30,7 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("org.springframework.boot:spring-boot-devtools")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+//    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // database
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
@@ -58,7 +58,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     testImplementation("io.projectreactor:reactor-test")
-    kaptTest("org.springframework.boot:spring-boot-configuration-processor")
+//    kaptTest("org.springframework.boot:spring-boot-configuration-processor")
 
     // common objects
     implementation(project(":common"))

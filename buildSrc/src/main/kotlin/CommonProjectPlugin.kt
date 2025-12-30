@@ -13,10 +13,12 @@ class CommonProjectPlugin : Plugin<Project> {
             apply("org.jetbrains.kotlin.jvm")
             apply("org.jetbrains.kotlin.plugin.spring")
             apply("org.jetbrains.kotlin.plugin.jpa")
-            apply("org.jetbrains.kotlin.kapt")
+//            apply("org.jetbrains.kotlin.kapt")
 
             apply("io.spring.dependency-management")
             apply("org.springframework.boot")
+            apply("org.jetbrains.kotlin.plugin.serialization")
+            apply("com.google.protobuf")
         }
 
         //kotlin

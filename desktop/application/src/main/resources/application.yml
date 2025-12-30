@@ -24,7 +24,7 @@ spring:
   datasource:
     url: jdbc:h2:file:./launcher;TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=1;MV_STORE=TRUE;DB_CLOSE_ON_EXIT=FALSE
     username: sa
-    password: ''
+    password: 'sa'
     hikari:
       maximum-pool-size: 1
   jmx:
@@ -41,17 +41,13 @@ spring:
     web-application-type: none
 
 application:
-  version: 3.1.8
+  version: 3.2.0
   platform: WINDOWS
   server:
-    http:
-      dns-name: mfr.fullrest.ru
-      ip: 135.181.163.171
-      port: 443
-    tcp:
-      dns-name: storage.mfr.fullrest.ru
-      ip: 135.181.163.171
-      port: 8443
+    eu-location:
+      address: client.mfr.hz.lezenford.com
+    ru-location:
+      address: client.mfr.yc.lezenford.com
     connectionCount: 20
   game-folder: game
   readme:
@@ -62,10 +58,10 @@ application:
     discord: https://discord.gg/j2wrYTm
     youtube: https://www.youtube.com/channel/UCY0V-oKZPvv_SEnH5N8onSQ
     vk: https://vk.com/club198345102
-    patreon: https://www.patreon.com/aLMFR
+    telegram: https://t.me/morrowindfr
+    website: https://morrowindfr.com
 game:
   optional: Optional
-  versionFile: Optional\version
   classic:
     application: Morrowind.exe
     launcher: Morrowind Launcher.exe

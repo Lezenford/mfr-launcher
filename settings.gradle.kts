@@ -23,7 +23,7 @@ pluginManagement {
         kotlin("jvm")
         kotlin("plugin.spring")
         kotlin("plugin.jpa")
-        kotlin("kapt")
+//        kotlin("kapt")
         id("io.spring.dependency-management")
         id("org.springframework.boot")
         id("org.openjfx.javafxplugin")

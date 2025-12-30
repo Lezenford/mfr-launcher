@@ -16,10 +16,16 @@ import com.lezenford.mfr.launcher.service.factory.FxControllerFactory
 import com.lezenford.mfr.launcher.service.factory.TaskFactory
 import com.lezenford.mfr.launcher.service.model.ExtraService
 import com.lezenford.mfr.launcher.service.model.SectionService
-import com.lezenford.mfr.launcher.service.provider.RestProvider
+import com.lezenford.mfr.launcher.service.provider.KtorProvider
+import com.lezenford.mfr.launcher.task.DownloadFileTask
 import javafx.event.EventHandler
 import javafx.geometry.Pos
-import javafx.scene.control.*
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.control.RadioButton
+import javafx.scene.control.TextArea
+import javafx.scene.control.ToggleButton
+import javafx.scene.control.ToggleGroup
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
@@ -39,13 +45,13 @@ import kotlin.io.path.inputStream
 @Profile("GUI")
 @Component
 class GameController(
-    private val properties: ApplicationProperties,
+    private val applicationProperties: ApplicationProperties,
     private val sectionService: SectionService,
     private val extraService: ExtraService,
     private val fxControllerFactory: FxControllerFactory,
-    private val restProvider: RestProvider,
     private val factory: TaskFactory,
-    private val notificationControllerFactory: ObjectFactory<NotificationController>
+    private val notificationControllerFactory: ObjectFactory<NotificationController>,
+    private val ktorProvider: KtorProvider,
 ) : FxController(source = "fxml/game-options.fxml") {
     private val sectionsContainer: VBox by fxml()
     private val extraContent: VBox by fxml()
@@ -61,8 +67,7 @@ class GameController(
     private val optionsForApply: MutableSet<Int> = mutableSetOf()
 
     private val initialize by lazy {
-        sectionsContainer.children.addAll(sectionService.findAllWithDetails()
-            .sortedBy { it.name }.map { SectionRow(it) })
+        sectionsContainer.children.addAll(sectionService.findAllWithDetails().sortedBy { it.name }.map { SectionRow(it) })
         sectionsContainer.children.find { it is SectionRow }?.let { it as SectionRow }?.button
             ?.also { it.toggleGroup.selectToggle(it) }
         extraContent.children.addAll(extraService.findAll().sortedBy { it.name }.map { ExtraContentRow(it) })
@@ -132,7 +137,7 @@ class GameController(
                         imageContainer.children.add(
                             ImageView().apply {
                                 image =
-                                    Image(this@GameController.properties.gameFolder.resolve(it.toPath()).inputStream())
+                                    Image(this@GameController.applicationProperties.gameFolder.resolve(it.toPath()).inputStream())
                             }
                         )
                     }
@@ -212,11 +217,31 @@ class GameController(
                 if (lock.compareAndSet(false, true)) {
                     try {
                         progressBar.updateProgress(0)
-                        val files = restProvider.findBuild(State.currentGameBuild.value).categories
-                            .first { it.type == contentType }.items.find { it.name == name }?.files
+                        val schema = State.schema.value
+                            ?: throw IllegalArgumentException("Schema not found")
+                        val versionSchema = ktorProvider.findGameVersionSchema(schema.version)
+                        val filesPlan = ktorProvider.findGameFilesPlan(versionSchema.host, versionSchema.files)
+                            .filesList.associateBy({ it.path }, { it.storage })
+                        val files = schema.optionsList
+                            .find { it.name == name }?.contentsList?.flatMap { it.partition.filesList }
                             ?: emptyList()
                         withContext(Dispatchers.IO) {
-                            progressBar.bind(factory.downloadGameFileTask()) { it.execute(files) }
+                            progressBar.bind(factory.downloadFileTask()) {
+                                it.execute(
+                                    DownloadFileTask.Properties(
+                                        host = versionSchema.host,
+                                        files = files.map { file ->
+                                            DownloadFileTask.Properties.File(
+                                                mainPath = applicationProperties.gameFolder.resolve(file.mainPath),
+                                                optionalPath = applicationProperties.gameFolder.resolve(file.optionalPath),
+                                                sha256 = file.sha256.toByteArray(),
+                                                storage = filesPlan[file.mainPath]!!
+                                            )
+                                        },
+                                        applyOptionalPath = false
+                                    )
+                                )
+                            }
                         }
                         save()
                         return true
@@ -233,7 +258,7 @@ class GameController(
                     try {
                         progressBar.updateProgress(0)
                         filePaths.forEachIndexed { index, path ->
-                            this@GameController.properties.gameFolder.resolve(path.toPath()).deleteIfExists()
+                            this@GameController.applicationProperties.gameFolder.resolve(path.toPath()).deleteIfExists()
                             progressBar.updateProgress(index.toLong(), filePaths.size.toLong())
                         }
                         save()

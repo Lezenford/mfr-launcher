@@ -3,8 +3,7 @@ package com.lezenford.mfr.launcher.service.factory
 import com.lezenford.mfr.launcher.service.initiator.InitApplicationInitiator
 import com.lezenford.mfr.launcher.task.ApplyOptionsTask
 import com.lezenford.mfr.launcher.task.CheckGameConsistencyTask
-import com.lezenford.mfr.launcher.task.DownloadGameFileTask
-import com.lezenford.mfr.launcher.task.DownloadLauncherFileTask
+import com.lezenford.mfr.launcher.task.DownloadFileTask
 import com.lezenford.mfr.launcher.task.FillSchemeTask
 import com.lezenford.mfr.launcher.task.GameInstallTask
 import com.lezenford.mfr.launcher.task.GameUpdateTask
@@ -19,7 +18,7 @@ class TaskFactory {
     fun gameInstallTask(): GameInstallTask = lookup()
 
     @Lookup
-    fun downloadGameFileTask(): DownloadGameFileTask = lookup()
+    fun downloadFileTask(): DownloadFileTask = lookup()
 
     @Lookup
     fun applyOptionsTask(): ApplyOptionsTask = lookup()
@@ -35,9 +34,6 @@ class TaskFactory {
 
     @Lookup
     fun launcherUpdateTask(): LauncherUpdateTask = lookup()
-
-    @Lookup
-    fun downloadLauncherFileTask(): DownloadLauncherFileTask = lookup()
 
     @Lookup
     fun initTask(): InitApplicationInitiator = lookup()

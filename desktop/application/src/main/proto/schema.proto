@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package com.lezenford.mfr.schema.v1;
+
+option java_multiple_files = true;
+option java_outer_classname = "SchemaDescription";
+option java_package = "com.lezenford.mfr.schema.v1";
+
+message Schema {
+  string version = 1;
+  repeated Partition partitions = 2;
+  repeated ContentGroup options = 3;
+}
+
+message Partition {
+  string id = 1;
+  bool required = 2;
+  repeated File files = 3;
+}
+
+message File {
+  string mainPath = 1;
+  optional string optionalPath = 2;
+  bytes sha256 = 3;
+}
+
+message ContentGroup {
+  string name = 1;
+  repeated Content contents = 2;
+}
+
+message Content {
+  string name = 1;
+  optional string picturePath = 2;
+  optional string description = 3;
+  Partition partition = 4;
+}

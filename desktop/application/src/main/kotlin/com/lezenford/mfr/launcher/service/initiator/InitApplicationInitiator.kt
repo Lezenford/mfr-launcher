@@ -1,8 +1,7 @@
 package com.lezenford.mfr.launcher.service.initiator
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.lezenford.mfr.common.extensions.Logger
+import com.lezenford.mfr.common.protocol.file.SCHEMA_FILE_NAME
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.config.properties.GameProperties
 import com.lezenford.mfr.launcher.exception.handler.AbstractExceptionHandler
@@ -11,18 +10,26 @@ import com.lezenford.mfr.launcher.extension.listener
 import com.lezenford.mfr.launcher.model.entity.Properties
 import com.lezenford.mfr.launcher.service.GameStatus
 import com.lezenford.mfr.launcher.service.LauncherStatus
+import com.lezenford.mfr.launcher.service.Location
 import com.lezenford.mfr.launcher.service.OpenMwService
 import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.model.PropertiesService
-import com.lezenford.mfr.launcher.service.provider.RSocketProvider
-import com.lezenford.mfr.launcher.service.provider.RestProvider
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import com.lezenford.mfr.launcher.service.provider.KtorProvider
+import com.lezenford.mfr.schema.v1.Schema
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.exists
+import kotlin.io.path.readBytes
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 abstract class InitApplicationInitiator : CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.IO
@@ -31,10 +38,8 @@ abstract class InitApplicationInitiator : CoroutineScope {
     protected abstract val applicationProperties: ApplicationProperties
     protected abstract val gameProperties: GameProperties
     protected abstract val propertyService: PropertiesService
-    protected abstract val restProvider: RestProvider
     protected abstract val openMwService: OpenMwService
-    protected abstract val rSocketProvider: RSocketProvider
-    protected abstract val objectMapper: ObjectMapper
+    protected abstract val ktorProvider: KtorProvider
 
     val init: Job by lazy {
         launch {
@@ -54,16 +59,14 @@ abstract class InitApplicationInitiator : CoroutineScope {
                 State.minimizeToTray.emit(false)
             }
 
-            log.info("Try to find speed limit value")
-            propertyService.findByKey(Properties.Key.SPEED_LIMIT)?.value?.toInt()?.also {
-                State.speedLimit.emit(it)
-            } ?: propertyService.save(Properties(Properties.Key.SPEED_LIMIT, 0.toString())).also {
-                State.speedLimit.emit(0)
+            log.info("Try to find location value")
+            propertyService.findByKey(Properties.Key.LOCATION)?.value?.also {
+                State.location.emit(Location.valueOf(it))
             }
 
             prepareListeners()
 
-            propertyService.findByKey(Properties.Key.GAME_INSTALLED)?.also {
+            propertyService.findByKey(Properties.Key.NEW_RELEASE_INSTALLED)?.also {
                 State.gameInstalled.emit(true)
             }
 
@@ -80,7 +83,9 @@ abstract class InitApplicationInitiator : CoroutineScope {
                         ?.also { it.toFile().setLastModified(modifiedDate) }
                 }
 
-                State.gameVersion.emit(gameProperties.version)
+                val schema = Schema.parseFrom(applicationProperties.gameFolder.resolve(SCHEMA_FILE_NAME).readBytes())
+                State.schema.emit(schema)
+                State.gameVersion.emit(schema.version)
 
                 openMwService.prepareTemplates()
             }
@@ -88,50 +93,70 @@ abstract class InitApplicationInitiator : CoroutineScope {
 
         State.onlineMode.listener { online ->
             if (online) {
-                val buildsDto = restProvider.findAllBuild()
-
-                val build = propertyService.findByKey(Properties.Key.SELECTED_BUILD) ?: buildsDto.first().run {
-                    Properties(key = Properties.Key.SELECTED_BUILD, value = name).also { propertyService.save(it) }
-                }
-
-                log.info("Try to find build id for name: ${build.value}")
-                State.currentGameBuild.emit(buildsDto.first { it.name == build.value }.id)
-
-                streamUpdateSubscribe {
-                    rSocketProvider.connection(applicationProperties.clientId).onStart {
-                        State.serverConnection.emit(true)
-                    }.onCompletion {
-                        State.serverConnection.emit(false)
-                        it?.also { throw it }
-                    }.collect()
-                }
-
-                streamUpdateSubscribe {
-                    State.serverConnection.first { it }
-                    rSocketProvider.buildLastUpdate(State.currentGameBuild.value).collect { serverUpdateDate ->
-                        log.info("Receive game last update date: $serverUpdateDate")
-                        propertyService.findByKey(Properties.Key.LAST_UPDATE_DATE)?.value?.also {
-                            State.gameUpdateStatus.emit(
-                                GameStatus(
-                                    currentUpdateDate = objectMapper.readValue(it),
-                                    serverUpdateDate = serverUpdateDate
-                                )
-                            )
+                streamUpdateSubscribe(5.minutes) {
+                    coroutineScope {
+                        val euResult = async {
+                            ktorProvider.checkAvailable("https://${applicationProperties.server.euLocation.address}")?.also {
+                                State.serverConnection.emit(true)
+                            }
+                        }
+                        val ruResult = async {
+                            ktorProvider.checkAvailable("https://${applicationProperties.server.ruLocation.address}")?.also {
+                                State.serverConnection.emit(true)
+                            }
+                        }
+                        if (euResult.await() == null && ruResult.await() == null) {
+                            State.serverConnection.emit(false)
                         }
                     }
                 }
 
                 streamUpdateSubscribe {
+                    coroutineScope {
+                        State.serverConnection.first { it }
+                        val euResult = async {
+                            ktorProvider.checkAvailable("https://${applicationProperties.server.euLocation.address}")?.also {
+                                State.serverConnection.emit(true)
+                            }
+                        }
+                        val ruResult = async {
+                            ktorProvider.checkAvailable("https://${applicationProperties.server.ruLocation.address}")?.also {
+                                State.serverConnection.emit(true)
+                            }
+                        }
+                        val ru = ruResult.await()
+                        val eu = euResult.await()
+                        when {
+                            eu == null && ru != null -> State.location.emit(Location.EU)
+                            eu != null && ru == null -> State.location.emit(Location.RU)
+                        }
+                        State.availableEuLocation.emit(eu != null)
+                        State.availableRuLocation.emit(ru != null)
+                    }
+                }
+
+                streamUpdateSubscribe {
                     State.serverConnection.first { it }
-                    rSocketProvider.launcherVersion(applicationProperties.platform).collect { launcherLastVersion ->
-                        log.info("Receive launcher last version: $launcherLastVersion")
-                        State.launcherUpdateStatus.emit(
-                            LauncherStatus(
-                                currentVersion = applicationProperties.version,
-                                lastVersion = launcherLastVersion
+                    val version = State.schema.value?.version
+                    if (State.gameInstalled.value && version != null) {
+                        State.gameUpdateStatus.emit(
+                            GameStatus(
+                                currentVersion = version,
+                                serverVersion = ktorProvider.findActiveGameVersion()
                             )
                         )
                     }
+                }
+
+                streamUpdateSubscribe {
+                    State.serverConnection.first { it }
+                    val version = ktorProvider.findActiveLauncherVersion()
+                    State.launcherUpdateStatus.emit(
+                        LauncherStatus(
+                            currentVersion = applicationProperties.version,
+                            lastVersion = version
+                        )
+                    )
                 }
             }
         }
@@ -140,20 +165,20 @@ abstract class InitApplicationInitiator : CoroutineScope {
             propertyService.updateValue(Properties.Key.MINIMIZE_TO_TRAY, it.toString())
         }
 
-        State.speedLimit.listener {
-            propertyService.updateValue(Properties.Key.SPEED_LIMIT, it.toString())
+        State.location.listener {
+            propertyService.updateValue(Properties.Key.LOCATION, it.toString())
         }
     }
 
-    private fun streamUpdateSubscribe(action: suspend () -> Unit) {
+    private fun streamUpdateSubscribe(delay: Duration = 1.hours, action: suspend () -> Unit) {
         launch {
             while (State.onlineMode.value) {
                 runCatching {
                     action()
                 }.onFailure {
                     log.error("Connection error. ${it.message}")
-                    delay(1000)
                 }
+                delay(delay)
             }
         }.also { connectionJob ->
             launch { State.onlineMode.listener { if (it.not()) connectionJob.cancel() } }

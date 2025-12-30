@@ -31,7 +31,6 @@ class PropertiesBeanPostProcessor(
             return bean.run {
                 GameProperties(
                     optional = optional.resolve(),
-                    versionFile = versionFile.resolve(),
                     classic = classic.run {
                         GameProperties.Classic(
                             application = application.resolve(),

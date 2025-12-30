@@ -5,10 +5,12 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion apply false
     kotlin("plugin.jpa") version kotlinVersion apply false
-    kotlin("kapt") version kotlinVersion apply false
+//    kotlin("kapt") version kotlinVersion apply false
     id("io.spring.dependency-management") version springBootDependencyManagementVersion apply false
     id("org.springframework.boot") version springBootVersion apply false
     id("org.openjfx.javafxplugin") version openfxPluginVersion apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion apply false
+    id("com.google.protobuf")  version "0.9.4" apply false
 }
 
 idea {

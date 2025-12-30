@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import java.nio.file.Path
 import kotlin.io.path.exists
-import kotlin.io.path.readLines
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "game")
@@ -12,10 +11,7 @@ data class GameProperties(
     val optional: Path,
     val classic: Classic,
     val openMw: OpenMw,
-    val versionFile: Path
 ) {
-    val version
-        get() = versionFile.takeIf { it.exists() }?.readLines()?.find { line -> line.isNotEmpty() } ?: ""
 
     data class Classic(
         val application: Path,

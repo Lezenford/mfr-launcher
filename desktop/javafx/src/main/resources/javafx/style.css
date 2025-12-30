@@ -171,15 +171,27 @@
     -fx-background-position: center;
 }
 
-.patreon {
-    -fx-background-image: url(button/patreon.png);
+.telegram {
+    -fx-background-image: url(button/telegram.png);
     -fx-min-width: 66px;
     -fx-min-height: 66px;
     -fx-background-position: center;
 }
 
-.patreon:hover {
-    -fx-background-image: url(button/hover/patreon-hover.png);
+.telegram:hover {
+    -fx-background-image: url(button/hover/telegram_hover.png);
+    -fx-background-position: center;
+}
+
+.website {
+    -fx-background-image: url(button/website.png);
+    -fx-min-width: 66px;
+    -fx-min-height: 66px;
+    -fx-background-position: center;
+}
+
+.website:hover {
+    -fx-background-image: url(button/hover/website_hover.png);
     -fx-background-position: center;
 }
 
@@ -626,7 +638,7 @@
 
 .main .setting .body .bottom .check,
 .main .setting .body .bottom .auto-send,
-.main .setting .body .bottom .speed-limit {
+.main .setting .body .bottom .region {
     -fx-alignment: center_left;
 }
 
@@ -1015,10 +1027,12 @@
     -fx-wrap-text: true;
 }
 
+.main .setting .body .bottom .region .radio-button .radio,
 .setting_window.game_options .radio-button .radio {
     -fx-background-color: transparent;
 }
 
+.main .setting .body .bottom .region .radio-button .dot,
 .setting_window.game_options .radio-button .dot {
     -fx-min-height: 24px;
     -fx-pref-height: 24px;
@@ -1028,6 +1042,7 @@
     -fx-background-image: url(element/radio-button-disable.png);
 }
 
+.main .setting .body .bottom .region .radio-button:selected .dot,
 .setting_window.game_options .radio-button:selected .dot {
     -fx-min-height: 24px;
     -fx-pref-height: 24px;

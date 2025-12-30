@@ -70,5 +70,5 @@ class OptionFile(
     var gamePath: String,
 
     @Column(name = "md5")
-    var md5: ByteArray
+    var sha256: ByteArray
 ) : BaseEntity()

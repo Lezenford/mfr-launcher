@@ -1,99 +1,106 @@
 package com.lezenford.mfr.launcher.task
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.lezenford.mfr.common.extensions.md5
-import com.lezenford.mfr.common.extensions.toPath
-import com.lezenford.mfr.common.protocol.enums.ContentType
-import com.lezenford.mfr.common.protocol.http.dto.Content
+import com.lezenford.mfr.common.extensions.sha256
+import com.lezenford.mfr.common.protocol.file.SCHEMA_FILE_NAME
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.javafx.controller.QuestionController
-import com.lezenford.mfr.launcher.model.entity.Properties
 import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.factory.TaskFactory
-import com.lezenford.mfr.launcher.service.model.ExtraService
-import com.lezenford.mfr.launcher.service.model.PropertiesService
 import com.lezenford.mfr.launcher.service.model.SectionService
-import com.lezenford.mfr.launcher.service.provider.RestProvider
+import com.lezenford.mfr.launcher.service.provider.KtorProvider
+import com.lezenford.mfr.schema.v1.File
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import org.springframework.beans.factory.ObjectFactory
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import kotlin.io.path.deleteIfExists
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.exists
+import kotlin.io.path.writeBytes
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class CheckGameConsistencyTask(
     private val properties: ApplicationProperties,
-    private val restProvider: RestProvider,
     private val sectionService: SectionService,
-    private val extraService: ExtraService,
-    private val propertiesService: PropertiesService,
     private val taskFactory: TaskFactory,
-    private val objectMapper: ObjectMapper,
-    private val questionControllerFactory: ObjectFactory<QuestionController>
+    private val questionControllerFactory: ObjectFactory<QuestionController>,
+    private val ktorProvider: KtorProvider
 ) : Task<Unit, Unit>() {
 
     override suspend fun action(params: Unit) {
         updateDescription("Проверка целостности игры")
-        val startDate = objectMapper.writeValueAsString(LocalDateTime.now(ZoneOffset.UTC))
-        val content: Content = restProvider.findBuild(State.currentGameBuild.value)
-        content.categories.flatMap { it.items }.flatMap { it.files }.filter { it.active.not() }.forEach {
-            properties.gameFolder.resolve(it.path).deleteIfExists()
+
+        val version = ktorProvider.findActiveGameVersion()
+        val versionSchema = ktorProvider.findGameVersionSchema(version)
+        val schema = ktorProvider.findGameSchema(versionSchema.host, versionSchema.schema)
+        val filesPlan = ktorProvider.findGameFilesPlan(versionSchema.host, versionSchema.files)
+            .filesList.associateBy({ it.path }, { it.storage })
+
+        properties.gameFolder.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
+
+        val downloadedSections = sectionService.findAll().filter { it.downloaded }.associateBy({ it.name }, { it.options })
+        val actualFiles = schema.partitionsList.flatMap { it.filesList } +
+            schema.optionsList.flatMap { option ->
+                option.contentsList.filter { option.name in downloadedSections || it.partition.required }.flatMap { it.partition.filesList }
+            }
+
+        updateDescription("Проверяем файлы")
+        updateProgress(0)
+
+        val incorrectFiles = LinkedBlockingQueue<File>()
+        coroutineScope {
+            val counter = AtomicInteger(0)
+            val semaphore = Semaphore(10)
+            actualFiles.forEach { file ->
+                launch {
+                    semaphore.withPermit {
+                        val paths = properties.gameFolder.resolve(file.mainPath)
+                        if (!paths.exists() || !paths.sha256().contentEquals(file.sha256.toByteArray())) {
+                            incorrectFiles.add(file)
+                        }
+                        updateProgress(counter.incrementAndGet(), actualFiles.size)
+                    }
+                }
+            }
         }
-        val downloadedSections = sectionService.findAll().filter { it.downloaded }
-        val downloadedExtras = extraService.findAll().filter { it.downloaded }
+        updateProgress(100)
 
-        val sectionsForCheck: List<Content.Category.Item.File> =
-            content.categories.find { it.type == ContentType.OPTIONAL }?.items?.filter { item ->
-                downloadedSections.any { it.name == item.name }
-            }?.flatMap { it.files } ?: emptyList()
-
-        val extrasForCheck: List<Content.Category.Item.File> =
-            content.categories.find { it.type == ContentType.EXTRA }?.items?.filter { item ->
-                downloadedExtras.any { it.name == item.name }
-            }?.flatMap { it.files } ?: emptyList()
-
-        val filesForCheck = content.categories.first { it.type == ContentType.MAIN }.items.flatMap { it.files } +
-                sectionsForCheck + extrasForCheck
-
-        val totalCount = filesForCheck.size.toLong()
-        var currentCount = 0L
-
-        // TODO не учитываются примененные опции, скачивает повторно оригинал, потом применяет опцию
-        val filesForDownload = filesForCheck.filter { it.active }.filterNot {
-            updateProgress(++currentCount, totalCount)
-            val file = properties.gameFolder.resolve(it.path.toPath())
-            file.exists() && file.md5().contentEquals(it.md5)
-        }.toMutableList()
-
-        val settingsFiles = filesForDownload.filter { file -> SETTINGS_FILE.any { file.path.contains(it) } }
-        if (settingsFiles.isNotEmpty()) {
-            val response = questionControllerFactory.`object`
-                .show(
-                    description = """Некоторые файлы могут содержать настройки игры. 
+        if (incorrectFiles.isNotEmpty()) {
+            val settingFiles = incorrectFiles.filter { file -> SETTINGS_FILE.any { file.mainPath.contains(it) } }
+            if (settingFiles.isNotEmpty()) {
+                val response = questionControllerFactory.`object`
+                    .show(
+                        description = """Некоторые файлы могут содержать настройки игры. 
                         |Их восстановление приведет к восстановлению настроек по умолчанию. 
                         |Хотите сбросить настройки?""".trimMargin()
+                    )
+                if (response.not()) {
+                    incorrectFiles.removeAll(settingFiles)
+                }
+            }
+
+            joinSubtask(
+                taskFactory.downloadFileTask(), DownloadFileTask.Properties(
+                    host = versionSchema.host,
+                    files = incorrectFiles.map { file ->
+                        DownloadFileTask.Properties.File(
+                            mainPath = properties.gameFolder.resolve(file.mainPath),
+                            optionalPath = file.takeIf { it.hasOptionalPath() }?.let { properties.gameFolder.resolve(it.optionalPath) },
+                            storage = filesPlan[file.mainPath]!!,
+                            sha256 = file.sha256.toByteArray()
+                        )
+                    },
+                    applyOptionalPath = false
                 )
-            if (response.not()) {
-                filesForDownload.removeAll(settingsFiles)
-            }
+            )
+
+            State.gameInstalled.emit(true)
         }
-
-        if (filesForDownload.isNotEmpty()) {
-            filesForDownload.forEach {
-                properties.gameFolder.resolve(it.path.toPath()).deleteIfExists()
-            }
-
-            joinSubtask(taskFactory.downloadGameFileTask(), filesForDownload.filter { it.active })
-        }
-        propertiesService.updateValue(Properties.Key.LAST_UPDATE_DATE, startDate)
-
-        State.gameInstalled.emit(true)
-
-        updateProgress(100)
         updateDescription("Проверка состояния")
 
         joinSubtask(taskFactory.fillSchemaTask())
@@ -106,6 +113,6 @@ class CheckGameConsistencyTask(
 
     companion object {
         private val SETTINGS_FILE =
-            listOf("Morrowind.exe", "Morrowind.ini", "mge3\\MGE.ini", "Data Files\\MWSE\\config", "mcpatch\\installed")
+            setOf("Morrowind.exe", "Morrowind.ini", "mge3/MGE.ini", "Data Files/MWSE/config", "mcpatch/installed")
     }
 }

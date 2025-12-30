@@ -4,7 +4,7 @@ import com.lezenford.mfr.common.protocol.enums.SystemType
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import java.nio.file.Path
-import java.util.*
+import java.util.UUID
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "application")
@@ -24,22 +24,21 @@ data class ApplicationProperties(
     )
 
     data class Server(
-        val http: Address,
-        val tcp: Address,
+        val euLocation: Location,
+        val ruLocation: Location,
         val connectionCount: Int
-    )
-
-    data class Address(
-        val dnsName: String,
-        val ip: String,
-        val port: Int
-    )
+    ) {
+        data class Location(
+            val address: String
+        )
+    }
 
     data class Social(
         val forum: String,
         val discord: String,
         val youtube: String,
         val vk: String,
-        val patreon: String
+        val telegram: String,
+        val website: String
     )
 }

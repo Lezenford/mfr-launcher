@@ -1,6 +1,5 @@
 package com.lezenford.mfr.launcher.service.initiator
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.config.properties.GameProperties
 import com.lezenford.mfr.launcher.exception.handler.AbstractExceptionHandler
@@ -11,8 +10,7 @@ import com.lezenford.mfr.launcher.model.entity.Properties
 import com.lezenford.mfr.launcher.service.OpenMwService
 import com.lezenford.mfr.launcher.service.factory.FxControllerFactory
 import com.lezenford.mfr.launcher.service.model.PropertiesService
-import com.lezenford.mfr.launcher.service.provider.RSocketProvider
-import com.lezenford.mfr.launcher.service.provider.RestProvider
+import com.lezenford.mfr.launcher.service.provider.KtorProvider
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
@@ -23,11 +21,9 @@ class JavaFxApplicationInitiator(
     override val applicationProperties: ApplicationProperties,
     override val gameProperties: GameProperties,
     override val propertyService: PropertiesService,
-    override val restProvider: RestProvider,
     override val openMwService: OpenMwService,
-    override val rSocketProvider: RSocketProvider,
-    override val objectMapper: ObjectMapper,
-    private val fxControllerFactory: FxControllerFactory
+    private val fxControllerFactory: FxControllerFactory,
+    override val ktorProvider: KtorProvider
 ) : InitApplicationInitiator() {
     override suspend fun complete() {
         fxControllerFactory.controller<StartController>().close()

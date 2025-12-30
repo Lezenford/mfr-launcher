@@ -42,7 +42,11 @@ abstract class RunnerService {
         application.hostServices.showDocument(applicationProperties.social.vk)
     }
 
-    fun openPatreon() {
-        application.hostServices.showDocument(applicationProperties.social.patreon)
+    fun openWebsite() {
+        application.hostServices.showDocument(applicationProperties.social.website)
+    }
+
+    fun openTelegram() {
+        application.hostServices.showDocument(applicationProperties.social.telegram)
     }
 }

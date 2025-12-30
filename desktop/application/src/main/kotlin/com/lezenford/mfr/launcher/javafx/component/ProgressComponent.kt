@@ -2,9 +2,7 @@ package com.lezenford.mfr.launcher.javafx.component
 
 import com.lezenford.mfr.common.extensions.Logger
 import com.lezenford.mfr.launcher.extension.bind
-import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.factory.TaskFactory
-import com.lezenford.mfr.launcher.service.provider.NettyProvider
 import com.lezenford.mfr.launcher.task.Task
 import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
@@ -20,7 +18,6 @@ import kotlinx.coroutines.withContext
 
 class ProgressComponent(
     override val fxmlLoader: FXMLLoader,
-    private val nettyProvider: NettyProvider,
     private val factory: TaskFactory,
 ) : SimpleLauncherProgressBar(fxmlLoader) {
     private val updateButton: Button by fxml()
@@ -56,17 +53,7 @@ class ProgressComponent(
                 setStatus(Status.BLOCK)
                 BLOCK_MUTEX.lock()
                 bind(task) {
-                    launch {
-                        State.nettyDownloadActive.collect {
-                            if (it) {
-                                setStatus(Status.PAUSE)
-                            } else {
-                                setStatus(Status.BLOCK)
-                            }
-                        }
-                    }.apply {
-                        it.execute(Unit)
-                    }.cancel()
+                    it.execute(Unit)
                 }
 
                 hide()
@@ -103,26 +90,6 @@ class ProgressComponent(
                 updateButton.styleClass.removeAll(styles)
                 updateButton.styleClass.add(BUTTON_LOCKED)
                 updateLogo.styleClass.remove(LOGO_UPDATE_READY)
-            }
-        },
-        PAUSE("Приостановить") {
-            override val applyStyle: suspend ProgressComponent.() -> Unit = {
-                updateButton.styleClass.removeAll(styles)
-                updateLogo.styleClass.remove(LOGO_UPDATE_READY)
-            }
-            override val action: suspend ProgressComponent.() -> Unit = {
-                setStatus(RESUME)
-                nettyProvider.pause()
-            }
-        },
-        RESUME("Продолжить") {
-            override val applyStyle: suspend ProgressComponent.() -> Unit = {
-                updateButton.styleClass.removeAll(styles)
-                updateLogo.styleClass.remove(LOGO_UPDATE_READY)
-            }
-            override val action: suspend ProgressComponent.() -> Unit = {
-                setStatus(PAUSE)
-                nettyProvider.resume()
             }
         },
         GAME_UPDATE("Обновить игру") {

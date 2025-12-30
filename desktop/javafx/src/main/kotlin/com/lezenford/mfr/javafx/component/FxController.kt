@@ -8,6 +8,8 @@ import javafx.stage.Stage
 import javafx.stage.StageStyle
 import kotlinx.coroutines.launch
 import com.lezenford.mfr.javafx.extensions.runFx
+import java.io.File
+import java.net.URL
 
 /**
  * Реализация контроллера может создаваться как вручную, так и с помощью DI-контейнера
@@ -19,7 +21,9 @@ abstract class FxController(
     stageStyle: StageStyle = StageStyle.TRANSPARENT,
     css: String? = CSS
 ) : FXMLComponent() {
-    final override val fxmlLoader: FXMLLoader = FXMLLoader()
+    final override val fxmlLoader: FXMLLoader = FXMLLoader().apply {
+        classLoader = this@FxController.javaClass.classLoader
+    }
 
     /**
      * Stage обязательно должен создаваться в JavaFx Thread.
@@ -27,7 +31,8 @@ abstract class FxController(
      */
     protected val stage: Stage = runFx {
         Stage(stageStyle).apply {
-            icons.add(Image("icon.png"))
+            val iconPath = this@FxController.javaClass.classLoader.getResource("icon.png")?.toExternalForm()
+            icons.add(Image(iconPath))
             title = TITLE
             initModality(Modality.APPLICATION_MODAL)
             owner?.also { initOwner(it.stage) }
@@ -41,9 +46,12 @@ abstract class FxController(
      * В данном случае используется специальный CoroutineScope
      */
     protected val scene: FxScene = runFx {
+        val cssResource = css?.let { path ->
+            this@FxController.javaClass.classLoader.getResource(path)?.toExternalForm()
+        }
         stage.javaClass.classLoader.getResourceAsStream(source).use { inputStream ->
             fxmlLoader.setControllerFactory { this@FxController }
-            FxScene(root = fxmlLoader.load(inputStream), stage = stage, css = css)
+            FxScene(root = fxmlLoader.load(inputStream), stage = stage, css = cssResource)
         }
     }
 

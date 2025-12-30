@@ -4,6 +4,7 @@ import com.lezenford.mfr.common.extensions.Logger
 import com.lezenford.mfr.launcher.config.FxConfiguration
 import com.lezenford.mfr.launcher.exception.ServerConnectionException
 import com.lezenford.mfr.launcher.exception.StartApplicationException
+import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.initiator.InitApplicationInitiator
 import javafx.application.Application
 import javafx.application.Platform
@@ -11,6 +12,7 @@ import javafx.stage.Stage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
@@ -28,7 +30,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.io.File
-import java.util.*
+import java.util.UUID
 import kotlin.system.exitProcess
 
 @SpringBootConfiguration
@@ -81,7 +83,11 @@ class Launcher : Application() {
                 .filter { it.size == 2 }
                 .associate { it.first() to it.last() }.toMutableMap()
                 .also { it.getOrPut(CLIENT_ID) { UUID.randomUUID().toString() } }
-                .also { map ->
+                .also {
+                    runBlocking {
+                        State.clientId.emit(it.get(CLIENT_ID))
+                    }
+                }.also { map ->
                     file.writeBytes(map.map { "${it.key}=${it.value}" }.joinToString("\n").toByteArray())
                 }.map { "--${it.key}=${it.value}" }
         }

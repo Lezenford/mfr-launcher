@@ -66,6 +66,10 @@ abstract class Task<K, T> : CoroutineScope {
         updateProgress(calculateProgress(currentValue, maxValue))
     }
 
+    protected suspend fun updateProgress(currentValue: Int, maxValue: Int) {
+        updateProgress(calculateProgress(currentValue.toLong(), maxValue.toLong()))
+    }
+
     protected suspend fun updateProgress(value: Int) {
         mutableProgressState.emit(value)
     }

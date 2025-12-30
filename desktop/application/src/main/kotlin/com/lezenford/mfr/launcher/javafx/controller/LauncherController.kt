@@ -8,13 +8,21 @@ import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.extension.listener
 import com.lezenford.mfr.launcher.javafx.component.ProgressComponent
 import com.lezenford.mfr.launcher.javafx.component.ProgressComponent.Status
+import com.lezenford.mfr.launcher.service.Location
 import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.factory.FxControllerFactory
 import com.lezenford.mfr.launcher.service.factory.TaskFactory
-import com.lezenford.mfr.launcher.service.provider.NettyProvider
 import com.lezenford.mfr.launcher.service.runner.RunnerService
 import javafx.event.EventHandler
-import javafx.scene.control.*
+import javafx.scene.control.Button
+import javafx.scene.control.CheckBox
+import javafx.scene.control.Label
+import javafx.scene.control.MenuItem
+import javafx.scene.control.RadioButton
+import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
+import javafx.scene.control.ToggleButton
+import javafx.scene.control.Tooltip
 import javafx.scene.layout.VBox
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -29,7 +37,6 @@ class LauncherController(
     private val taskFactory: TaskFactory,
     private val fxControllerFactory: FxControllerFactory,
     private val runnerService: RunnerService,
-    nettyProvider: NettyProvider,
     applicationProperties: ApplicationProperties
 ) : FxController("fxml/main.fxml") {
     private val modeTabPane: TabPane by fxml()
@@ -45,10 +52,10 @@ class LauncherController(
     private val consistencyCheckButton: Button by fxml()
     private val onlineModButton: ToggleButton by fxml()
     private val useTrayCheckbox: CheckBox by fxml()
-    private val useLimitCheckbox: CheckBox by fxml()
-    private val limitField: TextField by fxml()
+    private val ruRegion: RadioButton by fxml()
+    private val euRegion: RadioButton by fxml()
 
-    private val progressBarComponent = ProgressComponent(fxmlLoader, nettyProvider, taskFactory)
+    private val progressBarComponent = ProgressComponent(fxmlLoader, taskFactory)
 
     init {
         if (FXTrayIcon.isSupported()) {
@@ -140,22 +147,34 @@ class LauncherController(
             launch { State.minimizeToTray.emit(newValue) }
         }
 
-        useLimitCheckbox.selectedProperty().addListener { _, _, newValue ->
-            limitField.isDisable = newValue.not()
-            if (newValue.not()) {
-                limitField.text = "0"
+        launch {
+            State.availableRuLocation.collect { ruRegion.isDisable = !it }
+        }
+
+        launch {
+            State.availableEuLocation.collect { euRegion.isDisable = !it }
+        }
+
+        launch {
+            State.location.collect {
+                when (it) {
+                    Location.RU -> ruRegion.isSelected = true
+                    Location.EU -> euRegion.isSelected = true
+                }
             }
         }
-        limitField.textFormatter = TextFormatter<Int> { if (it.text.matches(Regex("^\\d{0,7}$"))) it else null }
-        limitField.textProperty().addListener { _, _, newValue ->
-            if (newValue.matches(Regex("^\\d{0,7}$"))) {
-                launch { State.speedLimit.emit(newValue?.toInt() ?: 0) }
+
+        ruRegion.selectedProperty().addListener { _, _, newValue ->
+            if (newValue) {
+                launch { State.location.emit(Location.RU) }
+                euRegion.isSelected = false
             }
         }
-        State.speedLimit.listener(coroutineContext) {
-            useLimitCheckbox.isSelected = it > 0
-            if (limitField.text != it.toString()) {
-                limitField.text = it.toString()
+
+        euRegion.selectedProperty().addListener { _, _, newValue ->
+            if (newValue) {
+                launch { State.location.emit(Location.EU) }
+                ruRegion.isSelected = false
             }
         }
     }
@@ -227,8 +246,12 @@ class LauncherController(
         runnerService.openVk()
     }
 
-    fun patreon() {
-        runnerService.openPatreon()
+    fun telegram() {
+        runnerService.openTelegram()
+    }
+
+    fun website() {
+        runnerService.openWebsite()
     }
 
     fun minimize() {

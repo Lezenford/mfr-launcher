@@ -1,47 +1,43 @@
 package com.lezenford.mfr.launcher.task
 
-import com.lezenford.mfr.common.extensions.md5
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
-import com.lezenford.mfr.launcher.exception.ApplicationException
-import com.lezenford.mfr.launcher.service.factory.TaskFactory
-import com.lezenford.mfr.launcher.service.provider.RestProvider
-import kotlinx.coroutines.flow.firstOrNull
+import com.lezenford.mfr.launcher.service.provider.KtorProvider
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
-import kotlin.io.path.absolutePathString
+import java.io.File
 import kotlin.system.exitProcess
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 class LauncherUpdateTask(
-    private val restProvider: RestProvider,
-    private val factory: TaskFactory,
-    private val applicationProperties: ApplicationProperties
+    private val applicationProperties: ApplicationProperties,
+    private val ktorProvider: KtorProvider
 ) : Task<Unit, Unit>() {
 
     override suspend fun action(params: Unit) {
         updateDescription("Подготовка к скачиванию")
+        val version = ktorProvider.findActiveLauncherVersion()
+        val versionSchema = ktorProvider.findLauncherVersionSchema(version)
 
-        val client = restProvider.clientVersions().firstOrNull { it.system == applicationProperties.platform }
-            ?: throw ApplicationException("Platform ${applicationProperties.platform} not found on server")
+        updateDescription("Идет скачивание")
 
-        val tempFile = joinSubtask(factory.downloadLauncherFileTask(), client)
+        val tempFile = File.createTempFile("mfr_", version)
+        ktorProvider.downloadFile(versionSchema.host, versionSchema.files).toInputStream().copyTo(tempFile.outputStream())
 
         updateDescription("Подготовка к установке")
         updateProgress(100)
 
-        if (tempFile.md5().contentEquals(client.md5)) {
-            ProcessBuilder(
-                "./jdk/bin/java.exe",
-                "-jar",
-                "\"$UPDATE_UTILITY\"",
-                "\"file_name=${tempFile.absolutePathString()}\""
-            ).apply {
-                directory(applicationProperties.gameFolder.parent.toFile())
-            }.start()
-            exitProcess(0)
-        }
+        ProcessBuilder(
+            "./jdk/bin/java.exe",
+            "-jar",
+            "\"$UPDATE_UTILITY\"",
+            "\"file_name=${tempFile.absolutePath}\""
+        ).apply {
+            directory(applicationProperties.gameFolder.parent.toFile())
+        }.start()
+        exitProcess(0)
     }
 
     companion object {
