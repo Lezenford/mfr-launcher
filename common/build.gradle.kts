@@ -11,6 +11,9 @@ val bootJar: BootJar by tasks
 bootJar.enabled = false
 jar.enabled = true
 
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
+
 dependencies {
 
     // spring boot

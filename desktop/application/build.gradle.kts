@@ -11,6 +11,9 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
+
 version = "3.2.0"
 // Configure Protobuf plugin
 protobuf {
@@ -72,8 +75,6 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = freeCompilerArgs + "-Xdebug"
     }
 }
-
-
 
 tasks.bootRun {
     doFirst {
