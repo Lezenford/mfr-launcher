@@ -43,11 +43,13 @@ class CheckGameConsistencyTask(
 
         properties.gameFolder.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
 
-        val downloadedSections = sectionService.findAll().filter { it.downloaded }.associateBy({ it.name }, { it.options })
+        val downloadedSections =
+            sectionService.findAll().filter { it.downloaded }.associateBy({ it.name }, { it.options })
         val actualFiles = schema.partitionsList.flatMap { it.filesList } +
-            schema.optionsList.flatMap { option ->
-                option.contentsList.filter { option.name in downloadedSections || it.partition.required }.flatMap { it.partition.filesList }
-            }
+                schema.optionsList.flatMap { option ->
+                    option.contentsList.filter { option.name in downloadedSections || it.partition.required }
+                        .flatMap { it.partition.filesList }
+                }
 
         updateDescription("Проверяем файлы")
         updateProgress(0)
@@ -90,7 +92,8 @@ class CheckGameConsistencyTask(
                     files = incorrectFiles.map { file ->
                         DownloadFileTask.Properties.File(
                             mainPath = properties.gameFolder.resolve(file.mainPath),
-                            optionalPath = file.takeIf { it.hasOptionalPath() }?.let { properties.gameFolder.resolve(it.optionalPath) },
+                            optionalPath = file.takeIf { it.hasOptionalPath() }
+                                ?.let { properties.gameFolder.resolve(it.optionalPath) },
                             storage = filesPlan[file.mainPath]!!,
                             sha256 = file.sha256.toByteArray()
                         )
@@ -105,9 +108,11 @@ class CheckGameConsistencyTask(
 
         joinSubtask(taskFactory.fillSchemaTask())
 
-        val filesForApply = sectionService.findAllWithDetails().filter { it.downloaded }.map { section ->
-            null to section.options.first { it.applied }
-        }
+        val filesForApply =
+            sectionService.findAllWithDetails().filter { it.downloaded && it.options.any { it.applied } }
+                .map { section ->
+                    null to section.options.first { it.applied }
+                }
         joinSubtask(taskFactory.applyOptionsTask(), filesForApply)
     }
 
