@@ -23,7 +23,10 @@ class OpenMwService(
             //Удалить текущий конфиг
             ?.also { gameProperties.openMw.configFolder.configFiles().forEach { it.deleteIfExists() } }
             ?.configFiles()?.forEach {
-                it.copyTo(gameProperties.openMw.configFolder.resolve(it.fileName), overwrite = true)
+                it.copyTo(
+                    gameProperties.openMw.configFolder.resolve(it.fileName).also { it.parent.toFile().mkdirs() },
+                    overwrite = true
+                )
             } ?: log.error("Config $configuration doesn't exist")
     }
 
