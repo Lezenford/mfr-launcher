@@ -81,9 +81,10 @@ class DownloadFileTask(
                                     throw IllegalArgumentException("Download failed. ${fileData.mainPath} has incorrect checksum")
                                 }
                                 if (params.applyOptionalPath && fileData.optionalPath != null) {
-                                    mainPathFile.copyTo(properties.gameFolder.resolve(fileData.optionalPath).also {
+                                    val target = properties.gameFolder.resolve(fileData.optionalPath).also {
                                         it.parent.toFile().mkdirs()
-                                    })
+                                    }
+                                    mainPathFile.copyTo(target, true)
                                 }
                                 val currentValue = downloaded.incrementAndGet()
                                 updateProgress(currentValue, totalSize)
@@ -96,37 +97,6 @@ class DownloadFileTask(
                             fileData = filesForDownload.poll()
                         }
                     }
-                }
-
-                while (filesForDownload.isNotEmpty()) {
-                    // val semaphore = Semaphore(properties.server.connectionCount)
-
-                    // val fileData = filesForDownload.poll()
-                    // launch(Dispatchers.IO) {
-                    //     semaphore.withPermit {
-                    //         try {
-                    //             val mainPathFile = properties.gameFolder.resolve(fileData.mainPath)
-                    //                 .also { it.parent.takeIf { !it.exists() }?.toFile()?.mkdirs() }.also { it.deleteIfExists() }
-                    //                 .also { it.createFile() }
-                    //             ktorProvider.downloadFile(params.host, fileData.storage).toInputStream()
-                    //                 .copyTo(mainPathFile.outputStream())
-                    //             if (!mainPathFile.sha256().contentEquals(fileData.sha256)) {
-                    //                 throw IllegalArgumentException("Download failed. ${fileData.mainPath} has incorrect checksum")
-                    //             }
-                    //             if (params.applyOptionalPath && fileData.optionalPath != null) {
-                    //                 mainPathFile.copyTo(properties.gameFolder.resolve(fileData.optionalPath).also {
-                    //                     it.parent.toFile().mkdirs()
-                    //                 })
-                    //             }
-                    //             val currentValue = downloaded.incrementAndGet()
-                    //             updateProgress(currentValue, totalSize)
-                    //             updateDescription("Скачано файлов: $currentValue/$totalSize")
-                    //         } catch (e: Exception) {
-                    //             log.warn("Download file error ${fileData.mainPath}, ${fileData.storage}", e)
-                    //             fails.add(fileData)
-                    //         }
-                    //     }
-                    // }
                 }
             }
 
