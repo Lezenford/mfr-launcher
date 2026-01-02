@@ -39,10 +39,6 @@ class GameUpdateTask(
 
         val (filesForDownload, filesForRemove) = findContent(schema)
 
-        applicationProperties.gameFolder.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
-        State.schema.emit(schema)
-
-
         filesForDownload.filter { it.mainPath !in filesPlan }.takeIf { it.isNotEmpty() }?.also {
             log.error("Some files don't have link for download. $it")
             throw IllegalArgumentException("Inconsistent files")
@@ -77,7 +73,8 @@ class GameUpdateTask(
         filesForRemove.forEach {
             applicationProperties.gameFolder.resolve(it.mainPath).deleteIfExists()
         }
-
+        applicationProperties.gameFolder.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
+        State.schema.emit(schema)
         State.gameVersion.emit(schema.version)
 
         updateProgress(0)
