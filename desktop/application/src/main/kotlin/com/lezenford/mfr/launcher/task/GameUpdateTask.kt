@@ -37,10 +37,11 @@ class GameUpdateTask(
         val filesPlan = ktorProvider.findGameFilesPlan(versionDetails.host, versionDetails.files)
             .filesList.associateBy({ it.path }, { it.storage })
 
+        val (filesForDownload, filesForRemove) = findContent(schema)
+
         applicationProperties.gameFolder.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
         State.schema.emit(schema)
 
-        val (filesForDownload, filesForRemove) = findContent(schema)
 
         filesForDownload.filter { it.mainPath !in filesPlan }.takeIf { it.isNotEmpty() }?.also {
             log.error("Some files don't have link for download. $it")

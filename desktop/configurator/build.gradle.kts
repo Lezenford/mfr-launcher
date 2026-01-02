@@ -10,6 +10,10 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
+
+
 dependencies {
     runtimeOnly("org.springframework.boot:spring-boot-devtools")
 //    kapt("org.springframework.boot:spring-boot-configuration-processor")
