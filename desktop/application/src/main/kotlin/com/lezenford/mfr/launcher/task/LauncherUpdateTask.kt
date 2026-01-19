@@ -64,7 +64,7 @@ class LauncherUpdateTask(
         updateProgress(100)
 
         ProcessBuilder(
-            "./jdk/bin/java.exe",
+            "./${versionSchema.jdk}/bin/java.exe",
             "-jar",
             "\"$UPDATE_UTILITY\"",
             "\"file_name=${tempFile.absolutePath}\""
