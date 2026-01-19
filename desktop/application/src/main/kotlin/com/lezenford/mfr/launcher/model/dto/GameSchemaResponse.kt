@@ -13,12 +13,11 @@
     "UnusedImport"
 )
 
-package com.lezenford.mfr.model
+package com.lezenford.mfr.launcher.model.dto
 
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Contextual
 
 /**
  * 
@@ -29,16 +28,16 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-data class VersionSchemaResponse (
+data class GameSchemaResponse (
 
     @SerialName(value = "host")
-    val host: kotlin.String,
+    val host: String,
 
     @SerialName(value = "files")
-    val files: kotlin.String,
+    val files: String,
 
     @SerialName(value = "schema")
-    val schema: kotlin.String
+    val schema: String
 
 ) {
 

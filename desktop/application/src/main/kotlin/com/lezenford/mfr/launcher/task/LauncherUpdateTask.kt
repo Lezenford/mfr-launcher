@@ -3,10 +3,16 @@ package com.lezenford.mfr.launcher.task
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.service.provider.KtorProvider
 import io.ktor.utils.io.jvm.javaio.toInputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+import java.util.zip.ZipFile
 import kotlin.system.exitProcess
 
 @Component
@@ -23,8 +29,36 @@ class LauncherUpdateTask(
 
         updateDescription("Идет скачивание")
 
-        val tempFile = File.createTempFile("mfr_", version)
-        ktorProvider.downloadFile(versionSchema.host, versionSchema.files).toInputStream().copyTo(tempFile.outputStream())
+        if (!File(versionSchema.jdk).exists()) {
+            withContext(Dispatchers.IO) {
+                val tempFile = Files.createTempFile("jdk_zip_", version).toFile()
+                ktorProvider.downloadFile(versionSchema.host, versionSchema.jdkStorage).toInputStream()
+                    .copyTo(tempFile.outputStream())
+                val jdkDirectory = Files.createTempDirectory("jdk_").toFile()
+                try {
+                    ZipFile(tempFile).use { zip ->
+                        zip.entries().asSequence().forEach { entry ->
+                            val outputFile = File(jdkDirectory, entry.name)
+
+                            if (entry.isDirectory) {
+                                outputFile.mkdirs()
+                            } else {
+                                outputFile.parentFile?.mkdirs()
+                                zip.getInputStream(entry).copyTo(outputFile.outputStream())
+                            }
+                        }
+                    }
+                    Files.move(jdkDirectory.toPath(), Paths.get(versionSchema.jdk), StandardCopyOption.REPLACE_EXISTING)
+                } finally {
+                    jdkDirectory.deleteRecursively()
+                    tempFile.delete()
+                }
+            }
+        }
+
+        val tempFile = Files.createTempFile("mfr_", version).toFile()
+        ktorProvider.downloadFile(versionSchema.host, versionSchema.launcherStorage).toInputStream()
+            .copyTo(tempFile.outputStream())
 
         updateDescription("Подготовка к установке")
         updateProgress(100)

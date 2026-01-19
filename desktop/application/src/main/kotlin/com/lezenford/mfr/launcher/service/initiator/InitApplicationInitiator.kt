@@ -93,6 +93,16 @@ abstract class InitApplicationInitiator : CoroutineScope {
             }
         }
 
+        State.gameVersion.listener { version ->
+            if (version.isNotBlank()) {
+                ModifyFiles.esmFileList.forEach { (fileName, modifiedDate) ->
+                    applicationProperties.gameFolder.resolve(ModifyFiles.fileDirectory).resolve(fileName)
+                        .takeIf { it.exists() }
+                        ?.also { it.toFile().setLastModified(modifiedDate) }
+                }
+            }
+        }
+
         State.onlineMode.listener { online ->
             if (online) {
                 streamUpdateSubscribe(5.minutes) {

@@ -31,3 +31,6 @@ fullchain.pem и в качестве ключа к нему сконвертир
 
 ***Настройка git ssh***
 Для генерации корректных ключей используется команда `ssh-keygen -t ecdsa -m PEM`
+
+***Генерация JRE***
+\jlink.exe --add-modules java.se,jdk.unsupported,jdk.crypto.ec --strip-debug --no-man-pages --no-header-files --compress=2 --output custom-jre

@@ -14,7 +14,7 @@ javafx {
 java.sourceCompatibility = JavaVersion.VERSION_11
 java.targetCompatibility = JavaVersion.VERSION_11
 
-version = "3.2.0"
+version = "3.2.2"
 // Configure Protobuf plugin
 protobuf {
     protoc {
@@ -86,7 +86,8 @@ tasks.bootRun {
             "-Djdk.tls.acknowledgeCloseNotify=true"
         )
     }
-    workingDir = File("/Users/av-plekhanov/MFR")
+//    workingDir = File("/Users/av-plekhanov/MFR")
+    workingDir = File("E:\\M[FR]")
 }
 
 tasks.jar {

@@ -4,20 +4,16 @@ import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.model.dto.Version
 import com.lezenford.mfr.launcher.service.Location
 import com.lezenford.mfr.launcher.service.State
-import com.lezenford.mfr.model.VersionSchemaResponse
+import com.lezenford.mfr.launcher.model.dto.GameSchemaResponse
+import com.lezenford.mfr.launcher.model.dto.LauncherSchemaResponse
 import com.lezenford.mfr.schema.v1.Schema
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.timeout
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.parameter
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.client.statement.readBytes
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.isSuccess
-import io.ktor.utils.io.ByteReadChannel
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.utils.io.*
 import org.springframework.stereotype.Component
 import kotlin.system.measureTimeMillis
 
@@ -39,40 +35,41 @@ class KtorProvider(
         }.call.response.body<Version>().id
     }
 
-    suspend fun findGameVersionSchema(version: String): VersionSchemaResponse {
+    suspend fun findGameVersionSchema(version: String): GameSchemaResponse {
         return client.get("$host/v1/game/files") {
             header(CLIENT_ID_HEADER, State.clientId.value)
             parameter("os", "WINDOWS")
             parameter("version", version)
             parameter("region", State.location.value)
-        }.call.response.body<VersionSchemaResponse>()
+        }.call.response.body<GameSchemaResponse>()
     }
 
     suspend fun findGameSchema(host: String, path: String): Schema {
-        return Schema.parseFrom(client.get("${host}/${path}"){
+        return Schema.parseFrom(client.get("${host}/${path}") {
             header(CLIENT_ID_HEADER, State.clientId.value)
         }.call.response.readBytes())
     }
 
     suspend fun findGameFilesPlan(host: String, path: String): com.lezenford.mfr.version.v1.Version {
-        return com.lezenford.mfr.version.v1.Version.parseFrom(client.get("${host}/${path}"){
+        return com.lezenford.mfr.version.v1.Version.parseFrom(client.get("${host}/${path}") {
             header(CLIENT_ID_HEADER, State.clientId.value)
         }.call.response.readBytes())
     }
 
     suspend fun findActiveLauncherVersion(): String {
-        return client.get("${host}/v1/launcher/version") {
+        return client.get("${host}/v2/launcher/version") {
             header(CLIENT_ID_HEADER, State.clientId.value)
             parameter("os", "WINDOWS")
         }.call.response.body<Version>().id
     }
 
-    suspend fun findLauncherVersionSchema(version: String): VersionSchemaResponse {
-        return client.get("$host/v1/launcher/files") {
+    suspend fun findLauncherVersionSchema(version: String): LauncherSchemaResponse {
+        return client.get("$host/v2/launcher/files") {
+            header(CLIENT_ID_HEADER, State.clientId.value)
             parameter("os", "WINDOWS")
             parameter("version", version)
             parameter("region", State.location.value)
-        }.call.response.body<VersionSchemaResponse>()
+        }.call.response.body<LauncherSchemaResponse>()
     }
 
     suspend fun downloadFile(host: String, path: String): ByteReadChannel {
@@ -100,6 +97,6 @@ class KtorProvider(
     }
 
     companion object {
-        private const val  CLIENT_ID_HEADER = "X-Client-ID"
+        private const val CLIENT_ID_HEADER = "X-Client-ID"
     }
 }
