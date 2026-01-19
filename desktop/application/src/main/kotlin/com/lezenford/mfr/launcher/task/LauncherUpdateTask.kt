@@ -48,7 +48,7 @@ class LauncherUpdateTask(
                             }
                         }
                     }
-                    Files.move(jdkDirectory.toPath(), Paths.get(versionSchema.jdk), StandardCopyOption.REPLACE_EXISTING)
+                    jdkDirectory.copyRecursively(File(versionSchema.jdk), true)
                 } finally {
                     jdkDirectory.deleteRecursively()
                     tempFile.delete()
