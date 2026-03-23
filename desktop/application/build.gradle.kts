@@ -14,7 +14,7 @@ javafx {
 java.sourceCompatibility = JavaVersion.VERSION_11
 java.targetCompatibility = JavaVersion.VERSION_11
 
-version = "3.2.2"
+version = "3.3.0"
 // Configure Protobuf plugin
 protobuf {
     protoc {
