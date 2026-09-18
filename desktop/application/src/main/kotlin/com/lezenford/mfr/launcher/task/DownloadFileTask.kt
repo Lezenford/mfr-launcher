@@ -15,14 +15,21 @@ import kotlinx.coroutines.sync.withPermit
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.copyTo
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
+import java.util.zip.GZIPInputStream
 import kotlin.random.Random
+
+/** Ключ gzip-копии из плана файлов; отсутствие поля означает, что копии у файла нет. */
+internal val com.lezenford.mfr.version.v1.File.compressedStorageOrNull: String?
+    get() = if (hasCompressedStorage()) compressedStorage else null
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -103,12 +110,27 @@ class DownloadFileTask(
      * контрольной суммы означает битый файл, и следующая попытка начинается с нуля.
      * Ответ сервера с кодом ошибки не повторяется: серверные сбои уже перебрал HttpRequestRetry,
      * а клиентские коды означают расхождение манифеста с хранилищем.
+     *
+     * Сжатая копия — только экономия трафика: любая проблема с ней (нет в хранилище, не
+     * распаковывается, неверная контрольная сумма) означает, что файл берётся сырым объектом.
      */
     private suspend fun downloadWithRetries(host: String, file: Properties.File) {
         val mainPathFile = properties.gameFolder.resolve(file.mainPath)
         var attempt = 1
+        var useCompressed = file.compressedStorage != null
         while (true) {
             try {
+                if (useCompressed) {
+                    val unpacked = runCatching { downloadCompressed(host, file.compressedStorage!!, mainPathFile) }
+                        .onFailure { if (it is CancellationException) throw it }
+                        .map { mainPathFile.sha256().contentEquals(file.sha256) }
+                        .getOrDefault(false)
+                    if (unpacked) return
+                    log.warn("Compressed copy of ${file.mainPath} is unusable, downloading raw object")
+                    mainPathFile.deleteIfExists()
+                    useCompressed = false
+                    continue
+                }
                 ktorProvider.downloadToFile(host, file.storage, mainPathFile)
                 if (!mainPathFile.sha256().contentEquals(file.sha256)) {
                     mainPathFile.deleteIfExists()
@@ -130,6 +152,22 @@ class DownloadFileTask(
         }
     }
 
+    /** Качает gzip-копию рядом с целевым файлом и распаковывает её на место. */
+    private suspend fun downloadCompressed(host: String, storage: String, target: Path) {
+        val packed = target.resolveSibling(target.fileName.toString() + PACKED_SUFFIX)
+        val unpacked = target.resolveSibling(target.fileName.toString() + UNPACKED_SUFFIX)
+        try {
+            ktorProvider.downloadToFile(host, storage, packed)
+            GZIPInputStream(Files.newInputStream(packed)).use { input ->
+                Files.newOutputStream(unpacked).use { output -> input.copyTo(output, UNPACK_BUFFER_SIZE) }
+            }
+            Files.move(unpacked, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
+        } finally {
+            packed.deleteIfExists()
+            unpacked.deleteIfExists()
+        }
+    }
+
     private fun retryDelayMillis(attempt: Int): Long {
         val base = RETRY_BASE_DELAY_MILLIS shl (attempt - 1)
         return base + Random.nextLong(-base / 4, base / 4 + 1)
@@ -144,11 +182,15 @@ class DownloadFileTask(
             val mainPath: Path,
             val optionalPath: Path?,
             val storage: String,
-            val sha256: ByteArray
+            val sha256: ByteArray,
+            val compressedStorage: String? = null
         )
     }
 
     companion object {
+        private const val PACKED_SUFFIX = ".gz"
+        private const val UNPACKED_SUFFIX = ".unpacked"
+        private const val UNPACK_BUFFER_SIZE = 256 * 1024
         private const val MAX_ATTEMPTS = 5
         private const val RETRY_BASE_DELAY_MILLIS = 2_000L
         private val log by Logger()

@@ -57,8 +57,8 @@ class GameInstallTask(
         log.info("Found version $version in line $line")
         val versionDetails = ktorProvider.findGameVersionSchema(version)
         log.info("Version can by downloaded from ${versionDetails.host}")
-        val schema = ktorProvider.findGameSchema(versionDetails.host, versionDetails.schema)
-        val filesPlan = ktorProvider.findGameFilesPlan(versionDetails.host, versionDetails.files)
+        val schema = ktorProvider.findGameSchema(versionDetails.host, versionDetails.schema, versionDetails.compressedSchema)
+        val filesPlan = ktorProvider.findGameFilesPlan(versionDetails.host, versionDetails.files, versionDetails.compressedFiles)
 
         properties.gameFolder.also { it.toFile().mkdirs() }.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
         State.schema.emit(schema)
@@ -68,7 +68,7 @@ class GameInstallTask(
         val mandatoryFiles = (schema.partitionsList.filter { it.required }.flatMap { it.filesList } + schema.optionsList.asSequence()
             .flatMap { it.contentsList }.map { it.partition }.filter { it.required }.flatMap { it.filesList })
 
-        val downloadPlan = filesPlan.filesList.associateBy({ it.path }, { it.storage })
+        val downloadPlan = filesPlan.filesList.associateBy { it.path }
         mandatoryFiles.filter { it.mainPath !in downloadPlan }.takeIf { it.isNotEmpty() }?.also {
             log.error("Some files don't have link for download. $it")
             throw IllegalArgumentException("Inconsistent files")
@@ -81,8 +81,9 @@ class GameInstallTask(
                     DownloadFileTask.Properties.File(
                         mainPath = properties.gameFolder.resolve(file.mainPath),
                         optionalPath = file.takeIf { it.hasOptionalPath() }?.let { properties.gameFolder.resolve(it.optionalPath) },
-                        storage = downloadPlan[file.mainPath]!!,
-                        sha256 = file.sha256.toByteArray()
+                        storage = downloadPlan.getValue(file.mainPath).storage,
+                        sha256 = file.sha256.toByteArray(),
+                        compressedStorage = downloadPlan.getValue(file.mainPath).compressedStorageOrNull
                     )
                 },
                 applyOptionalPath = true

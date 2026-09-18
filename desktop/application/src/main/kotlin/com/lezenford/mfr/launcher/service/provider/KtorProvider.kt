@@ -18,12 +18,14 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withTimeoutOrNull
 import org.springframework.stereotype.Component
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
+import java.util.zip.GZIPInputStream
 import kotlin.io.path.exists
 import kotlin.io.path.fileSize
 import kotlin.system.measureTimeMillis
@@ -95,18 +97,43 @@ class KtorProvider(
         }.call.response.body<GameSchemaResponse>()
     }
 
-    suspend fun findGameSchema(host: String, path: String): Schema {
-        return Schema.parseFrom(client.get("${host}/${path}") {
-            header(CLIENT_ID_HEADER, State.clientId.value)
-            manifestTimeout()
-        }.call.response.readBytes())
+    suspend fun findGameSchema(host: String, path: String, compressedPath: String? = null): Schema {
+        return Schema.parseFrom(readManifest(host, path, compressedPath))
     }
 
-    suspend fun findGameFilesPlan(host: String, path: String): com.lezenford.mfr.version.v1.Version {
-        return com.lezenford.mfr.version.v1.Version.parseFrom(client.get("${host}/${path}") {
+    suspend fun findGameFilesPlan(
+        host: String,
+        path: String,
+        compressedPath: String? = null
+    ): com.lezenford.mfr.version.v1.Version {
+        return com.lezenford.mfr.version.v1.Version.parseFrom(readManifest(host, path, compressedPath))
+    }
+
+    /**
+     * Манифест читается из gzip-копии, когда сервер её предложил, иначе — сырым. Копия только
+     * экономит трафик: любая проблема с ней означает чтение сырого манифеста, как и без копии.
+     */
+    private suspend fun readManifest(host: String, path: String, compressedPath: String?): ByteArray {
+        if (compressedPath != null) {
+            try {
+                val response = client.get("${host}/${compressedPath}") {
+                    header(CLIENT_ID_HEADER, State.clientId.value)
+                    manifestTimeout()
+                }.call.response
+                if (response.status.isSuccess()) {
+                    return GZIPInputStream(response.readBytes().inputStream()).use { it.readBytes() }
+                }
+                log.warn("Compressed manifest $compressedPath returned ${response.status}, reading raw manifest")
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                log.warn("Compressed manifest $compressedPath is unusable, reading raw manifest: ${e.message}")
+            }
+        }
+        return client.get("${host}/${path}") {
             header(CLIENT_ID_HEADER, State.clientId.value)
             manifestTimeout()
-        }.call.response.readBytes())
+        }.call.response.readBytes()
     }
 
     suspend fun findActiveLauncherVersion(): String {

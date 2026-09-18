@@ -37,7 +37,13 @@ data class GameSchemaResponse (
     val files: String,
 
     @SerialName(value = "schema")
-    val schema: String
+    val schema: String,
+
+    @SerialName(value = "compressed_files")
+    val compressedFiles: String? = null,
+
+    @SerialName(value = "compressed_schema")
+    val compressedSchema: String? = null
 
 ) {
 

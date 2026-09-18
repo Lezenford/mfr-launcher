@@ -41,6 +41,7 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.inputStream
+import com.lezenford.mfr.launcher.task.compressedStorageOrNull
 
 @Profile("GUI")
 @Component
@@ -220,8 +221,8 @@ class GameController(
                         val schema = State.schema.value
                             ?: throw IllegalArgumentException("Schema not found")
                         val versionSchema = ktorProvider.findGameVersionSchema(schema.version)
-                        val filesPlan = ktorProvider.findGameFilesPlan(versionSchema.host, versionSchema.files)
-                            .filesList.associateBy({ it.path }, { it.storage })
+                        val filesPlan = ktorProvider.findGameFilesPlan(versionSchema.host, versionSchema.files, versionSchema.compressedFiles)
+                            .filesList.associateBy { it.path }
                         val files = schema.optionsList
                             .find { it.name == name }?.contentsList?.flatMap { it.partition.filesList }
                             ?: emptyList()
@@ -235,7 +236,8 @@ class GameController(
                                                 mainPath = applicationProperties.gameFolder.resolve(file.mainPath),
                                                 optionalPath = applicationProperties.gameFolder.resolve(file.optionalPath),
                                                 sha256 = file.sha256.toByteArray(),
-                                                storage = filesPlan[file.mainPath]!!
+                                                storage = filesPlan.getValue(file.mainPath).storage,
+                                                compressedStorage = filesPlan.getValue(file.mainPath).compressedStorageOrNull
                                             )
                                         },
                                         applyOptionalPath = false

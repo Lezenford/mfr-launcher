@@ -37,9 +37,9 @@ class CheckGameConsistencyTask(
 
         val version = ktorProvider.requireActiveGameVersion(installedLine())
         val versionSchema = ktorProvider.findGameVersionSchema(version)
-        val schema = ktorProvider.findGameSchema(versionSchema.host, versionSchema.schema)
-        val filesPlan = ktorProvider.findGameFilesPlan(versionSchema.host, versionSchema.files)
-            .filesList.associateBy({ it.path }, { it.storage })
+        val schema = ktorProvider.findGameSchema(versionSchema.host, versionSchema.schema, versionSchema.compressedSchema)
+        val filesPlan = ktorProvider.findGameFilesPlan(versionSchema.host, versionSchema.files, versionSchema.compressedFiles)
+            .filesList.associateBy { it.path }
 
         properties.gameFolder.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
 
@@ -94,8 +94,9 @@ class CheckGameConsistencyTask(
                             mainPath = properties.gameFolder.resolve(file.mainPath),
                             optionalPath = file.takeIf { it.hasOptionalPath() }
                                 ?.let { properties.gameFolder.resolve(it.optionalPath) },
-                            storage = filesPlan[file.mainPath]!!,
-                            sha256 = file.sha256.toByteArray()
+                            storage = filesPlan.getValue(file.mainPath).storage,
+                            sha256 = file.sha256.toByteArray(),
+                            compressedStorage = filesPlan.getValue(file.mainPath).compressedStorageOrNull
                         )
                     },
                     applyOptionalPath = false

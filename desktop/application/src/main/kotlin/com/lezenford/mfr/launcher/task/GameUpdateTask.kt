@@ -31,9 +31,9 @@ class GameUpdateTask(
 
         val version = ktorProvider.requireActiveGameVersion(installedLine())
         val versionDetails = ktorProvider.findGameVersionSchema(version)
-        val schema = ktorProvider.findGameSchema(versionDetails.host, versionDetails.schema)
-        val filesPlan = ktorProvider.findGameFilesPlan(versionDetails.host, versionDetails.files)
-            .filesList.associateBy({ it.path }, { it.storage })
+        val schema = ktorProvider.findGameSchema(versionDetails.host, versionDetails.schema, versionDetails.compressedSchema)
+        val filesPlan = ktorProvider.findGameFilesPlan(versionDetails.host, versionDetails.files, versionDetails.compressedFiles)
+            .filesList.associateBy { it.path }
 
         val (filesForDownload, filesForRemove) = findContent(schema)
 
@@ -54,8 +54,9 @@ class GameUpdateTask(
                             mainPath = applicationProperties.gameFolder.resolve(file.mainPath),
                             optionalPath = file.takeIf { it.hasOptionalPath() }
                                 ?.let { applicationProperties.gameFolder.resolve(it.optionalPath) },
-                            storage = filesPlan[file.mainPath]!!,
-                            sha256 = file.sha256.toByteArray()
+                            storage = filesPlan.getValue(file.mainPath).storage,
+                            sha256 = file.sha256.toByteArray(),
+                            compressedStorage = filesPlan.getValue(file.mainPath).compressedStorageOrNull
                         )
                     },
                     applyOptionalPath = false

@@ -14,4 +14,7 @@ message Version {
 message File {
   string path = 1;
   string storage = 2;
+  // Объект с gzip-копией того же файла. Есть не у каждого файла: копия
+  // публикуется только там, где она заметно меньше оригинала.
+  optional string compressed_storage = 3;
 }
