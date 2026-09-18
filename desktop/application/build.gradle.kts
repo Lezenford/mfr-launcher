@@ -56,6 +56,7 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:2.1.3")
 
     implementation("io.ktor:ktor-client-java:2.1.3")
+    testImplementation("io.ktor:ktor-client-mock:2.1.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.1.3")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
@@ -66,6 +67,10 @@ dependencies {
     //  modules
     implementation(project(":common"))
     implementation(project(":desktop:javafx"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {

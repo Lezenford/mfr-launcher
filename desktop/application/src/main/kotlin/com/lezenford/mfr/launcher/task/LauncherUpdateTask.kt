@@ -2,7 +2,6 @@ package com.lezenford.mfr.launcher.task
 
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.service.provider.KtorProvider
-import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.config.BeanDefinition
@@ -32,8 +31,7 @@ class LauncherUpdateTask(
         if (!File(versionSchema.jdk).exists()) {
             withContext(Dispatchers.IO) {
                 val tempFile = Files.createTempFile("jdk_zip_", version).toFile()
-                ktorProvider.downloadFile(versionSchema.host, versionSchema.jdkStorage).toInputStream()
-                    .copyTo(tempFile.outputStream())
+                ktorProvider.downloadToFile(versionSchema.host, versionSchema.jdkStorage, tempFile.toPath())
                 val jdkDirectory = Files.createTempDirectory("jdk_").toFile()
                 try {
                     ZipFile(tempFile).use { zip ->
@@ -44,7 +42,9 @@ class LauncherUpdateTask(
                                 outputFile.mkdirs()
                             } else {
                                 outputFile.parentFile?.mkdirs()
-                                zip.getInputStream(entry).copyTo(outputFile.outputStream())
+                                zip.getInputStream(entry).use { input ->
+                                    outputFile.outputStream().use { output -> input.copyTo(output) }
+                                }
                             }
                         }
                     }
@@ -57,8 +57,7 @@ class LauncherUpdateTask(
         }
 
         val tempFile = Files.createTempFile("mfr_", version).toFile()
-        ktorProvider.downloadFile(versionSchema.host, versionSchema.launcherStorage).toInputStream()
-            .copyTo(tempFile.outputStream())
+        ktorProvider.downloadToFile(versionSchema.host, versionSchema.launcherStorage, tempFile.toPath())
 
         updateDescription("Подготовка к установке")
         updateProgress(100)
