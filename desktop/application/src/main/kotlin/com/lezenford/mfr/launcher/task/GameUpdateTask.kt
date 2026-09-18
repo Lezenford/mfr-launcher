@@ -13,9 +13,7 @@ import com.lezenford.mfr.schema.v1.Schema
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
-import java.nio.file.Path
 import kotlin.io.path.deleteIfExists
-import kotlin.io.path.moveTo
 import kotlin.io.path.readBytes
 import kotlin.io.path.writeBytes
 
@@ -45,30 +43,24 @@ class GameUpdateTask(
         }
 
         if (filesForDownload.isNotEmpty()) {
-            val backup = mutableListOf<Pair<Path, Path>>()
-            try {
-                joinSubtask(
-                    factory.downloadFileTask(),
-                    DownloadFileTask.Properties(
-                        host = versionDetails.host,
-                        files = filesForDownload.map { file ->
-                            DownloadFileTask.Properties.File(
-                                mainPath = applicationProperties.gameFolder.resolve(file.mainPath),
-                                optionalPath = file.takeIf { it.hasOptionalPath() }
-                                    ?.let { applicationProperties.gameFolder.resolve(it.optionalPath) },
-                                storage = filesPlan[file.mainPath]!!,
-                                sha256 = file.sha256.toByteArray()
-                            )
-                        },
-                        applyOptionalPath = false
-                    )
+            // Ошибка загрузки должна остановить обновление до записи новой схемы: иначе
+            // установка считается обновлённой, а часть файлов в ней не докачана.
+            joinSubtask(
+                factory.downloadFileTask(),
+                DownloadFileTask.Properties(
+                    host = versionDetails.host,
+                    files = filesForDownload.map { file ->
+                        DownloadFileTask.Properties.File(
+                            mainPath = applicationProperties.gameFolder.resolve(file.mainPath),
+                            optionalPath = file.takeIf { it.hasOptionalPath() }
+                                ?.let { applicationProperties.gameFolder.resolve(it.optionalPath) },
+                            storage = filesPlan[file.mainPath]!!,
+                            sha256 = file.sha256.toByteArray()
+                        )
+                    },
+                    applyOptionalPath = false
                 )
-            } catch (e: Exception) {
-                log.error("Error while game update", e)
-                backup.forEach { it.second.moveTo(it.first, true) }
-            } finally {
-                backup.forEach { it.second.deleteIfExists() }
-            }
+            )
         }
         filesForRemove.forEach {
             applicationProperties.gameFolder.resolve(it.mainPath).deleteIfExists()

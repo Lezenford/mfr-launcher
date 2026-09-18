@@ -10,7 +10,6 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.pipeline.PipelineInterceptor
 import kotlinx.serialization.json.Json
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,9 +26,12 @@ class KtorConfiguration {
                 protocolVersion = java.net.http.HttpClient.Version.HTTP_1_1
             }
             install(HttpTimeout) {
+                // Общего лимита на запрос нет намеренно: он отменяет и потоковое чтение тела,
+                // а скачивание большого файла на медленном канале может идти дольше любого
+                // разумного лимита. Короткие вызовы API ограничены поштучно в KtorProvider,
+                // бездействие потока при скачивании ловит сторож в KtorProvider.downloadToFile.
+                // Таймаут сокета движок Java не поддерживает, поэтому он не задаётся.
                 connectTimeoutMillis = 10_000
-                requestTimeoutMillis = 600_000
-                socketTimeoutMillis = 5_000
             }
             install(HttpRequestRetry) {
                 maxRetries = 5
