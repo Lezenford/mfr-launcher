@@ -4,6 +4,7 @@ import com.lezenford.mfr.common.extensions.Logger
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.exception.DownloadFileException
 import com.lezenford.mfr.launcher.exception.DownloadStalledException
+import com.lezenford.mfr.launcher.model.dto.ChannelList
 import com.lezenford.mfr.launcher.model.dto.Version
 import com.lezenford.mfr.launcher.service.Location
 import com.lezenford.mfr.launcher.service.State
@@ -40,12 +41,48 @@ class KtorProvider(
             Location.EU -> properties.server.euLocation.address
         }.let { "https://$it" }
 
-    suspend fun findActiveGameVersion(): String {
-        return client.get("$host/v1/game/version") {
+    /**
+     * Активная версия игровой сборки в линии совместимости. 404 — такой линии нет, состояние
+     * постоянное; 503 — линия есть, отдать в ней пока нечего, состояние временное.
+     */
+    suspend fun findActiveGameVersion(line: String): LineVersion {
+        val response = client.get("$host/v2/game/${line.encodeURLPathPart()}/version") {
             header(CLIENT_ID_HEADER, State.clientId.value)
             parameter("os", "WINDOWS")
             apiTimeout()
-        }.call.response.body<Version>().id
+            retry {
+                // 503 здесь — штатный ответ «в линии пока нечего отдать», а не сбой сервера,
+                // поэтому из общего правила повторов он исключён.
+                maxRetries = 5
+                retryIf { _, response ->
+                    response.status.value >= 500 && response.status != HttpStatusCode.ServiceUnavailable
+                }
+                retryOnExceptionIf { _, _ -> true }
+                exponentialDelay()
+            }
+        }
+        return when {
+            response.status.isSuccess() -> LineVersion.Found(response.body<Version>().id)
+            response.status == HttpStatusCode.NotFound -> LineVersion.NoSuchLine
+            response.status == HttpStatusCode.ServiceUnavailable -> LineVersion.NothingYet
+            else -> throw IllegalArgumentException("Request return error code ${response.status}")
+        }
+    }
+
+    /**
+     * Линии, в которых этому клиенту есть что отдать, в порядке сервера: первая — умолчание
+     * для свежей установки.
+     */
+    suspend fun findGameChannels(): List<String> {
+        val response = client.get("$host/v2/game/channels") {
+            header(CLIENT_ID_HEADER, State.clientId.value)
+            parameter("os", "WINDOWS")
+            apiTimeout()
+        }
+        if (!response.status.isSuccess()) {
+            throw IllegalArgumentException("Request return error code ${response.status}")
+        }
+        return response.body<ChannelList>().channels.map { it.id }
     }
 
     suspend fun findGameVersionSchema(version: String): GameSchemaResponse {
@@ -184,4 +221,10 @@ class KtorProvider(
         private const val STALL_TIMEOUT_MILLIS = 60_000L
         private val log by Logger()
     }
+}
+
+sealed interface LineVersion {
+    data class Found(val id: String) : LineVersion
+    object NoSuchLine : LineVersion
+    object NothingYet : LineVersion
 }

@@ -1,5 +1,6 @@
 package com.lezenford.mfr.launcher.task
 
+import com.lezenford.mfr.common.exception.ServerMaintenanceException
 import com.lezenford.mfr.common.extensions.Logger
 import com.lezenford.mfr.common.protocol.file.SCHEMA_FILE_NAME
 import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
@@ -48,8 +49,12 @@ class GameInstallTask(
             propertiesService.save(Properties(Properties.Key.OLD_RELEASE_REMOVED))
         }
 
-        val version = ktorProvider.findActiveGameVersion()
-        log.info("Found version $version")
+        // Свежая установка идёт в первую линию перечня: сервер отдаёт линии по убыванию.
+        val line = State.selectedBuild.value
+            ?: ktorProvider.findGameChannels().firstOrNull()
+            ?: throw ServerMaintenanceException("Нет доступных линий игры")
+        val version = ktorProvider.requireActiveGameVersion(line)
+        log.info("Found version $version in line $line")
         val versionDetails = ktorProvider.findGameVersionSchema(version)
         log.info("Version can by downloaded from ${versionDetails.host}")
         val schema = ktorProvider.findGameSchema(versionDetails.host, versionDetails.schema)
@@ -57,6 +62,7 @@ class GameInstallTask(
 
         properties.gameFolder.also { it.toFile().mkdirs() }.resolve(SCHEMA_FILE_NAME).writeBytes(schema.toByteArray())
         State.schema.emit(schema)
+        State.selectedBuild.emit(line)
         log.info("Saved schema file")
 
         val mandatoryFiles = (schema.partitionsList.filter { it.required }.flatMap { it.filesList } + schema.optionsList.asSequence()

@@ -1,7 +1,6 @@
 .gradle
 */build/
 build/
-gradle
 *.log
 /server/download/
 

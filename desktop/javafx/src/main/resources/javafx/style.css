@@ -100,6 +100,15 @@
     -fx-background-image: url(button/button_update.png), url(button/hover/button_update_hover.png), url(button/button_update_lava.png);
 }
 
+.updateButton.branch {
+    -fx-background-image: url(button/button_update.png), url(button/button_update_lava.png);
+    -fx-text-fill: #a8e6ff;
+}
+
+.updateButton.branch:hover {
+    -fx-background-image: url(button/button_update.png), url(button/hover/button_update_hover.png), url(button/button_update_lava.png);
+}
+
 .close {
     -fx-background-image: url(button/close.png);
 }

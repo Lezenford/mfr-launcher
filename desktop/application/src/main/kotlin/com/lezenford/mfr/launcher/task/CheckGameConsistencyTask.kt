@@ -35,7 +35,7 @@ class CheckGameConsistencyTask(
     override suspend fun action(params: Unit) {
         updateDescription("Проверка целостности игры")
 
-        val version = ktorProvider.findActiveGameVersion()
+        val version = ktorProvider.requireActiveGameVersion(installedLine())
         val versionSchema = ktorProvider.findGameVersionSchema(version)
         val schema = ktorProvider.findGameSchema(versionSchema.host, versionSchema.schema)
         val filesPlan = ktorProvider.findGameFilesPlan(versionSchema.host, versionSchema.files)

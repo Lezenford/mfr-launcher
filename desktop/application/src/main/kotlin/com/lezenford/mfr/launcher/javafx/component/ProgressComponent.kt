@@ -2,6 +2,7 @@ package com.lezenford.mfr.launcher.javafx.component
 
 import com.lezenford.mfr.common.extensions.Logger
 import com.lezenford.mfr.launcher.extension.bind
+import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.factory.TaskFactory
 import com.lezenford.mfr.launcher.task.Task
 import javafx.event.EventHandler
@@ -19,6 +20,8 @@ import kotlinx.coroutines.withContext
 class ProgressComponent(
     override val fxmlLoader: FXMLLoader,
     private val factory: TaskFactory,
+    /** Спрашивает игрока о переходе на линию; `true` — согласие, линия уже выбрана. */
+    private val lineSwitch: suspend (String) -> Boolean,
 ) : SimpleLauncherProgressBar(fxmlLoader) {
     private val updateButton: Button by fxml()
     private val updateLogo: VBox by fxml()
@@ -72,8 +75,9 @@ class ProgressComponent(
         private val log by Logger()
         private const val BUTTON_LAVA = "lava"
         private const val BUTTON_LOCKED = "locked"
+        private const val BUTTON_BRANCH = "branch"
         private const val LOGO_UPDATE_READY = "update"
-        private val styles = listOf(BUTTON_LAVA, BUTTON_LOCKED)
+        private val styles = listOf(BUTTON_LAVA, BUTTON_LOCKED, BUTTON_BRANCH)
         private val BLOCK_MUTEX = Mutex()
     }
 
@@ -115,6 +119,19 @@ class ProgressComponent(
                 updateLogo.styleClass.remove(LOGO_UPDATE_READY)
             }
             override val action: suspend ProgressComponent.() -> Unit = { executeTask(factory.launcherUpdateTask()) }
+        },
+        NEW_LINE("Новая линия игры") {
+            override val applyStyle: suspend ProgressComponent.() -> Unit = {
+                updateButton.styleClass.removeAll(styles)
+                updateButton.styleClass.add(BUTTON_BRANCH)
+                updateLogo.styleClass.add(LOGO_UPDATE_READY)
+            }
+            override val action: suspend ProgressComponent.() -> Unit = {
+                val line = State.newLineAvailable.value
+                if (line != null && lineSwitch(line)) {
+                    executeTask(factory.gameUpdateTask())
+                }
+            }
         };
 
         abstract val applyStyle: suspend ProgressComponent.() -> Unit

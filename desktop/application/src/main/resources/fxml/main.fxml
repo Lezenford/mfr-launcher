@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -226,15 +225,8 @@
                                                                       styleClass="cell" HBox.hgrow="ALWAYS">
                                                                     <children>
                                                                         <Label text="Версия сборки:"/>
-                                                                        <ComboBox disable="true" prefWidth="150.0"
-                                                                                  visibleRowCount="2">
-                                                                            <items>
-                                                                                <FXCollections
-                                                                                        fx:factory="observableArrayList">
-                                                                                    <String fx:value="General"/>
-                                                                                    <String fx:value="Test"/>
-                                                                                </FXCollections>
-                                                                            </items>
+                                                                        <ComboBox fx:id="buildComboBox" disable="true"
+                                                                                  prefWidth="150.0" visibleRowCount="2">
                                                                             <styleClass>
                                                                                 <String fx:value="red"/>
                                                                                 <String fx:value="combo"/>

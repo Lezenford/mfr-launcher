@@ -6,7 +6,9 @@ import com.lezenford.mfr.launcher.config.properties.ApplicationProperties
 import com.lezenford.mfr.launcher.config.properties.GameProperties
 import com.lezenford.mfr.launcher.exception.handler.AbstractExceptionHandler
 import com.lezenford.mfr.launcher.extension.ModifyFiles
+import com.lezenford.mfr.launcher.extension.compareVersionLines
 import com.lezenford.mfr.launcher.extension.listener
+import com.lezenford.mfr.launcher.extension.versionLine
 import com.lezenford.mfr.launcher.model.entity.Properties
 import com.lezenford.mfr.launcher.service.GameStatus
 import com.lezenford.mfr.launcher.service.LauncherStatus
@@ -15,6 +17,7 @@ import com.lezenford.mfr.launcher.service.OpenMwService
 import com.lezenford.mfr.launcher.service.State
 import com.lezenford.mfr.launcher.service.model.PropertiesService
 import com.lezenford.mfr.launcher.service.provider.KtorProvider
+import com.lezenford.mfr.launcher.service.provider.LineVersion
 import com.lezenford.mfr.schema.v1.Schema
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,6 +67,14 @@ abstract class InitApplicationInitiator : CoroutineScope {
                 State.location.emit(Location.valueOf(it))
             }
 
+            log.info("Try to find selected build value")
+            propertyService.findByKey(Properties.Key.SELECTED_BUILD)?.value?.takeIf { it.isNotBlank() }?.also {
+                State.selectedBuild.emit(it)
+            }
+            propertyService.findByKey(Properties.Key.KNOWN_BUILDS)?.value?.takeIf { it.isNotBlank() }?.also {
+                State.availableBuilds.emit(it.split(BUILDS_SEPARATOR))
+            }
+
             prepareListeners()
 
             propertyService.findByKey(Properties.Key.NEW_RELEASE_INSTALLED)?.also {
@@ -87,6 +98,10 @@ abstract class InitApplicationInitiator : CoroutineScope {
                     val schema = Schema.parseFrom(it.readBytes())
                     State.schema.emit(schema)
                     State.gameVersion.emit(schema.version)
+                    // Установка, сделанная до появления линий, знает свою линию только по номеру версии.
+                    if (State.selectedBuild.value == null) {
+                        schema.version.versionLine()?.also { line -> State.selectedBuild.emit(line) }
+                    }
                 }
 
                 openMwService.prepareTemplates()
@@ -149,13 +164,24 @@ abstract class InitApplicationInitiator : CoroutineScope {
 
                 streamUpdateSubscribe {
                     State.serverConnection.first { it }
+                    val channels = ktorProvider.findGameChannels()
+                    State.availableBuilds.emit(channels)
                     val version = State.schema.value?.version
                     if (State.gameInstalled.value && version != null) {
-                        State.gameUpdateStatus.emit(
-                            GameStatus(
-                                currentVersion = version,
-                                serverVersion = ktorProvider.findActiveGameVersion()
+                        val line = State.selectedBuild.value ?: version.versionLine() ?: return@streamUpdateSubscribe
+                        when (val result = ktorProvider.findActiveGameVersion(line)) {
+                            is LineVersion.Found -> State.gameUpdateStatus.emit(
+                                GameStatus(currentVersion = version, serverVersion = result.id)
                             )
+                            LineVersion.NoSuchLine -> log.warn("Line $line is unknown to the server")
+                            LineVersion.NothingYet -> log.info("Line $line has no active version yet")
+                        }
+                        // Подсвечивается только самая свежая линия, и только пока игрок её не отклонил:
+                        // отклонённая молчит до появления следующей.
+                        val newest = channels.maxWithOrNull(::compareVersionLines)
+                        val dismissed = propertyService.findByKey(Properties.Key.DISMISSED_BUILD)?.value
+                        State.newLineAvailable.emit(
+                            newest?.takeIf { compareVersionLines(it, line) > 0 && it != dismissed }
                         )
                     }
                 }
@@ -180,6 +206,16 @@ abstract class InitApplicationInitiator : CoroutineScope {
         State.location.listener {
             propertyService.updateValue(Properties.Key.LOCATION, it.toString())
         }
+
+        State.selectedBuild.listener { line ->
+            line?.also { propertyService.updateValue(Properties.Key.SELECTED_BUILD, it) }
+        }
+
+        State.availableBuilds.listener { builds ->
+            if (builds.isNotEmpty()) {
+                propertyService.updateValue(Properties.Key.KNOWN_BUILDS, builds.joinToString(BUILDS_SEPARATOR))
+            }
+        }
     }
 
     private fun streamUpdateSubscribe(delay: Duration = 1.hours, action: suspend () -> Unit) {
@@ -200,6 +236,7 @@ abstract class InitApplicationInitiator : CoroutineScope {
     protected abstract suspend fun complete()
 
     companion object {
+        private const val BUILDS_SEPARATOR = ","
         private val log by Logger()
     }
 }

@@ -48,6 +48,15 @@ object State {
     val clientId: MutableStateFlow<String?> = MutableStateFlow<String?>(null).also { flow ->
         flow.listener { log.info("Set cleintId value: $it") }
     }
+    val selectedBuild: MutableStateFlow<String?> = MutableStateFlow<String?>(null).also { flow ->
+        flow.listener { log.info("Set selected build value: $it") }
+    }
+    val availableBuilds: MutableStateFlow<List<String>> = MutableStateFlow(emptyList<String>()).also { flow ->
+        flow.listener { log.info("Set available builds value: $it") }
+    }
+    val newLineAvailable: MutableStateFlow<String?> = MutableStateFlow<String?>(null).also { flow ->
+        flow.listener { log.info("Set new line available value: $it") }
+    }
 
     private val log by Logger()
 }

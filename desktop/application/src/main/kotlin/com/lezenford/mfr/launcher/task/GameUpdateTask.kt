@@ -29,7 +29,7 @@ class GameUpdateTask(
     override suspend fun action(params: Unit) {
         updateDescription("Подготовка к обновлению")
 
-        val version = ktorProvider.findActiveGameVersion()
+        val version = ktorProvider.requireActiveGameVersion(installedLine())
         val versionDetails = ktorProvider.findGameVersionSchema(version)
         val schema = ktorProvider.findGameSchema(versionDetails.host, versionDetails.schema)
         val filesPlan = ktorProvider.findGameFilesPlan(versionDetails.host, versionDetails.files)
