@@ -19,7 +19,6 @@ import java.nio.file.Path
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.copyTo
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
@@ -37,7 +36,6 @@ class DownloadFileTask(
 
         val totalSize = params.files.size
         val downloaded = AtomicInteger(0)
-        val downloadedBytes = AtomicLong(0)
         val filesForDownload = LinkedBlockingQueue<Properties.File>()
 
         updateDescription("Анализ существующих файлов")
@@ -71,7 +69,7 @@ class DownloadFileTask(
                     var fileData = filesForDownload.poll()
                     while (fileData != null) {
                         try {
-                            downloadWithRetries(params.host, fileData) { downloadedBytes.addAndGet(it.toLong()) }
+                            downloadWithRetries(params.host, fileData)
                             if (params.applyOptionalPath && fileData.optionalPath != null) {
                                 val target = properties.gameFolder.resolve(fileData.optionalPath).also {
                                     it.parent.toFile().mkdirs()
@@ -80,9 +78,7 @@ class DownloadFileTask(
                             }
                             val currentValue = downloaded.incrementAndGet()
                             updateProgress(currentValue, totalSize)
-                            updateDescription(
-                                "Скачано файлов: $currentValue/$totalSize (${formatSize(downloadedBytes.get())})"
-                            )
+                            updateDescription("Скачано файлов: $currentValue/$totalSize")
                         } catch (e: CancellationException) {
                             throw e
                         } catch (e: Exception) {
@@ -108,12 +104,12 @@ class DownloadFileTask(
      * Ответ сервера с кодом ошибки не повторяется: серверные сбои уже перебрал HttpRequestRetry,
      * а клиентские коды означают расхождение манифеста с хранилищем.
      */
-    private suspend fun downloadWithRetries(host: String, file: Properties.File, onChunk: (Int) -> Unit) {
+    private suspend fun downloadWithRetries(host: String, file: Properties.File) {
         val mainPathFile = properties.gameFolder.resolve(file.mainPath)
         var attempt = 1
         while (true) {
             try {
-                ktorProvider.downloadToFile(host, file.storage, mainPathFile, onChunk)
+                ktorProvider.downloadToFile(host, file.storage, mainPathFile)
                 if (!mainPathFile.sha256().contentEquals(file.sha256)) {
                     mainPathFile.deleteIfExists()
                     throw IllegalStateException("Download failed. ${file.mainPath} has incorrect checksum")
@@ -137,12 +133,6 @@ class DownloadFileTask(
     private fun retryDelayMillis(attempt: Int): Long {
         val base = RETRY_BASE_DELAY_MILLIS shl (attempt - 1)
         return base + Random.nextLong(-base / 4, base / 4 + 1)
-    }
-
-    private fun formatSize(bytes: Long): String = when {
-        bytes >= 1L shl 30 -> String.format("%.1f ГБ", bytes.toDouble() / (1L shl 30))
-        bytes >= 1L shl 20 -> String.format("%.0f МБ", bytes.toDouble() / (1L shl 20))
-        else -> String.format("%.0f КБ", bytes.toDouble() / (1L shl 10))
     }
 
     data class Properties(

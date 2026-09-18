@@ -139,7 +139,7 @@ class KtorProvider(
      * Тело читается потоком через [HttpStatement.execute]: обычный `get()` сохраняет ответ
      * целиком в памяти, и файл в сотни мегабайт сначала занял бы ОЗУ, а уже потом диск.
      */
-    suspend fun downloadToFile(host: String, path: String, target: Path, onChunk: (Int) -> Unit = {}) {
+    suspend fun downloadToFile(host: String, path: String, target: Path) {
         val part = target.resolveSibling(target.fileName.toString() + PART_SUFFIX)
         Files.createDirectories(target.parent)
         val offset = if (part.exists()) part.fileSize() else 0L
@@ -153,11 +153,11 @@ class KtorProvider(
                     // Либо объект пустой, либо накопленная часть уже покрывает его целиком.
                 }
                 response.status == HttpStatusCode.PartialContent -> {
-                    copyWithWatchdog(response.bodyAsChannel(), part, append = true, onChunk)
+                    copyWithWatchdog(response.bodyAsChannel(), part, append = true)
                 }
                 response.status.isSuccess() -> {
                     if (offset > 0) log.info("Server ignored range request for $path, downloading from scratch")
-                    copyWithWatchdog(response.bodyAsChannel(), part, append = false, onChunk)
+                    copyWithWatchdog(response.bodyAsChannel(), part, append = false)
                 }
                 else -> throw DownloadFileException("Request $path returned error code ${response.status}")
             }
@@ -168,7 +168,7 @@ class KtorProvider(
         Files.move(part, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
     }
 
-    private suspend fun copyWithWatchdog(channel: ByteReadChannel, part: Path, append: Boolean, onChunk: (Int) -> Unit) {
+    private suspend fun copyWithWatchdog(channel: ByteReadChannel, part: Path, append: Boolean) {
         val options = if (append) {
             arrayOf(StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND)
         } else {
@@ -183,7 +183,6 @@ class KtorProvider(
                     if (read < 0) break
                     if (read > 0) {
                         output.write(buffer, 0, read)
-                        onChunk(read)
                     }
                 }
             }
