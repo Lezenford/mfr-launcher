@@ -48,7 +48,7 @@ application:
       address: client.mfr.hz.lezenford.com
     ru-location:
       address: client.mfr.yc.lezenford.com
-    connectionCount: 20
+    connectionCount: 32
   game-folder: game
   readme:
     local: Manual\readme\index.html

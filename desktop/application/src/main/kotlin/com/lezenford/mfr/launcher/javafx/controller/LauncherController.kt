@@ -228,17 +228,17 @@ class LauncherController(
      * прячет предложение до появления следующей линии.
      */
     private suspend fun askLineSwitch(line: String, dismissOnRefuse: Boolean): Boolean {
-        val current = State.selectedBuild.value ?: State.schema.value?.version?.versionLine() ?: "не определена"
+        val current = State.selectedBuild.value ?: State.schema.value?.version?.versionLine()?.let { " (сейчас установлена $it)" } ?: ""
         val description = buildString {
-            appendLine("Линия игры $line (сейчас установлена $current).")
-            appendLine("Переход скачает изменившиеся файлы игры. Сохранения другой линии могут оказаться несовместимы.")
+            appendLine("Глобальная версия игры $line$current")
+            appendLine("Переход скачает изменившиеся файлы игры. Сохранения другой версии могут оказаться несовместимы.")
             if (dismissOnRefuse) {
-                appendLine("«Отмена» скроет это предложение до появления следующей линии.")
+                appendLine("«Отмена» скроет это предложение до появления следующей глобальной версии.")
             }
             append("Перейти сейчас?")
         }
         val agreed = fxControllerFactory.controller<QuestionController>().show(
-            title = "Смена линии игры",
+            title = "Глобальная версия игры",
             description = description
         )
         withContext(Dispatchers.IO) {
